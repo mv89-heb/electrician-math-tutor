@@ -214,6 +214,42 @@ export default function Home() {
     setMasteryCorrectCount(0);
   }
 
+  function openFinalExam() {
+    if (!stageGateSatisfied(8, learning, curriculum) || learning.finalExamPassed) return;
+    const questions = buildFinalExam(curriculum, learning.attempts + learning.completed.length);
+    if (!questions.length) return;
+    setFinalExamQuestions(questions);
+    setFinalExamIndex(0);
+    setFinalExamAnswer("");
+    setFinalExamCorrectCount(0);
+    setFinalExamFeedback("idle");
+    setFinalExamScore(null);
+    setFinalExamOpen(true);
+  }
+
+  function submitFinalExam() {
+    const question = finalExamQuestions[finalExamIndex];
+    if (!question || !finalExamAnswer.trim() || finalExamFeedback === "correct") return;
+    const correct = answerMatches(finalExamAnswer, question.accepted);
+    setFinalExamFeedback(correct ? "correct" : "wrong");
+    if (correct) setFinalExamCorrectCount((count) => count + 1);
+  }
+
+  function nextFinalExam() {
+    const finalQuestion = finalExamIndex >= finalExamQuestions.length - 1;
+    const score = finalExamCorrectCount + (finalExamFeedback === "correct" ? 1 : 0);
+    if (!finalQuestion) {
+      setFinalExamIndex((index) => index + 1);
+      setFinalExamAnswer("");
+      setFinalExamFeedback("idle");
+      return;
+    }
+    setFinalExamScore(score);
+    if (finalExamPasses(score)) {
+      setLearning((previous) => recordFinalExam(previous, true));
+    }
+  }
+
   function next() {
     if (canStartMasteryTest(exercise.topic, learning, curriculum) && !generated) {
       openMasteryForTopic(exercise.topic);
