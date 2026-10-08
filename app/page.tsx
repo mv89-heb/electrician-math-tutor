@@ -251,7 +251,15 @@ export default function Home() {
         <div className="eyebrow"><Sparkles size={16} /> מתחילים מאפס • מתמטיקה → חשמל</div>
         <h1>לא צריך לזכור כלום.<br /><em>נבנה את הידע מחדש.</em></h1>
         <p>הסברים קצרים, דוגמאות פשוטות ותרגיל אחד בכל פעם. המערכת מתקדמת רק כשאתה מוכן.</p>
-      </section>
+        <div className="roadmap">
+          <div className="roadmapTitle">תוכנית הדרך ל־100</div>
+          <div className="roadmapGrid">
+            <div className="roadmapStep active"><span>1</span><div><strong>יסודות מוחלטים</strong><small>מספרים, פעולות, X, משוואות ושברים</small></div></div>
+            <div className="roadmapStep"><span>2</span><div><strong>מתמטיקה לחשמל</strong><small>אלגברה, נוסחאות, חזקות, טריגונומטריה וחוק אוהם</small></div></div>
+            <div className="roadmapStep"><span>3</span><div><strong>שליטה ובחינת 100</strong><small>תרגול חשמלאי, מבחני סימולציה, תיקון טעויות וחיזוק</small></div></div>
+          </div>
+        </div>
+      </section>>
 
       <div className="layout">
         <aside className="panel progressPanel">
