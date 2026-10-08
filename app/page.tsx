@@ -5,8 +5,7 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
-import { generatedReinforcement, shouldGenerateReinforcement } from "../lib/learning";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, type LearningState } from "../lib/learning";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
