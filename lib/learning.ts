@@ -1,4 +1,5 @@
 import type { Exercise } from "./curriculum";
+import { generateReinforcement } from "./exercise-generator";
 
 export type TopicStats = {
   attempts: number;
@@ -67,6 +68,14 @@ export function recordAttempt(
       },
     },
   };
+}
+
+export function shouldGenerateReinforcement(stats?: TopicStats): boolean {
+  return !!stats && stats.attempts >= 2 && topicMastery(stats) < 60;
+}
+
+export function generatedReinforcement(topic: string, seed: number): Exercise | null {
+  return generateReinforcement(topic, seed);
 }
 
 export function topicMastery(stats?: TopicStats): number {
