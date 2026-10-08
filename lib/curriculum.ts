@@ -176,7 +176,7 @@ export const curriculum: Exercise[] = [
     hint1:"2² פירושו 2 × 2.",
     hint2:"חשב 2 כפול 2.",
     explanation:"נכון. 2 × 2 = 4.",
-    next:"power-1"
+    next:"power-1b"
   },
   {
     id:"power-1b", topic:"חזקות", level:1,
