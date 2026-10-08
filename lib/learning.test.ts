@@ -197,3 +197,23 @@ describe("generated exercise correctness", () => {
     expect(division.accepted).toEqual(["5"]);
   });
 });
+
+describe("reinforcement topic alignment", () => {
+  it("does not inject an unrelated operation exercise into a fractions topic", () => {
+    const exercise = generateReinforcement("שברים", 9, "operation");
+    expect(exercise?.topic).toBe("שברים");
+    expect(exercise?.prompt).toContain("1/2");
+  });
+
+  it("uses division when reinforcing division equations", () => {
+    const exercise = generateReinforcement("חילוק במשוואות", 9, "operation");
+    expect(exercise?.prompt).toContain("X ÷");
+    expect(exercise?.accepted).toEqual(["20"]);
+  });
+
+  it("does not inject a unit exercise into a non-electrical topic", () => {
+    const exercise = generateReinforcement("חזקות", 9, "unit");
+    expect(exercise?.topic).toBe("חזקות");
+    expect(exercise?.prompt).toContain("²");
+  });
+});
