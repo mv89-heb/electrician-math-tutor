@@ -112,7 +112,10 @@ export default function Home() {
     if (diagnosticIndex === diagnosticQuestions.length - 1) {
       setLearning((previous) => ({
         ...previous,
-        currentIndex: recommendedStartingIndex(previous.diagnosticResults, curriculum),
+        currentIndex: recommendedStartingIndex(
+          [...previous.diagnosticResults, { skill: question.skill, correct }],
+          curriculum,
+        ),
       }));
       setDiagnosticDone(true);
       return;
