@@ -13,7 +13,7 @@ export function buildTopicMasteryTest(exercises: Exercise[], topic: string, seed
   if (!source.length) return [];
   const rotated = [...source.slice(seed % source.length), ...source.slice(0, seed % source.length)];
   const unique = rotated.filter((exercise, index, list) => list.findIndex((item) => item.id === exercise.id) === index);
-  const selected = unique.length >= 3 ? unique.slice(0, 3) : [...unique, ...unique, ...unique].slice(0, 3);
+  const selected = unique.slice(0, 3);
   return selected.map((exercise, index) => ({
     id: `mastery-${topic}-${seed}-${index + 1}-${exercise.id}`,
     topic,
