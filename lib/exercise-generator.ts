@@ -158,7 +158,7 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       explanation: `נכון. ${n} + ${n + 3} = ${n + n + 3}.`, generated: true,
     },
     unit: {
-      id: `generated-${topic}-unit-${seed}`, topic: "נוסחאות בסיסיות", level: 1, title: "חיזוק יחידות חשמל",
+      id: `generated-${topic}-unit-${seed}`, topic, level: 1, title: "חיזוק יחידות חשמל",
       teachingNote: "בחשמל חשוב לזהות גם את הגודל וגם את היחידה שלו.",
       prompt: "איזו יחידה מתאימה לזרם חשמלי: V, A או Ω?",
       accepted: ["A", "a", "אמפר"],
