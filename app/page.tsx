@@ -27,6 +27,22 @@ function isCorrect(answer: string, exercise: Exercise) {
   return exercise.accepted.some((value) => normalize(value) === normalized);
 }
 
+
+function MathPrompt({ prompt }: { prompt: string }) {
+  const match = prompt.match(/[A-Za-z0-9]+(?:\\s*[+\\-−×÷=]\\s*[A-Za-z0-9]+)+/);
+  if (!match) return <div className="promptText">{prompt}</div>;
+  const expression = match[0];
+  const before = prompt.slice(0, match.index).trim();
+  const after = prompt.slice((match.index ?? 0) + expression.length).trim();
+  return (
+    <div className="promptStack">
+      {before && <div className="promptText">{before}</div>}
+      <div className="mathLine" dir="ltr" lang="en">{expression}</div>
+      {after && <div className="promptText">{after}</div>}
+    </div>
+  );
+}
+
 function errorGuidance(exercise: Exercise, answer: string) {
   const normalized = normalize(answer);
 
@@ -197,7 +213,7 @@ export default function Home() {
             <h2>רק לוודא שזה באמת יושב 🧠</h2>
             <p>אין ציון. אנחנו בודקים מה נשאר בזיכרון אחרי הלמידה, כדי לדעת אם לחזור קצת או להתקדם.</p>
             <div className="diagnosticProgress">שאלה {checkpointIndex + 1} מתוך {checkpointQuestions.length}</div>
-            <div className="diagnosticQuestion">{checkpointQuestions[checkpointIndex].prompt}</div>
+            <div className="diagnosticQuestion"><MathPrompt prompt={checkpointQuestions[checkpointIndex].prompt} /></div>
             {checkpointFeedback === "wrong" && <div className="feedback wrong">כמעט. קח רגע לחשוב שוב — אני לא נותן את הפתרון.</div>}
             {checkpointFeedback === "correct" && <div className="feedback success">מעולה. זה יושב טוב. אפשר להמשיך.</div>}
             {checkpointFeedback !== "correct" && <input className="diagnosticInput" dir="ltr" autoFocus value={checkpointAnswer}
@@ -222,7 +238,7 @@ export default function Home() {
                 <h2>רק כדי שאדע מאיפה להתחיל</h2>
                 <p>אין כאן נכשל או עובר. השאלות קצרות מאוד, והמטרה היא לזהות מה כבר מוכר לך ומה כדאי לחזק.</p>
                 <div className="diagnosticProgress">שאלה {diagnosticIndex + 1} מתוך {diagnosticQuestions.length}</div>
-                <div className="diagnosticQuestion">{diagnosticQuestions[diagnosticIndex].prompt}</div>
+                <div className="diagnosticQuestion"><MathPrompt prompt={diagnosticQuestions[diagnosticIndex].prompt} /></div>
                 {diagnosticFeedback === "wrong" && (
                   <div className="feedback wrong">לא נורא — זו בדיוק הסיבה לבדיקה. נסה פעם נוספת. אפשר לחשוב לאט, בלי לחץ.</div>
                 )}
@@ -295,7 +311,7 @@ export default function Home() {
               <div className="panel exerciseCard">
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={20} /><div><strong>רגע של הסבר</strong><p>{exercise.teachingNote}</p></div></div>
-                <div className="question">{exercise.prompt}</div>
+                <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
                 <div className="answerRow">
