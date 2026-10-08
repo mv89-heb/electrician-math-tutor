@@ -113,6 +113,14 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
   if (!errorType) return generateExercise(topic, seed);
 
   const n = 2 + (seed % 6);
+  const equationTopics = new Set(["מהו נעלם?", "חיבור וחיסור במשוואות", "כפל במשוואות", "חילוק במשוואות", "משוואות פשוטות"]);
+  const electricalTopics = new Set(["חשמל — חוק אוהם", "חשמל — הספק", "נוסחאות בסיסיות", "שינוי נושא נוסחה"]);
+  if (errorType === "sign" && !equationTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "operation" && !["כפל במשוואות", "חילוק במשוואות"].includes(topic)) return generateExercise(topic, seed);
+  if (errorType === "arithmetic" && !["סדר פעולות", "כפל במשוואות", "חיבור וחיסור במשוואות", "חילוק במשוואות", "משוואות פשוטות"].includes(topic)) return generateExercise(topic, seed);
+  if (errorType === "unit" && !electricalTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "concept" && topic !== "מהו נעלם?") return generateExercise(topic, seed);
+  if (errorType === "unknown" && !equationTopics.has(topic)) return generateExercise(topic, seed);
   const targeted: Record<string, GeneratedExercise> = {
     sign: {
       id: `generated-${topic}-sign-${seed}`, topic, level: 0, title: "חיזוק סימנים",
