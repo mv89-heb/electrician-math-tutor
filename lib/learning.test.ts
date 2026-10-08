@@ -179,3 +179,21 @@ describe("strict answer validation", () => {
     expect(answerMatches("x", ["R"])).toBe(false);
   });
 });
+
+
+describe("generated exercise correctness", () => {
+  it("keeps every generated algebra answer consistent with its prompt", async () => {
+    const { generateExercise, generateReinforcement } = await import("./exercise-generator");
+    const x = generateExercise("מהו נעלם?", 7)!;
+    expect(x.prompt).toBe("X + 2 = 4. איזה מספר נמצא במקום X?");
+    expect(x.accepted).toEqual(["2"]);
+
+    const multiplication = generateReinforcement("כפל במשוואות", 9, "operation")!;
+    expect(multiplication.prompt).toBe("5 × X = 20. איזה מספר הוא X?");
+    expect(multiplication.accepted).toEqual(["4"]);
+
+    const division = generateReinforcement("חילוק במשוואות", 9, "unknown")!;
+    expect(division.prompt).toBe("X + 5 = 10. איזה מספר הוא X?");
+    expect(division.accepted).toEqual(["5"]);
+  });
+});
