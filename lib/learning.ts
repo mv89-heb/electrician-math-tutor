@@ -203,8 +203,22 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
       .find(({ exercise }) => exercise.topic === current.topic && !state.completed.includes(exercise.id));
     if (sameTopicUnfinished) return sameTopicUnfinished.index;
 
+    const topicErrors = state.errors
+      .filter((error) => error.topic === current.topic)
+      .sort((a, b) => b.count - a.count);
+    if (topicErrors.length) return current.index;
+
     const sameTopic = curriculum.findIndex((exercise) => exercise.topic === current.topic);
     if (sameTopic >= 0) return sameTopic;
+  }
+
+  const weakErrorTopic = state.errors
+    .filter((error) => error.count >= 2)
+    .map((error) => error.topic)
+    .find((topic) => curriculum.some((exercise) => exercise.topic === topic && !state.completed.includes(exercise.id)));
+  if (weakErrorTopic) {
+    const targeted = curriculum.findIndex((exercise) => exercise.topic === weakErrorTopic && !state.completed.includes(exercise.id));
+    if (targeted >= 0) return targeted;
   }
 
   const next = curriculum
