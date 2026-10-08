@@ -43,7 +43,7 @@ export type ReviewCard = {
 };
 
 export type LearningState = {
-  version: 6;
+  version: 7;
   currentIndex: number;
   attempts: number;
   completed: string[];
@@ -90,7 +90,7 @@ export function recordAttempt(
 
   return {
     ...state,
-    version: 6,
+    version: 7,
     attempts: state.attempts + 1,
     completed,
     mistakes,
@@ -291,7 +291,8 @@ export function loadLearningState(storage: Storage | null): LearningState {
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
       reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
       errors: Array.isArray(parsed.errors) ? parsed.errors as ErrorRecord[] : [],
-      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},\n      finalExamPassed: Boolean(parsed.finalExamPassed),
+      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},
+      finalExamPassed: Boolean(parsed.finalExamPassed),
     };
   } catch {
     return emptyLearningState;
@@ -354,7 +355,7 @@ export function recordMasteryTest(state: LearningState, topic: string, score: nu
   const passed = score >= requiredCorrect;
   return {
     ...state,
-    version: 6,
+    version: 7,
     masteryTests: {
       ...state.masteryTests,
       [topic]: {
