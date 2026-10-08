@@ -56,7 +56,7 @@ export function recordAttempt(
 
   return {
     ...state,
-    version: 3,
+    version: 4,
     attempts: state.attempts + 1,
     completed,
     mistakes,
@@ -131,7 +131,7 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
       const targeted = curriculum
         .map((exercise, index) => ({ exercise, index }))
         .find(({ exercise }) => exercise.topic === targetTopic && !state.completed.includes(exercise.id));
-        if (targeted) return targeted.index;
+      if (targeted) return targeted.index;
     }
   }
 
@@ -163,7 +163,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
       stats,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
-        diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
+      diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
     };
   } catch {
