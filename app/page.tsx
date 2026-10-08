@@ -390,7 +390,23 @@ export default function Home() {
           ) : (
             <>
               {!masteryOpen && (
-                <div className="lessonMeta"><span>{exercise.topic}</span><span className="dot" /> {generated ? "תרגול חיזוק" : `תרגיל ${completedCount + 1}`}</div>
+                <>
+                  <div className="lessonMeta"><span>{exercise.topic}</span><span className="dot" /> {generated ? "תרגול חיזוק" : `תרגיל ${completedCount + 1}`}</div>
+                  <div className="lessonScene" aria-label="תמונת מצב של השיעור">
+                    <div className="sceneCircuit" aria-hidden="true">
+                      <span className="sceneNode active" /><span className="sceneWire" /><span className="sceneNode" /><span className="sceneWire short" /><span className="sceneNode" />
+                    </div>
+                    <div className="sceneCopy">
+                      <span className="sceneKicker">⚡ המשימה עכשיו</span>
+                      <strong>{exercise.topic}</strong>
+                      <span>{generated ? "חיזוק ממוקד לפני שמתקדמים" : "צעד קטן בדרך לחישובי חשמל"}</span>
+                    </div>
+                    <div className="sceneStats">
+                      <span><b>{currentStage}</b>/8 <small>שלב</small></span>
+                      <span><b>{averageMastery}%</b> <small>שליטה</small></span>
+                    </div>
+                  </div>
+                </>
               )}
 
               {masteryOpen ? (
