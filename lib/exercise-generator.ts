@@ -109,6 +109,42 @@ export function generateExercise(topic: string, seed: number): GeneratedExercise
   };
 }
 
-export function generateReinforcement(topic: string, seed: number): GeneratedExercise | null {
-  return generateExercise(topic, seed + 1);
+export function generateReinforcement(topic: string, seed: number, errorType?: "sign" | "operation" | "unknown" | "unit" | "arithmetic" | "concept"): GeneratedExercise | null {
+  const generated = generateExercise(topic, seed + 1);
+  if (!generated || !errorType) return generated;
+
+  const targeted: Record<string, Partial<GeneratedExercise>> = {
+    sign: {
+      title: "חיזוק סימנים",
+      teachingNote: "הפעם אנחנו מתמקדים רק בסימן. קודם מזהים אם צריך להוסיף או להחסיר.",
+      hint1: "עצור רגע וקרא את הסימן שליד X.",
+      hint2: "אל תחשב עדיין. קודם קבע אם הפעולה היא חיבור או חיסור.",
+    },
+    operation: {
+      title: "חיזוק הפעולה ההפוכה",
+      teachingNote: "המטרה היא לבחור את הפעולה שמחזירה אותנו צעד אחד אחורה.",
+      hint1: "איזו פעולה בוצעה על X?",
+      hint2: "כדי לבודד את X, השתמש בפעולה ההפוכה.",
+    },
+    arithmetic: {
+      title: "חיזוק דיוק בחישוב",
+      teachingNote: "הכיוון שלך חשוב. עכשיו נפתור לאט ובדיוק, בלי לדלג על שלבים.",
+      hint1: "חשב צעד אחד בכל פעם.",
+      hint2: "בדוק את התוצאה פעם נוספת לפני השליחה.",
+    },
+    unit: {
+      title: "חיזוק יחידות",
+      teachingNote: "בחשמל המספר והיחידה צריכים להתאים זה לזה.",
+      hint1: "בדוק אם ביקשו מתח, זרם או הספק.",
+      hint2: "כתוב את הערך הנכון בלי להחליף בין יחידות.",
+    },
+    concept: {
+      title: "חיזוק ההבנה",
+      teachingNote: "לפני החישוב, נסביר לעצמנו מה כל סימן מייצג.",
+      hint1: "מה בדיוק מבקשים למצוא?",
+      hint2: "סמן לעצמך מה ידוע ומה עדיין חסר.",
+    },
+  };
+
+  return { ...generated, ...targeted[errorType] };
 }
