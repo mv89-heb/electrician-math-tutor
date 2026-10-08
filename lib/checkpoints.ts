@@ -14,7 +14,9 @@ export function buildCheckpoint(exercises: Exercise[], checkpointNumber: number,
     ? exercises.filter((exercise) => completedIds.includes(exercise.id))
     : exercises.filter((exercise) => exercise.level <= Math.max(1, checkpointNumber - 1));
   const source = completed.length ? completed : exercises;
-  return source.slice(0, 3).map((exercise, index) => ({
+  const start = source.length > 3 ? (checkpointNumber * 2) % source.length : 0;
+  const rotated = [...source.slice(start), ...source.slice(0, start)];
+  return rotated.slice(0, 3).map((exercise, index) => ({
     id: `checkpoint-${checkpointNumber}-${index + 1}-${exercise.id}`,
     topic: exercise.topic,
     prompt: exercise.prompt,
