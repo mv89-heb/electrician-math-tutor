@@ -133,6 +133,33 @@ export function saveLearningState(storage: Storage | null, state: LearningState)
   storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 3 }));
 }
 
+export function diagnosticScore(results: DiagnosticResult[], skill: DiagnosticSkill): number {
+  const relevant = results.filter((result) => result.skill === skill);
+  if (!relevant.length) return 50;
+  return Math.round((relevant.filter((result) => result.correct).length / relevant.length) * 100);
+}
+
+export function recommendedStartingIndex(results: DiagnosticResult[], curriculum: Exercise[]): number {
+  if (!results.length) return 0;
+  const weakest = (["נעלם", "נוסחה", "חילוק", "כפל", "חיסור", "חיבור"] as DiagnosticSkill[])
+    .map((skill) => ({ skill, score: diagnosticScore(results, skill) }))
+    .sort((a, b) => a.score - b.score)[0];
+
+  if (!weakest || weakest.score >= 80) return 0;
+
+  const topicMap: Partial<Record<DiagnosticSkill, string>> = {
+    "חיבור": "חיבור בסיסי",
+    "חיסור": "חיסור בסיסי",
+    "כפל": "כפל במשוואות",
+    "חילוק": "חילוק במשוואות",
+    "נעלם": "מהו נעלם?",
+    "נוסחה": "נוסחאות",
+  };
+  const target = topicMap[weakest.skill];
+  const index = curriculum.findIndex((exercise) => exercise.topic === target);
+  return index >= 0 ? Math.max(0, index - 1) : 0;
+}
+
 export function weakestDiagnosticSkills(results: DiagnosticResult[]): DiagnosticSkill[] {
   const skills: DiagnosticSkill[] = ["חיבור", "חיסור", "כפל", "חילוק", "נעלם", "נוסחה"];
   return skills
