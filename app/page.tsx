@@ -369,61 +369,16 @@ export default function Home() {
           </div>
         </div>
       )}
-      <section className={"sparkyWelcome panel sparkyMood-" + sparkyMood}>
-        <div className="sparkyAvatar" aria-hidden="true"><span className="sparkyBody">👨‍🔧</span><span className="sparkyBolt">{sparkyIcon}</span><span className="sparkyPulse">⚡</span></div>
-        <div className="sparkyMessage">
-          <div className="eyebrow">⚡ היי! אני ספארקי</div>
-          <h2>{feedback === "correct" ? "מעולה! ממשיכים לטעון את הידע 🔋" : feedback === "wrong" ? "בוא נחשוב על זה יחד 💡" : "ברוך הבא למסע שלך ל־100 🎯"}</h2>
-          <p><strong>אני ספארקי</strong>, חשמלאי מנוסה והמלווה שלך בדרך. אני מניח שלא צריך לזכור שום דבר — נבנה הכל יחד, לאט, ברור ובלי לחץ.</p>
-          <p>נתחיל כמו בעבודה בשטח: קודם מסתכלים ומבינים, אחר כך מחשבים. כל פעם <strong>תרגיל אחד בלבד</strong>.</p>
-        </div>
-      </section>
-
-      <section className="journeyMeter panel" aria-label="מד התקדמות">
-        <div className="journeyMeterHead"><strong>🛠️ מסע ספארקי ל־100</strong><span>שלב {currentStage} מתוך 8 • {journeyLabels[currentStage - 1]}</span></div>
-        <div className="journeyTrack" aria-hidden="true"><div className="journeyFill" style={{ width: Math.min(100, Math.max(7, progress)) + "%" }} /></div>
-        <div className="journeyBlocks" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <span key={index} className={index < currentStage ? "filled" : ""}>{index < currentStage ? "■" : "□"}</span>)}</div>
-        <small>{journeyLabels.join(" → ")} • כל תשובה נכונה ממלאת את המסע עוד קצת ⚡</small>
-      </section>
-
-      <header className="topbar">
-        <div className="brand">
-          <div className="logo"><Zap size={22} /></div>
-          <div><strong>מתמטיקה לחשמלאי מוסמך</strong><span>מורה פרטי אינטראקטיבי</span></div>
-        </div>
-        <div className="topActions"><button className="ghost" onClick={() => setDiagnosticOpen(true)}><Target size={17} /> בדיקת רמה קצרה</button><button className="ghost" onClick={reset}><RotateCcw size={17} /> איפוס התקדמות</button></div>
+      <header className="focusHeader">
+        <div className="focusBrand"><div className="logo"><Zap size={20}/></div><strong>מתמטיקה לחשמלאי מוסמך</strong></div>
+        <div className="focusProgress"><span>שלב {currentStage}/8</span><div className="focusTrack"><div style={{width: Math.min(100, Math.max(4, progress)) + "%"}} /></div></div>
+        <button className="ghost focusMenu" onClick={() => setDiagnosticOpen(true)}><Target size={16}/> בדיקת רמה</button>
       </header>
-
-      <section className="hero">
-        <div className="eyebrow"><Sparkles size={16} /> מתחילים מאפס • מתמטיקה → חשמל</div>
-        <h1>לא צריך לזכור כלום.<br /><em>נבנה את הידע מחדש.</em></h1>
-        <p>הסברים קצרים, דוגמאות פשוטות ותרגיל אחד בכל פעם. המערכת מתקדמת רק כשאתה מוכן.</p>
-        <div className="roadmap">
-          <div className="roadmapTitle">תוכנית הדרך ל־100</div>
-          <div className="roadmapGrid">
-            <div className={`roadmapStep ${currentStage === 1 ? "active" : ""}`}><span>1</span><div><strong>יסודות מוחלטים</strong><small>מספרים, פעולות, X, משוואות ושברים</small></div></div>
-            <div className={`roadmapStep ${currentStage === 2 ? "active" : ""}`}><span>2</span><div><strong>מתמטיקה לחשמל</strong><small>אלגברה, נוסחאות, חזקות, טריגונומטריה וחוק אוהם</small></div></div>
-            <div className={`roadmapStep ${currentStage === 3 ? "active" : ""}`}><span>3</span><div><strong>שליטה ובחינת 100</strong><small>תרגול חשמלאי, מבחני סימולציה, תיקון טעויות וחיזוק</small></div></div>
-          </div>
-        </div>
+      <section className={"sparkyFocus sparkyMood-" + sparkyMood}>
+        <div className="sparkyFocusAvatar" aria-hidden="true"><span className="sparkyBody">👨‍🔧</span><span className="sparkyBolt">{sparkyIcon}</span></div>
+        <div><div className="eyebrow">⚡ ספארקי</div><h1>{feedback === "correct" ? "מעולה! ממשיכים 🔋" : feedback === "wrong" ? "בוא נחשוב יחד 💡" : "מתחילים מהבסיס 🎯"}</h1><p>{feedback === "idle" ? "תרגיל אחד בלבד. אין צורך לזכור כלום — נבנה את זה יחד." : feedback === "wrong" ? "לא אתן את הפתרון. אני אתן לך כיוון קטן." : "בדיוק כך. כל תשובה נכונה בונה עוד לבנה."}</p></div>
       </section>
-
-      <div className="layout">
-        <aside className="panel progressPanel">
-          <div className="panelTitle">ההתקדמות שלך</div>
-          <div className="progressCircle"><span>{progress}%</span><small>התקדמות</small></div>
-          <div className="stat"><span>תרגילים שהושלמו</span><b>{completedCount} / {curriculum.length}</b></div>
-          <div className="stat"><span>שליטה ממוצעת</span><b>{averageMastery}%</b></div>
-          <div className="stat"><span>ניסיונות</span><b>{learning.attempts}</b></div>
-          <div className="stat"><span>חזרות חכמות להיום</span><b>{dueReviews.length}</b></div>
-          {topError && <div className="teacherTip"><strong>המורה מזהה דפוס</strong><span>{topError.type === "sign" ? "יש לך נטייה להתבלבל בסימנים." : topError.type === "operation" ? "יש נטייה לבחור פעולה הפוכה." : topError.type === "arithmetic" ? "הכיוון נכון, אבל כדאי להאט בחישוב." : topError.type === "unit" ? "כדאי לשים לב ליחידות." : "יש כאן בלבול רעיוני שכדאי לפרק לצעד קטן יותר."}</span></div>}
-          <div className="topics">
-            <div className="topicHead">מה אנחנו לומדים</div>
-            {topics.map((topic) => <div className="topic" key={topic}><span>{topic}</span><b>{topicMastery(learning.stats[topic])}%</b></div>)}
-          </div>
-          {weakTopic && weakTopic.mastery < 70 && <div className="teacherTip"><Target size={18} /><span>נחזק לאט את <strong>{weakTopic.topic}</strong>. אין לחץ.</span></div>}
-        </aside>
-
+      <div className="layout focusLayout">
         <section className="lesson">
           {completedCount === curriculum.length ? (
             <div className="panel exerciseCard completion">
