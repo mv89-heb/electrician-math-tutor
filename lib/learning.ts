@@ -18,6 +18,15 @@ export type DiagnosticResult = {
 
 export type ErrorType = "sign" | "operation" | "unknown" | "unit" | "arithmetic" | "concept";
 
+export type MasteryTestResult = {
+  topic: string;
+  attempts: number;
+  passed: boolean;
+  bestScore: number;
+  lastScore: number;
+  lastAttemptAt: number;
+};
+
 export type ErrorRecord = {
   type: ErrorType;
   exerciseId: string;
@@ -34,7 +43,7 @@ export type ReviewCard = {
 };
 
 export type LearningState = {
-  version: 5;
+  version: 6;
   currentIndex: number;
   attempts: number;
   completed: string[];
@@ -44,6 +53,7 @@ export type LearningState = {
   checkpointsCompleted: number[];
   reviews: Record<string, ReviewCard>;
   errors: ErrorRecord[];
+  masteryTests: Record<string, MasteryTestResult>;
 };
 
 export const emptyLearningState: LearningState = {
@@ -57,6 +67,7 @@ export const emptyLearningState: LearningState = {
   checkpointsCompleted: [],
   reviews: {},
   errors: [],
+  masteryTests: {},
 };
 
 export function recordAttempt(
@@ -79,7 +90,7 @@ export function recordAttempt(
 
   return {
     ...state,
-    version: 5,
+    version: 6,
     attempts: state.attempts + 1,
     completed,
     mistakes,
@@ -240,7 +251,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
     if (!raw) return emptyLearningState;
     const parsed = JSON.parse(raw) as Partial<LearningState>;
     const storedVersion = Number(parsed.version);
-    if (storedVersion !== 3 && storedVersion !== 4 && storedVersion !== 5) return emptyLearningState;
+    if (storedVersion !== 3 && storedVersion !== 4 && storedVersion !== 5 && storedVersion !== 6) return emptyLearningState;
 
     const rawStats = parsed.stats && typeof parsed.stats === "object" ? parsed.stats as Record<string, TopicStats> : {};
     const stats = Object.fromEntries(Object.entries(rawStats).map(([topic, value]) => [topic, {
@@ -254,7 +265,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
     return {
       ...emptyLearningState,
       ...parsed,
-      version: 5,
+      version: 6,
       stats,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
@@ -262,6 +273,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
       reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
       errors: Array.isArray(parsed.errors) ? parsed.errors as ErrorRecord[] : [],
+      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},
     };
   } catch {
     return emptyLearningState;
@@ -270,7 +282,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
 
 export function saveLearningState(storage: Storage | null, state: LearningState) {
   if (!storage) return;
-  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 5 }));
+  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 6 }));
 }
 
 export function diagnosticScore(results: DiagnosticResult[], skill: DiagnosticSkill): number {
@@ -311,4 +323,29 @@ export function weakestDiagnosticSkills(results: DiagnosticResult[]): Diagnostic
     .filter((item) => item.total > 0 && item.correct < item.total)
     .sort((a, b) => a.correct - b.correct)
     .map((item) => item.skill);
+}
+
+
+export function canStartMasteryTest(topic: string, state: LearningState): boolean {
+  return topicMasteryGate(state.stats[topic]) && !state.masteryTests[topic]?.passed;
+}
+
+export function recordMasteryTest(state: LearningState, topic: string, score: number, requiredCorrect = 3): LearningState {
+  const previous = state.masteryTests[topic];
+  const passed = score >= requiredCorrect;
+  return {
+    ...state,
+    version: 6,
+    masteryTests: {
+      ...state.masteryTests,
+      [topic]: {
+        topic,
+        attempts: (previous?.attempts ?? 0) + 1,
+        passed,
+        bestScore: Math.max(previous?.bestScore ?? 0, score),
+        lastScore: score,
+        lastAttemptAt: Date.now(),
+      },
+    },
+  };
 }
