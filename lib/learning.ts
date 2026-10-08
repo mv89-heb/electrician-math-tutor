@@ -92,14 +92,32 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
     const reinforcement = curriculum
       .map((exercise, index) => ({ exercise, index }))
       .find(({ exercise }) => exercise.topic === weakTopic && !state.completed.includes(exercise.id));
-
     if (reinforcement) return reinforcement.index;
-
     const knownExercise = curriculum
       .map((exercise, index) => ({ exercise, index }))
       .find(({ exercise }) => exercise.topic === weakTopic);
-
     if (knownExercise) return knownExercise.index;
+  }
+
+  if (state.diagnosticResults.length) {
+    const diagnosticTopics: Record<DiagnosticSkill, string> = {
+      "חיבור": "חיבור וחיסור במשוואות",
+      "חיסור": "חיבור וחיסור במשוואות",
+      "כפל": "כפל במשוואות",
+      "חילוק": "חילוק במשוואות",
+      "נעלם": "מהו נעלם?",
+      "נוסחה": "נוסחאות בסיסיות",
+    };
+    const weakest = (["נעלם", "חילוק", "כפל", "חיסור", "חיבור", "נוסחה"] as DiagnosticSkill[])
+      .map((skill) => ({ skill, score: diagnosticScore(state.diagnosticResults, skill) }))
+      .sort((a, b) => a.score - b.score)[0];
+    if (weakest && weakest.score < 80) {
+      const targetTopic = diagnosticTopics[weakest.skill];
+      const targeted = curriculum
+        .map((exercise, index) => ({ exercise, index }))
+        .find(({ exercise }) => exercise.topic === targetTopic && !state.completed.includes(exercise.id));
+      if (targeted) return targeted.index;
+    }
   }
 
   return next.index;
