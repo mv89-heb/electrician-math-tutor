@@ -152,7 +152,10 @@ export default function Home() {
     () => topics.map((topic) => ({ topic, mastery: topicMastery(learning.stats[topic]) })).sort((a, b) => a.mastery - b.mastery)[0],
     [learning.stats],
   );
-  const currentStage = exercise.level >= 3 ? 3 : (exercise.topic === "נוסחאות בסיסיות" || exercise.topic === "שינוי נושא נוסחה") ? 2 : 1;
+  const currentStage = Math.min(8, Math.floor((completedCount / Math.max(1, curriculum.length)) * 8) + 1);
+  const sparkyMood = feedback === "correct" ? "celebrate" : feedback === "wrong" ? "think" : "idle";
+  const sparkyIcon = feedback === "correct" ? "🔋" : feedback === "wrong" ? "💡" : "⚡";
+  const journeyLabels = ["יסודות", "פעולות", "X ומשוואות", "שברים וחזקות", "אלגברה", "מתמטיקה לחשמל", "תרגול חשמלאי", "100 🎯"];
   const averageMastery = topics.length
     ? Math.round(topics.reduce((sum, topic) => sum + topicMastery(learning.stats[topic]), 0) / topics.length)
     : 0;
@@ -321,20 +324,21 @@ export default function Home() {
           </div>
         </div>
       )}
-      <section className="sparkyWelcome panel">
-        <div className="sparkyAvatar" aria-hidden="true">👨‍🔧⚡</div>
+      <section className={"sparkyWelcome panel sparkyMood-" + sparkyMood}>
+        <div className="sparkyAvatar" aria-hidden="true"><span className="sparkyBody">👨‍🔧</span><span className="sparkyBolt">{sparkyIcon}</span><span className="sparkyPulse">⚡</span></div>
         <div className="sparkyMessage">
           <div className="eyebrow">⚡ היי! אני ספארקי</div>
-          <h2>ברוך הבא למסע שלך ל־100 🎯</h2>
+          <h2>{feedback === "correct" ? "מעולה! ממשיכים לטעון את הידע 🔋" : feedback === "wrong" ? "בוא נחשוב על זה יחד 💡" : "ברוך הבא למסע שלך ל־100 🎯"}</h2>
           <p><strong>אני ספארקי</strong>, חשמלאי מנוסה והמלווה שלך בדרך. אני מניח שלא צריך לזכור שום דבר — נבנה הכל יחד, לאט, ברור ובלי לחץ.</p>
           <p>נתחיל כמו בעבודה בשטח: קודם מסתכלים ומבינים, אחר כך מחשבים. כל פעם <strong>תרגיל אחד בלבד</strong>.</p>
         </div>
       </section>
 
       <section className="journeyMeter panel" aria-label="מד התקדמות">
-        <div className="journeyMeterHead"><strong>🛠️ מסע ספארקי ל־100</strong><span>שלב 1 מתוך 8</span></div>
-        <div className="journeyBlocks" aria-hidden="true"><span className="filled">■</span><span>■</span><span>■</span><span>■</span><span>■</span><span>■</span><span>■</span><span>■</span></div>
-        <small>יסודות מוחלטים → אלגברה → מתמטיקה לחשמל → חוק אוהם → הספק → תרגול מתקדם → סימולציות → 100 🎯</small>
+        <div className="journeyMeterHead"><strong>🛠️ מסע ספארקי ל־100</strong><span>שלב {currentStage} מתוך 8 • {journeyLabels[currentStage - 1]}</span></div>
+        <div className="journeyTrack" aria-hidden="true"><div className="journeyFill" style={{ width: Math.min(100, Math.max(7, progress)) + "%" }} /></div>
+        <div className="journeyBlocks" aria-hidden="true">{Array.from({ length: 8 }, (_, index) => <span key={index} className={index < currentStage ? "filled" : ""}>{index < currentStage ? "■" : "□"}</span>)}</div>
+        <small>{journeyLabels.join(" → ")} • כל תשובה נכונה ממלאת את המסע עוד קצת ⚡</small>
       </section>
 
       <header className="topbar">
