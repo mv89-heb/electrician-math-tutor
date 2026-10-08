@@ -573,3 +573,45 @@ body{color:var(--ink)}
     100%{left:106px;opacity:0}
   }
 }
+
+.miniSimulator{margin:0 0 18px;padding:15px;border:1px solid #dce5f4;border-radius:15px;background:linear-gradient(135deg,#f8fbff,#fff)}
+.simHeader{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.simKicker{display:block;color:#2457d6;font-size:10px;font-weight:800;margin-bottom:2px}
+.simHeader h3{margin:0;font-size:14px;color:#172033}
+.simFormula{padding:7px 10px;border:1px solid #dce5f4;border-radius:9px;background:#fff;font-weight:800;font-size:13px;color:#2457d6;white-space:nowrap}
+.simIntro{margin:7px 0 12px;color:#667085;font-size:11px}
+.ohmVisual{display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:center;gap:8px;direction:ltr;padding:13px 8px;margin-bottom:12px;border-radius:12px;background:#fff;border:1px solid #e7ecf4}
+.batterySymbol,.resistorSymbol{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10px;color:#667085}
+.batterySymbol span,.resistorSymbol span{font-size:22px;line-height:1}
+.circuitWire{height:3px;background:#d4ddea;position:relative;overflow:hidden;border-radius:3px}
+.circuitWire i{display:block;height:100%;width:100%;background:#4b78dc;transition:opacity .2s}
+.lamp{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#fff 10%,rgba(255,214,88,.35) 45%,rgba(255,214,88,.08) 70%,transparent 71%);filter:drop-shadow(0 0 calc(var(--lamp-brightness) * .10) rgba(255,190,30,.8));transition:filter .2s ease,transform .2s ease}
+.lamp span{font-size:25px}
+.simControls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.simControls label{padding:9px 10px;border:1px solid #e3e8f1;border-radius:10px;background:#fff}
+.simControls label>span{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#475467;margin-bottom:5px}
+.simControls output{font-weight:800;color:#2457d6}
+.simControls input[type=range]{width:100%;accent-color:#2457d6;cursor:pointer}
+.simResult{display:flex;justify-content:center;align-items:baseline;gap:7px;margin-top:11px;padding:10px;border-radius:10px;background:#eef3ff;color:#172033;font-size:14px}
+.simResult strong{font-size:20px;color:#2457d6}
+.simCoach{margin-top:9px;color:#667085;font-size:11px;line-height:1.45;text-align:center}
+.powerVisual{display:flex;align-items:center;justify-content:center;gap:15px;padding:13px;margin-bottom:12px;border:1px solid #e7ecf4;border-radius:12px;background:#fff}
+.powerOrb{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:25px;background:radial-gradient(circle,rgba(255,214,88,.9) 0 12%,rgba(255,214,88,.25) 35%,transparent 68%);filter:drop-shadow(0 0 calc(var(--power-level) * .10) rgba(255,190,30,.65));transition:filter .2s ease}
+.powerReadout{display:flex;align-items:baseline;gap:4px;color:#172033}
+.powerReadout strong{font-size:28px;color:#2457d6}
+.powerReadout span{font-size:13px;font-weight:800}
+@media(max-width:700px){.miniSimulator{padding:13px}.simHeader{align-items:flex-start}.simHeader h3{font-size:13px}.simFormula{font-size:11px;padding:6px 8px}.ohmVisual{gap:5px}.simControls{grid-template-columns:1fr}.lamp{width:36px;height:36px}}
+
+.powerTriangle{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:12px;padding:13px;margin-bottom:12px;border:1px solid #e7ecf4;border-radius:12px;background:#fff}
+.triangleShape{position:relative;width:132px;height:94px;margin:auto;clip-path:polygon(0 100%,0 0,100% 100%);background:linear-gradient(135deg,#dce7ff,#7da0ea);border:1px solid #9eb5e8}
+.triangleShape:after{content:"";position:absolute;left:0;bottom:0;width:100%;height:2px;background:#2457d6}
+.triangleShape span{position:absolute;font-size:10px;font-weight:800;color:#172033}
+.triangleShape span:nth-child(1){left:48%;bottom:5px}
+.triangleShape span:nth-child(2){left:5px;top:43%}
+.triangleShape span:nth-child(3){right:24%;top:43%;transform:rotate(calc(-1 * var(--triangle-angle)))}
+.triangleReadout{display:grid;gap:5px}
+.triangleReadout div{display:flex;align-items:baseline;gap:5px;padding:5px 7px;border-radius:7px;background:#f7f9fd}
+.triangleReadout b{width:14px;color:#2457d6}
+.triangleReadout strong{font-size:16px;color:#172033}
+.triangleReadout span{font-size:9px;color:#667085}
+@media(max-width:700px){.powerTriangle{grid-template-columns:1fr}.triangleShape{width:120px;height:84px}}

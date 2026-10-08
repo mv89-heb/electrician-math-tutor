@@ -8,6 +8,7 @@ import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from ".
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
+import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
@@ -412,6 +413,7 @@ export default function Home() {
               <div key={exercise.id} className="panel exerciseCard exerciseEnter">
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
+                <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
