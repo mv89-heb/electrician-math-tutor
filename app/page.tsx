@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
+import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, type LearningState } from "../lib/learning";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
@@ -56,12 +57,17 @@ export default function Home() {
   const [diagnosticDone, setDiagnosticDone] = useState(false);
   const [diagnosticAttempts, setDiagnosticAttempts] = useState(0);
   const [diagnosticFeedback, setDiagnosticFeedback] = useState<"idle" | "wrong">("idle");
+  const [checkpointOpen, setCheckpointOpen] = useState(false);
+  const [checkpointQuestions, setCheckpointQuestions] = useState<CheckpointQuestion[]>([]);
+  const [checkpointIndex, setCheckpointIndex] = useState(0);
+  const [checkpointAnswer, setCheckpointAnswer] = useState("");
+  const [checkpointFeedback, setCheckpointFeedback] = useState<"idle" | "wrong" | "correct">("idle");
+  const [checkpointAttempts, setCheckpointAttempts] = useState(0);
 
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
     setLearning(restored);
     setReady(true);
-    if (restored.diagnosticResults.length === 0) setDiagnosticOpen(true);
   }, []);
 
   useEffect(() => {
@@ -75,6 +81,15 @@ export default function Home() {
     () => topics.map((topic) => ({ topic, mastery: topicMastery(learning.stats[topic]) })).sort((a, b) => a.mastery - b.mastery)[0],
     [learning.stats],
   );
+
+  useEffect(() => {
+    if (!ready || diagnosticOpen || checkpointOpen) return;
+    if (shouldRunCheckpoint(learning.completed.length, learning.checkpointsCompleted)) {
+      const number = Math.floor(learning.completed.length / 5);
+      setCheckpointQuestions(buildCheckpoint(curriculum, number));
+      setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointOpen(true);
+    }
+  }, [ready, diagnosticOpen, checkpointOpen, learning.completed.length, learning.checkpointsCompleted]);
 
   function check() {
     if (!answer.trim() || feedback === "correct") return;
@@ -90,10 +105,42 @@ export default function Home() {
     setAnswer(""); setHint(0); setFeedback("idle");
   }
 
+  function submitCheckpoint() {
+    const question = checkpointQuestions[checkpointIndex];
+    if (!question || !checkpointAnswer.trim() || checkpointFeedback === "correct") return;
+    const correct = normalize(checkpointAnswer) && question.accepted.some((value) => normalize(value) === normalize(checkpointAnswer));
+    if (correct) {
+      setCheckpointFeedback("correct");
+      return;
+    }
+    if (checkpointAttempts === 0) {
+      setCheckpointAttempts(1); setCheckpointFeedback("wrong");
+      return;
+    }
+    if (checkpointIndex >= checkpointQuestions.length - 1) {
+      const number = Math.floor(learning.completed.length / 5);
+      setLearning((previous) => ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
+      setCheckpointOpen(false); setCheckpointFeedback("idle"); setCheckpointAnswer(""); setCheckpointAttempts(0);
+      return;
+    }
+    setCheckpointIndex((index) => index + 1); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
+  }
+
+  function nextCheckpoint() {
+    if (checkpointIndex >= checkpointQuestions.length - 1) {
+      const number = Math.floor(learning.completed.length / 5);
+      setLearning((previous) => previous.checkpointsCompleted.includes(number) ? previous : ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
+      setCheckpointOpen(false); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
+      return;
+    }
+    setCheckpointIndex((index) => index + 1); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
+  }
+
   function reset() {
     setLearning(emptyLearningState); setAnswer(""); setHint(0); setFeedback("idle");
     setDiagnosticOpen(false); setDiagnosticIndex(0); setDiagnosticAnswer(""); setDiagnosticDone(false);
     setDiagnosticAttempts(0); setDiagnosticFeedback("idle");
+    setCheckpointOpen(false); setCheckpointQuestions([]); setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
   }
 
   function submitDiagnostic() {
@@ -137,6 +184,28 @@ export default function Home() {
 
   return (
     <main className="shell">
+      {checkpointOpen && checkpointQuestions[checkpointIndex] && (
+        <div className="diagnosticOverlay" role="dialog" aria-modal="true" aria-label="בוחן קצרצר">
+          <div className="diagnosticModal">
+            <div className="eyebrow"><Target size={16} /> בקרת איכות • בוחן קצרצר</div>
+            <h2>רק לוודא שזה באמת יושב 🧠</h2>
+            <p>אין ציון. אנחנו בודקים מה נשאר בזיכרון אחרי הלמידה, כדי לדעת אם לחזור קצת או להתקדם.</p>
+            <div className="diagnosticProgress">שאלה {checkpointIndex + 1} מתוך {checkpointQuestions.length}</div>
+            <div className="diagnosticQuestion">{checkpointQuestions[checkpointIndex].prompt}</div>
+            {checkpointFeedback === "wrong" && <div className="feedback wrong">כמעט. קח רגע לחשוב שוב — אני לא נותן את הפתרון.</div>}
+            {checkpointFeedback === "correct" && <div className="feedback success">מעולה. זה יושב טוב. אפשר להמשיך.</div>}
+            {checkpointFeedback !== "correct" && <input className="diagnosticInput" dir="ltr" autoFocus value={checkpointAnswer}
+              onChange={(event) => setCheckpointAnswer(event.target.value)}
+              onKeyDown={(event) => event.key === "Enter" && submitCheckpoint()} placeholder="התשובה שלך..." />}
+            {checkpointFeedback === "correct" ? (
+              <button className="primary diagnosticSubmit" onClick={nextCheckpoint}>המשך <ChevronLeft size={18} /></button>
+            ) : (
+              <button className="primary diagnosticSubmit" onClick={submitCheckpoint} disabled={!checkpointAnswer.trim()}>בדוק תשובה <ChevronLeft size={18} /></button>
+            )}
+            {checkpointFeedback === "wrong" && <p className="checkpointHint">{checkpointQuestions[checkpointIndex].hint1}</p>}
+          </div>
+        </div>
+      )}
       {diagnosticOpen && (
         <div className="diagnosticOverlay" role="dialog" aria-modal="true" aria-label="בדיקת רמה קצרה">
           <div className="diagnosticModal">
