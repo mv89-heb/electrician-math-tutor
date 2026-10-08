@@ -101,3 +101,28 @@
 .masteryCard{margin-top:18px;border:1px solid rgba(255,193,7,.35);background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,255,255,.9));animation:cardEnter .45s ease both}
 .masteryHeader{display:flex;justify-content:space-between;gap:12px;margin:12px 0;font-weight:700}
 .masteryCard .question{border-color:rgba(255,193,7,.28);box-shadow:0 8px 26px rgba(255,193,7,.08)}
+
+
+/* Focus Tutor UX */
+.focusHeader{display:flex;align-items:center;gap:20px;padding:14px 0 10px;border-bottom:1px solid rgba(15,23,42,.07)}
+.focusBrand{display:flex;align-items:center;gap:9px;min-width:max-content}
+.focusBrand .logo{width:34px;height:34px}
+.focusProgress{display:flex;align-items:center;gap:10px;flex:1;max-width:360px;margin-inline:auto;font-size:13px;font-weight:700}
+.focusTrack{height:7px;flex:1;background:#e8edf5;border-radius:99px;overflow:hidden;direction:ltr}
+.focusTrack>div{height:100%;background:linear-gradient(90deg,#1769ff,#35b8ff,#ffc107);border-radius:inherit;transition:width .7s ease}
+.focusMenu{padding:7px 10px}
+.sparkyFocus{max-width:820px;margin:34px auto 22px;display:flex;align-items:center;gap:18px;padding:18px 22px;border-radius:20px;background:rgba(255,255,255,.82);border:1px solid rgba(15,23,42,.07);box-shadow:0 8px 28px rgba(15,23,42,.06)}
+.sparkyFocusAvatar{position:relative;flex:0 0 64px;width:64px;height:64px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,#fff7d6,#eef6ff);font-size:39px;animation:sparkyFloat 3.2s ease-in-out infinite}
+.sparkyFocusAvatar .sparkyBolt{position:absolute;right:-5px;top:-8px;font-size:20px}
+.sparkyFocus h1{font-size:23px;margin:3px 0 4px}
+.sparkyFocus p{margin:0;color:#64748b;font-size:14px}
+.focusLayout{display:block;max-width:820px;margin:0 auto}
+.focusLayout .lesson{width:100%}
+.focusLayout .lessonMeta{justify-content:center;margin-bottom:10px}
+.focusLayout .exerciseCard{box-shadow:0 14px 40px rgba(15,23,42,.08);border-radius:22px}
+.focusLayout .mistakesCard{display:none}
+.focusLayout .electricalBridge{padding:9px 12px;font-size:13px;background:#f8fbff}
+@media(max-width:700px){
+ .focusHeader{gap:10px}.focusBrand strong{display:none}.focusProgress{max-width:none}.focusMenu{font-size:0}.focusMenu svg{margin:0}
+ .sparkyFocus{margin:20px 0 14px;padding:15px}.sparkyFocus h1{font-size:20px}.sparkyFocusAvatar{flex-basis:54px;width:54px;height:54px;font-size:32px}
+}
