@@ -57,3 +57,14 @@ describe("diagnostic placement", () => {
     expect(recommendedStartingIndex(results, curriculum)).toBe(0);
   });
 });
+
+
+describe("adaptive diagnostic scoring", () => {
+  it("uses the latest retry rather than averaging failed first attempts", async () => {
+    const { diagnosticScore } = await import("./learning");
+    expect(diagnosticScore([
+      { skill: "חילוק", correct: false },
+      { skill: "חילוק", correct: true },
+    ], "חילוק")).toBe(100);
+  });
+});
