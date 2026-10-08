@@ -203,7 +203,8 @@ describe("reinforcement topic alignment", () => {
   it("does not inject an unrelated operation exercise into a fractions topic", () => {
     const exercise = generateReinforcement("שברים", 9, "operation");
     expect(exercise?.topic).toBe("שברים");
-    expect(exercise?.prompt).toContain("1/2");
+    expect(exercise?.prompt).toContain("חלק אחד מתוך 4 חלקים");
+    expect(exercise?.accepted).toEqual(["1/4"]);
   });
 
   it("uses division when reinforcing division equations", () => {
