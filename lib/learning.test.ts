@@ -286,3 +286,14 @@ describe("eight-stage progression", () => {
     expect(stageGateSatisfied(3, emptyLearningState, curriculum)).toBe(false);
   });
 });
+
+
+describe("stage assignment integrity", () => {
+  it("assigns every curriculum topic to a real learning stage", async () => {
+    const { stageForExercise } = await import("./stages");
+    for (const exercise of curriculum) {
+      expect(stageForExercise(exercise).number).toBeGreaterThanOrEqual(1);
+      expect(stageForExercise(exercise).number).toBeLessThanOrEqual(7);
+    }
+  });
+});
