@@ -5,7 +5,8 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, classifyError, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
+import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
@@ -119,6 +120,12 @@ export default function Home() {
   const [checkpointFeedback, setCheckpointFeedback] = useState<"idle" | "wrong" | "correct">("idle");
   const [checkpointAttempts, setCheckpointAttempts] = useState(0);
   const [checkpointCorrectCount, setCheckpointCorrectCount] = useState(0);
+  const [masteryOpen, setMasteryOpen] = useState(false);
+  const [masteryQuestions, setMasteryQuestions] = useState<MasteryQuestion[]>([]);
+  const [masteryIndex, setMasteryIndex] = useState(0);
+  const [masteryAnswer, setMasteryAnswer] = useState("");
+  const [masteryCorrectCount, setMasteryCorrectCount] = useState(0);
+  const [masteryFeedback, setMasteryFeedback] = useState<"idle" | "wrong" | "correct">("idle");
 
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
@@ -177,7 +184,45 @@ export default function Home() {
     else { setFeedback("wrong"); if (hint === 0) setHint(1); }
   }
 
+  function openMasteryForTopic(topic: string) {
+    const questions = buildTopicMasteryTest(curriculum, topic, learning.attempts + learning.completed.length);
+    if (!questions.length) return false;
+    setMasteryQuestions(questions); setMasteryIndex(0); setMasteryAnswer(""); setMasteryCorrectCount(0); setMasteryFeedback("idle"); setMasteryOpen(true);
+    return true;
+  }
+
+  function submitMastery() {
+    const question = masteryQuestions[masteryIndex];
+    if (!question || !masteryAnswer.trim() || masteryFeedback === "correct") return;
+    const correct = question.accepted.some((value) => normalize(value) === normalize(masteryAnswer));
+    if (!correct) { setMasteryFeedback("wrong"); return; }
+    setMasteryCorrectCount((count) => count + 1);
+    setMasteryFeedback("correct");
+  }
+
+  function nextMastery() {
+    const finalQuestion = masteryIndex >= masteryQuestions.length - 1;
+    if (!finalQuestion) {
+      setMasteryIndex((index) => index + 1); setMasteryAnswer(""); setMasteryFeedback("idle"); return;
+    }
+    const score = masteryCorrectCount + (masteryFeedback === "correct" ? 1 : 0);
+    const topic = masteryQuestions[0]?.topic;
+    if (topic) setLearning((previous) => recordMasteryTest(previous, topic, score));
+    if (masteryPasses(score)) {
+      setMasteryOpen(false);
+      setLearning((previous) => ({ ...previous, currentIndex: chooseNextExercise(curriculum, previous) }));
+      setAnswer(""); setHint(0); setFeedback("idle");
+    } else {
+      setMasteryOpen(false); setMasteryIndex(0); setMasteryAnswer(""); setMasteryFeedback("idle");
+    }
+    setMasteryCorrectCount(0);
+  }
+
   function next() {
+    if (canStartMasteryTest(exercise.topic, learning) && !generated) {
+      openMasteryForTopic(exercise.topic);
+      return;
+    }
     const nextIndex = chooseNextExercise(curriculum, learning);
     setLearning((previous) => ({ ...previous, currentIndex: nextIndex }));
     setAnswer(""); setHint(0); setFeedback("idle");
@@ -413,6 +458,17 @@ export default function Home() {
                 {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{learning.reviews[exercise.id] && <small>החזרה הבאה בנושא מתוזמנת אוטומטית — המערכת תביא אותו שוב כדי לוודא שהידע נשאר.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>
+
+              {masteryOpen && (
+                <div className="panel masteryCard">
+                  <div className="sparkyLessonIntro"><span className="sparkyMini">🏆⚡</span><div><strong>ספארקי אומר:</strong><span>הגעת לנקודת שליטה! עכשיו נבדוק אם הידע באמת יושב.</span></div></div>
+                  <div className="masteryHeader"><strong>מבחן שליטה: {masteryQuestions[0]?.topic}</strong><span>שאלה {masteryIndex + 1} מתוך {masteryQuestions.length}</span></div>
+                  <div className="question"><MathPrompt prompt={masteryQuestions[masteryIndex]?.prompt ?? ""} /></div>
+                  <div className="answerRow"><input dir="ltr" autoComplete="off" value={masteryAnswer} onChange={(e)=>{setMasteryAnswer(e.target.value);setMasteryFeedback("idle")}} onKeyDown={(e)=>e.key==="Enter"&&submitMastery()} placeholder="התשובה שלך..." disabled={masteryFeedback==="correct"} /><button className="primary" onClick={submitMastery} disabled={!masteryAnswer.trim()||masteryFeedback==="correct"}>בדוק</button></div>
+                  {masteryFeedback==="wrong" && <div className="feedback hint"><Lightbulb size={20}/><div><strong>ספארקי: כמעט! 💡</strong><span>לא אתן את הפתרון. נסה לחשוב שוב על הפעולה שעשית.</span></div></div>}
+                  {masteryFeedback==="correct" && <div className="feedback success"><CheckCircle2 size={22}/><div><strong>נכון! ⚡</strong><span>מעולה. ממשיכים לשאלת השליטה הבאה.</span><button onClick={nextMastery} className="nextBtn">{masteryIndex === masteryQuestions.length-1 ? "סיום מבחן" : "השאלה הבאה"} <ChevronLeft size={18}/></button></div></div>}
+                </div>
+              )}
 
               {learning.mistakes.length > 0 && <div className="panel mistakesCard"><div className="panelTitle">דברים שנרצה לחזק</div><p>אין כאן ציונים ואין כישלון. המערכת פשוט זוכרת איפה היה קשה וחוזרת לשם בהמשך.</p><div className="mistakeList">{learning.mistakes.slice(-4).map((id) => { const item = curriculum.find((candidate) => candidate.id === id); return item ? <span key={id}>{item.topic}</span> : null; })}</div></div>}
             </>
