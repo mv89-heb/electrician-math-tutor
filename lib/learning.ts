@@ -6,6 +6,7 @@ export type TopicStats = {
   correct: number;
   hints: number;
   streak: number;
+  unassistedCorrect: number;
 };
 
 export type DiagnosticSkill = "חיבור" | "חיסור" | "כפל" | "חילוק" | "נעלם" | "נוסחה";
@@ -16,7 +17,7 @@ export type DiagnosticResult = {
 };
 
 export type LearningState = {
-  version: 3;
+  version: 4;
   currentIndex: number;
   attempts: number;
   completed: string[];
@@ -27,7 +28,7 @@ export type LearningState = {
 };
 
 export const emptyLearningState: LearningState = {
-  version: 3,
+  version: 4,
   currentIndex: 0,
   attempts: 0,
   completed: [],
@@ -43,7 +44,7 @@ export function recordAttempt(
   correct: boolean,
   usedHint: boolean,
 ): LearningState {
-  const previous = state.stats[exercise.topic] ?? { attempts: 0, correct: 0, hints: 0, streak: 0 };
+  const previous = state.stats[exercise.topic] ?? { attempts: 0, correct: 0, hints: 0, streak: 0, unassistedCorrect: 0 };
   const nextStreak = correct ? previous.streak + 1 : 0;
   const isCurriculumExercise = !exercise.id.startsWith("generated-");
   const completed = correct && isCurriculumExercise && !state.completed.includes(exercise.id)
@@ -66,6 +67,7 @@ export function recordAttempt(
         correct: previous.correct + (correct ? 1 : 0),
         hints: previous.hints + (usedHint ? 1 : 0),
         streak: nextStreak,
+        unassistedCorrect: previous.unassistedCorrect + (correct && !usedHint ? 1 : 0),
       },
     },
   };
@@ -83,7 +85,8 @@ export function topicMastery(stats?: TopicStats): number {
   if (!stats || stats.attempts === 0) return 0;
   const accuracy = stats.correct / stats.attempts;
   const consistency = Math.min(1, stats.streak / 3);
-  return Math.round((accuracy * 0.75 + consistency * 0.25) * 100);
+  const unassisted = stats.unassistedCorrect / stats.attempts;
+  return Math.round((accuracy * 0.6 + unassisted * 0.25 + consistency * 0.15) * 100);
 }
 
 function firstIncomplete(curriculum: Exercise[], state: LearningState) {
@@ -128,7 +131,7 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
       const targeted = curriculum
         .map((exercise, index) => ({ exercise, index }))
         .find(({ exercise }) => exercise.topic === targetTopic && !state.completed.includes(exercise.id));
-      if (targeted) return targeted.index;
+        if (targeted) return targeted.index;
     }
   }
 
@@ -142,16 +145,25 @@ export function loadLearningState(storage: Storage | null): LearningState {
     const raw = storage.getItem("electrician-math-learning");
     if (!raw) return emptyLearningState;
     const parsed = JSON.parse(raw) as Partial<LearningState>;
-    if (parsed.version !== 3) return emptyLearningState;
+    if (parsed.version !== 3 && parsed.version !== 4) return emptyLearningState;
+
+    const rawStats = parsed.stats && typeof parsed.stats === "object" ? parsed.stats as Record<string, TopicStats> : {};
+    const stats = Object.fromEntries(Object.entries(rawStats).map(([topic, value]) => [topic, {
+      attempts: Number(value?.attempts) || 0,
+      correct: Number(value?.correct) || 0,
+      hints: Number(value?.hints) || 0,
+      streak: Number(value?.streak) || 0,
+      unassistedCorrect: Number(value?.unassistedCorrect) || 0,
+    }]));
 
     return {
       ...emptyLearningState,
       ...parsed,
-      version: 3,
+      version: 4,
+      stats,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
-      stats: parsed.stats && typeof parsed.stats === "object" ? parsed.stats : {},
-      diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
+        diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
     };
   } catch {
@@ -161,7 +173,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
 
 export function saveLearningState(storage: Storage | null, state: LearningState) {
   if (!storage) return;
-  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 3 }));
+  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 4 }));
 }
 
 export function diagnosticScore(results: DiagnosticResult[], skill: DiagnosticSkill): number {
