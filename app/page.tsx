@@ -469,6 +469,28 @@ export default function Home() {
                 </>
               )}
 
+              {finalExamOpen ? (
+                <div className="panel exerciseCard masteryFocusCard">
+                  {finalExamScore === null ? (
+                    <>
+                      <div className="masteryIntro"><span className="masteryBadge">🎯</span><div><strong>מבחן 100</strong><span>שאלה {finalExamIndex + 1} מתוך {finalExamQuestions.length} • ללא רמזים</span></div></div>
+                      <div className="masteryHeader"><strong>{finalExamQuestions[finalExamIndex]?.topic}</strong><span>ציון מצטבר: {finalExamCorrectCount}</span></div>
+                      <div className="question"><MathPrompt prompt={finalExamQuestions[finalExamIndex]?.prompt ?? ""} /></div>
+                      <div className="answerRow"><input dir="ltr" autoComplete="off" value={finalExamAnswer} onChange={(e)=>{setFinalExamAnswer(e.target.value);setFinalExamFeedback("idle")}} onKeyDown={(e)=>e.key==="Enter"&&submitFinalExam()} placeholder="התשובה שלך..." disabled={finalExamFeedback==="correct"} /><button className="primary" onClick={submitFinalExam} disabled={!finalExamAnswer.trim()||finalExamFeedback==="correct"}>{finalExamFeedback==="correct" ? "נכון" : "בדוק"} <ChevronLeft size={18}/></button></div>
+                      {finalExamFeedback==="wrong" && <div className="feedback hint"><Lightbulb size={20}/><div><strong>לא הפעם 💡</strong><span>בדוק את החישוב ונסה שוב. במבחן הגמר אין רמזים.</span></div></div>}
+                      {finalExamFeedback==="correct" && <div className="feedback success"><CheckCircle2 size={22}/><div><strong>נכון! ⚡</strong><button onClick={nextFinalExam} className="nextBtn">{finalExamIndex === finalExamQuestions.length-1 ? "סיום מבחן" : "השאלה הבאה"} <ChevronLeft size={18}/></button></div></div>}
+                      {finalExamFeedback==="wrong" && <button onClick={nextFinalExam} className="nextBtn">המשך לשאלה הבאה <ChevronLeft size={18}/></button>}
+                    </>
+                  ) : (
+                    <div className="completion">
+                      <div className="completionIcon">{finalExamPasses(finalExamScore) ? <Trophy size={42}/> : <Target size={42}/>}</div>
+                      <h2>{finalExamPasses(finalExamScore) ? "100 🎯 הושג!" : "עוד קצת ⚡"}</h2>
+                      <p>קיבלת {finalExamScore} מתוך {FINAL_EXAM_TOTAL}. {finalExamPasses(finalExamScore) ? "הוכחת שליטה במסלול." : "צריך לפחות " + FINAL_EXAM_REQUIRED + " תשובות נכונות. נחזור לחיזוק ממוקד וננסה שוב."}</p>
+                      {finalExamPasses(finalExamScore) ? <button className="primary" onClick={()=>setFinalExamOpen(false)}>סיום <ChevronLeft size={18} /></button> : <button className="primary" onClick={()=>{setFinalExamOpen(false);setFinalExamScore(null)}}>חזרה לחיזוק <ChevronLeft size={18} /></button>}
+                    </div>
+                  )}
+                </div>
+              ) : (
               {masteryOpen ? (
                 <div className="panel exerciseCard masteryFocusCard">
                   <div className="masteryIntro"><span className="masteryBadge">🎯</span><div><strong>נקודת שליטה</strong><span>סיימת את התרגול. עכשיו נוודא שהידע באמת יושב.</span></div></div>
