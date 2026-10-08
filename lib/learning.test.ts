@@ -12,10 +12,10 @@ describe("learning engine", () => {
     expect(second.stats[curriculum[0].topic].hints).toBe(1);
   });
 
-  it("records mistakes and calculates mastery", () => {
+  it("records mistakes and gives zero mastery after a first failed attempt", () => {
     const failed = recordAttempt(emptyLearningState, curriculum[0], false, true);
     expect(failed.mistakes).toContain(curriculum[0].id);
-    expect(topicMastery(failed.stats[curriculum[0].topic])).toBe(25);
+    expect(topicMastery(failed.stats[curriculum[0].topic])).toBe(0);
   });
 
   it("prioritizes the weakest known topic", () => {
