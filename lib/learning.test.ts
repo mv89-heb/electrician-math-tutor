@@ -147,3 +147,35 @@ describe("topic mastery tests", () => {
     expect(state.masteryTests["שברים"].attempts).toBe(2);
   });
 });
+
+
+describe("strict answer validation", () => {
+  it("does not turn decimal punctuation into a different number", async () => {
+    const { answerMatches } = await import("./answer-checker");
+    expect(answerMatches("0.5", ["0.5"])).toBe(true);
+    expect(answerMatches("05", ["0.5"])).toBe(false);
+    expect(answerMatches("1.0", ["1"])).toBe(true);
+    expect(answerMatches("10", ["1.0"])).toBe(false);
+  });
+
+  it("rejects unrelated units on plain numeric exercises", async () => {
+    const { answerMatches } = await import("./answer-checker");
+    expect(answerMatches("4", ["4"])).toBe(true);
+    expect(answerMatches("4A", ["4"])).toBe(false);
+    expect(answerMatches("4V", ["4"])).toBe(false);
+  });
+
+  it("accepts equivalent numeric and fraction forms only when mathematically equal", async () => {
+    const { answerMatches } = await import("./answer-checker");
+    expect(answerMatches("0.5", ["1/2"])).toBe(true);
+    expect(answerMatches("2/4", ["1/2"])).toBe(true);
+    expect(answerMatches("3/4", ["1/2"])).toBe(false);
+  });
+
+  it("keeps text answers exact after case normalization", async () => {
+    const { answerMatches } = await import("./answer-checker");
+    expect(answerMatches("R", ["r"])).toBe(true);
+    expect(answerMatches("division", ["divide"])).toBe(false);
+    expect(answerMatches("x", ["R"])).toBe(false);
+  });
+});
