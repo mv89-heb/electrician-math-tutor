@@ -5,9 +5,10 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, checkpointPasses, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, recordFinalExam, type LearningState } from "../lib/learning";
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
+import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { stageForExercise, stageGateSatisfied, stageProgress, stageExercises } from "../lib/stages";
 
@@ -121,6 +122,13 @@ export default function Home() {
   const [masteryAnswer, setMasteryAnswer] = useState("");
   const [masteryCorrectCount, setMasteryCorrectCount] = useState(0);
   const [masteryFeedback, setMasteryFeedback] = useState<"idle" | "wrong" | "correct">("idle");
+  const [finalExamOpen, setFinalExamOpen] = useState(false);
+  const [finalExamQuestions, setFinalExamQuestions] = useState<FinalExamQuestion[]>([]);
+  const [finalExamIndex, setFinalExamIndex] = useState(0);
+  const [finalExamAnswer, setFinalExamAnswer] = useState("");
+  const [finalExamCorrectCount, setFinalExamCorrectCount] = useState(0);
+  const [finalExamFeedback, setFinalExamFeedback] = useState<"idle" | "wrong" | "correct">("idle");
+  const [finalExamScore, setFinalExamScore] = useState<number | null>(null);
 
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
@@ -204,6 +212,42 @@ export default function Home() {
       setMasteryOpen(false); setMasteryIndex(0); setMasteryAnswer(""); setMasteryFeedback("idle");
     }
     setMasteryCorrectCount(0);
+  }
+
+  function openFinalExam() {
+    if (!stageGateSatisfied(8, learning, curriculum) || learning.finalExamPassed) return;
+    const questions = buildFinalExam(curriculum, learning.attempts + learning.completed.length);
+    if (!questions.length) return;
+    setFinalExamQuestions(questions);
+    setFinalExamIndex(0);
+    setFinalExamAnswer("");
+    setFinalExamCorrectCount(0);
+    setFinalExamFeedback("idle");
+    setFinalExamScore(null);
+    setFinalExamOpen(true);
+  }
+
+  function submitFinalExam() {
+    const question = finalExamQuestions[finalExamIndex];
+    if (!question || !finalExamAnswer.trim() || finalExamFeedback === "correct") return;
+    const correct = answerMatches(finalExamAnswer, question.accepted);
+    setFinalExamFeedback(correct ? "correct" : "wrong");
+    if (correct) setFinalExamCorrectCount((count) => count + 1);
+  }
+
+  function nextFinalExam() {
+    const finalQuestion = finalExamIndex >= finalExamQuestions.length - 1;
+    const score = finalExamCorrectCount + (finalExamFeedback === "correct" ? 1 : 0);
+    if (!finalQuestion) {
+      setFinalExamIndex((index) => index + 1);
+      setFinalExamAnswer("");
+      setFinalExamFeedback("idle");
+      return;
+    }
+    setFinalExamScore(score);
+    if (finalExamPasses(score)) {
+      setLearning((previous) => recordFinalExam(previous, true));
+    }
   }
 
   function next() {
@@ -386,12 +430,22 @@ export default function Home() {
       </section>
       <div className="layout focusLayout">
         <section className="lesson">
-          {completedCount === curriculum.length ? (
+          {completedCount === curriculum.length && !finalExamOpen ? (
             <div className="panel exerciseCard completion">
               <div className="completionIcon"><Trophy size={42} /></div>
-              <h2>סיימת את מסלול הבסיס 🎉</h2>
-              <p>בשלב הבא נוכל להעמיק בהדרגה ולהכניס יותר ויותר שאלות מעולם החשמל.</p>
-              <button className="primary" onClick={reset}>התחל שוב <ChevronLeft size={18} /></button>
+              {learning.finalExamPassed ? (
+                <>
+                  <h2>100 🎯 הושג!</h2>
+                  <p>עברת את מבחן הגמר והוכחת שליטה במסלול הבסיס — כולל אלגברה, נוסחאות וחישובי חשמל.</p>
+                  <button className="primary" onClick={reset}>התחל מסלול חדש <ChevronLeft size={18} /></button>
+                </>
+              ) : (
+                <>
+                  <h2>הגיע הזמן למבחן 100 🎯</h2>
+                  <p>12 שאלות מעורבות, ללא רמזים. צריך לפחות {FINAL_EXAM_REQUIRED} תשובות נכונות.</p>
+                  <button className="primary" onClick={openFinalExam}>התחל מבחן 100 <ChevronLeft size={18} /></button>
+                </>
+              )}
             </div>
           ) : (
             <>
@@ -415,7 +469,28 @@ export default function Home() {
                 </>
               )}
 
-              {masteryOpen ? (
+              {finalExamOpen ? (
+                <div className="panel exerciseCard masteryFocusCard">
+                  {finalExamScore === null ? (
+                    <>
+                      <div className="masteryIntro"><span className="masteryBadge">🎯</span><div><strong>מבחן 100</strong><span>שאלה {finalExamIndex + 1} מתוך {finalExamQuestions.length} • ללא רמזים</span></div></div>
+                      <div className="masteryHeader"><strong>{finalExamQuestions[finalExamIndex]?.topic}</strong><span>ציון מצטבר: {finalExamCorrectCount}</span></div>
+                      <div className="question"><MathPrompt prompt={finalExamQuestions[finalExamIndex]?.prompt ?? ""} /></div>
+                      <div className="answerRow"><input dir="ltr" autoComplete="off" value={finalExamAnswer} onChange={(e)=>{setFinalExamAnswer(e.target.value);setFinalExamFeedback("idle")}} onKeyDown={(e)=>e.key==="Enter"&&submitFinalExam()} placeholder="התשובה שלך..." disabled={finalExamFeedback==="correct"} /><button className="primary" onClick={submitFinalExam} disabled={!finalExamAnswer.trim()||finalExamFeedback==="correct"}>{finalExamFeedback==="correct" ? "נכון" : "בדוק"} <ChevronLeft size={18}/></button></div>
+                      {finalExamFeedback==="wrong" && <div className="feedback hint"><Lightbulb size={20}/><div><strong>לא הפעם 💡</strong><span>בדוק את החישוב ונסה שוב. במבחן הגמר אין רמזים.</span></div></div>}
+                      {finalExamFeedback==="correct" && <div className="feedback success"><CheckCircle2 size={22}/><div><strong>נכון! ⚡</strong><button onClick={nextFinalExam} className="nextBtn">{finalExamIndex === finalExamQuestions.length-1 ? "סיום מבחן" : "השאלה הבאה"} <ChevronLeft size={18}/></button></div></div>}
+                      {finalExamFeedback==="wrong" && <button onClick={nextFinalExam} className="nextBtn">המשך לשאלה הבאה <ChevronLeft size={18}/></button>}
+                    </>
+                  ) : (
+                    <div className="completion">
+                      <div className="completionIcon">{finalExamPasses(finalExamScore) ? <Trophy size={42}/> : <Target size={42}/>}</div>
+                      <h2>{finalExamPasses(finalExamScore) ? "100 🎯 הושג!" : "עוד קצת ⚡"}</h2>
+                      <p>קיבלת {finalExamScore} מתוך {FINAL_EXAM_TOTAL}. {finalExamPasses(finalExamScore) ? "הוכחת שליטה במסלול." : "צריך לפחות " + FINAL_EXAM_REQUIRED + " תשובות נכונות. נחזור לחיזוק ממוקד וננסה שוב."}</p>
+                      {finalExamPasses(finalExamScore) ? <button className="primary" onClick={()=>setFinalExamOpen(false)}>סיום <ChevronLeft size={18} /></button> : <button className="primary" onClick={()=>{setFinalExamOpen(false);setFinalExamScore(null)}}>חזרה לחיזוק <ChevronLeft size={18} /></button>}
+                    </div>
+                  )}
+                </div>
+              ) : masteryOpen ? (
                 <div className="panel exerciseCard masteryFocusCard">
                   <div className="masteryIntro"><span className="masteryBadge">🎯</span><div><strong>נקודת שליטה</strong><span>סיימת את התרגול. עכשיו נוודא שהידע באמת יושב.</span></div></div>
                   <div className="masteryHeader"><strong>{masteryQuestions[0]?.topic}</strong><span>שאלה {masteryIndex + 1} / {masteryQuestions.length}</span></div>
@@ -447,7 +522,7 @@ export default function Home() {
               </div>
 
               )}
-
+              )}
 
               {learning.mistakes.length > 0 && <div className="panel mistakesCard"><div className="panelTitle">דברים שנרצה לחזק</div><p>אין כאן ציונים ואין כישלון. המערכת פשוט זוכרת איפה היה קשה וחוזרת לשם בהמשך.</p><div className="mistakeList">{learning.mistakes.slice(-4).map((id) => { const item = curriculum.find((candidate) => candidate.id === id); return item ? <span key={id}>{item.topic}</span> : null; })}</div></div>}
             </>

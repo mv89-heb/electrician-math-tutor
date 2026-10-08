@@ -3,6 +3,7 @@ import { curriculum } from "./curriculum";
 import { checkpointPasses } from "./checkpoints";
 import { generateReinforcement } from "./exercise-generator";
 import { buildTopicMasteryTest } from "./mastery";
+import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
 
@@ -32,7 +33,7 @@ describe("learning engine", () => {
     const first = recordAttempt(emptyLearningState, curriculum[0], true, false);
     const second = recordAttempt(first, curriculum[0], true, true);
 
-    expect(second.version).toBe(6);
+    expect(second.version).toBe(7);
     expect(second.completed).toEqual([curriculum[0].id]);
     expect(second.stats[curriculum[0].topic].correct).toBe(2);
     expect(second.stats[curriculum[0].topic].hints).toBe(1);
@@ -295,5 +296,27 @@ describe("stage assignment integrity", () => {
       expect(stageForExercise(exercise).number).toBeGreaterThanOrEqual(1);
       expect(stageForExercise(exercise).number).toBeLessThanOrEqual(7);
     }
+  });
+});
+
+
+describe("final 100 exam", () => {
+  it("builds twelve unique questions across the learning path", () => {
+    const questions = buildFinalExam(curriculum, 0);
+    expect(questions).toHaveLength(12);
+    expect(new Set(questions.map((question) => question.id)).size).toBe(12);
+  });
+
+  it("requires at least 10 of 12 correct answers", () => {
+    expect(finalExamPasses(9)).toBe(false);
+    expect(finalExamPasses(10)).toBe(true);
+    expect(finalExamPasses(12)).toBe(true);
+  });
+
+  it("persists final exam completion without allowing it to be undone", async () => {
+    const { recordFinalExam, emptyLearningState } = await import("./learning");
+    const passed = recordFinalExam(emptyLearningState, true);
+    expect(passed.finalExamPassed).toBe(true);
+    expect(recordFinalExam(passed, false).finalExamPassed).toBe(true);
   });
 });

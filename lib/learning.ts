@@ -57,7 +57,7 @@ export type LearningState = {
 };
 
 export const emptyLearningState: LearningState = {
-  version: 6,
+  version: 7,
   currentIndex: 0,
   attempts: 0,
   completed: [],
@@ -269,7 +269,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
     if (!raw) return emptyLearningState;
     const parsed = JSON.parse(raw) as Partial<LearningState>;
     const storedVersion = Number(parsed.version);
-    if (storedVersion !== 3 && storedVersion !== 4 && storedVersion !== 5 && storedVersion !== 6) return emptyLearningState;
+    if (storedVersion !== 3 && storedVersion !== 4 && storedVersion !== 5 && storedVersion !== 6 && storedVersion !== 7) return emptyLearningState;
 
     const rawStats = parsed.stats && typeof parsed.stats === "object" ? parsed.stats as Record<string, TopicStats> : {};
     const stats = Object.fromEntries(Object.entries(rawStats).map(([topic, value]) => [topic, {
@@ -291,7 +291,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
       reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
       errors: Array.isArray(parsed.errors) ? parsed.errors as ErrorRecord[] : [],
-      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},
+      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},\n      finalExamPassed: Boolean(parsed.finalExamPassed),
     };
   } catch {
     return emptyLearningState;
@@ -300,7 +300,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
 
 export function saveLearningState(storage: Storage | null, state: LearningState) {
   if (!storage) return;
-  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 6 }));
+  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 7 }));
 }
 
 export function diagnosticScore(results: DiagnosticResult[], skill: DiagnosticSkill): number {
@@ -367,4 +367,9 @@ export function recordMasteryTest(state: LearningState, topic: string, score: nu
       },
     },
   };
+}
+
+
+export function recordFinalExam(state: LearningState, passed: boolean): LearningState {
+  return { ...state, version: 7, finalExamPassed: state.finalExamPassed || passed };
 }
