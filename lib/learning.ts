@@ -74,7 +74,18 @@ export function recordAttempt(
 }
 
 export function shouldGenerateReinforcement(stats?: TopicStats): boolean {
-  return !!stats && stats.attempts >= 2 && topicMastery(stats) < 60;
+  return !!stats && stats.attempts >= 2 && topicMastery(stats) < 70;
+}
+
+export function topicMasteryGate(stats?: TopicStats): boolean {
+  if (!stats || stats.attempts < 3) return false;
+  const accuracy = stats.correct / stats.attempts;
+  const unassisted = stats.unassistedCorrect / stats.attempts;
+  return accuracy >= 0.8 && unassisted >= 0.65 && stats.streak >= 2;
+}
+
+export function topicNeedsRemediation(stats?: TopicStats): boolean {
+  return !!stats && stats.attempts >= 2 && !topicMasteryGate(stats) && topicMastery(stats) < 80;
 }
 
 export function generatedReinforcement(topic: string, seed: number): Exercise | null {
@@ -100,7 +111,7 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
   if (!next) return 0;
 
   const weakTopic = Object.entries(state.stats)
-    .filter(([, stats]) => stats.attempts >= 2 && topicMastery(stats) < 60)
+    .filter(([, stats]) => topicNeedsRemediation(stats))
     .sort((a, b) => topicMastery(a[1]) - topicMastery(b[1]))[0]?.[0];
 
   if (weakTopic) {
