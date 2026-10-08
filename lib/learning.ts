@@ -8,6 +8,7 @@ export type TopicStats = {
 };
 
 export type LearningState = {
+  version: 2;
   currentIndex: number;
   attempts: number;
   completed: string[];
@@ -16,6 +17,7 @@ export type LearningState = {
 };
 
 export const emptyLearningState: LearningState = {
+  version: 2,
   currentIndex: 0,
   attempts: 0,
   completed: [],
@@ -40,6 +42,7 @@ export function recordAttempt(
 
   return {
     ...state,
+    version: 2,
     attempts: state.attempts + 1,
     completed,
     mistakes,
@@ -62,36 +65,62 @@ export function topicMastery(stats?: TopicStats): number {
   return Math.round((accuracy * 0.75 + consistency * 0.25) * 100);
 }
 
+function firstIncomplete(curriculum: Exercise[], state: LearningState) {
+  return curriculum
+    .map((exercise, index) => ({ exercise, index }))
+    .find(({ exercise }) => !state.completed.includes(exercise.id));
+}
+
+/**
+ * Adaptive selection stays gentle:
+ * 1. Never jumps to a later topic just because it exists.
+ * 2. If a topic is genuinely weak after at least two attempts, reinforce it.
+ * 3. Otherwise continue with the first unfinished lesson.
+ */
 export function chooseNextExercise(
   curriculum: Exercise[],
   state: LearningState,
 ): number {
-  const incomplete = curriculum
-    .map((exercise, index) => ({ exercise, index }))
-    .filter(({ exercise }) => !state.completed.includes(exercise.id));
-
-  if (incomplete.length === 0) return 0;
+  const next = firstIncomplete(curriculum, state);
+  if (!next) return 0;
 
   const weakTopic = Object.entries(state.stats)
+    .filter(([, stats]) => stats.attempts >= 2 && topicMastery(stats) < 60)
     .sort((a, b) => topicMastery(a[1]) - topicMastery(b[1]))[0]?.[0];
 
   if (weakTopic) {
-    const weak = incomplete.find(({ exercise }) => exercise.topic === weakTopic);
-    if (weak) return weak.index;
+    const reinforcement = curriculum
+      .map((exercise, index) => ({ exercise, index }))
+      .find(({ exercise }) => exercise.topic === weakTopic && !state.completed.includes(exercise.id));
+
+    if (reinforcement) return reinforcement.index;
+
+    const knownExercise = curriculum
+      .map((exercise, index) => ({ exercise, index }))
+      .find(({ exercise }) => exercise.topic === weakTopic);
+
+    if (knownExercise) return knownExercise.index;
   }
 
-  return incomplete[0].index;
+  return next.index;
 }
 
 export function loadLearningState(storage: Storage | null): LearningState {
   if (!storage) return emptyLearningState;
+
   try {
     const raw = storage.getItem("electrician-math-learning");
     if (!raw) return emptyLearningState;
-    const parsed = JSON.parse(raw) as LearningState;
+
+    const parsed = JSON.parse(raw) as Partial<LearningState>;
+
+    // A curriculum change should never leave a learner in an incompatible state.
+    if (parsed.version !== 2) return emptyLearningState;
+
     return {
       ...emptyLearningState,
       ...parsed,
+      version: 2,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
       stats: parsed.stats && typeof parsed.stats === "object" ? parsed.stats : {},
@@ -103,5 +132,5 @@ export function loadLearningState(storage: Storage | null): LearningState {
 
 export function saveLearningState(storage: Storage | null, state: LearningState) {
   if (!storage) return;
-  storage.setItem("electrician-math-learning", JSON.stringify(state));
+  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 2 }));
 }
