@@ -29,16 +29,29 @@ function isCorrect(answer: string, exercise: Exercise) {
 
 
 function MathPrompt({ prompt }: { prompt: string }) {
-  const match = prompt.match(/[A-Za-z0-9]+(?:\\s*[+\\-−×÷=]\\s*[A-Za-z0-9]+)+/);
-  if (!match) return <div className="promptText">{prompt}</div>;
-  const expression = match[0];
-  const before = prompt.slice(0, match.index).trim();
-  const after = prompt.slice((match.index ?? 0) + expression.length).trim();
+  const expressionPattern = /(?:[A-Za-z0-9]+\\s*)?(?:[=+\\-−×÷*/]\\s*[A-Za-z0-9]+(?:\\s*[=+\\-−×÷*/]\\s*[A-Za-z0-9]+)*)/g;
+  const parts: Array<{ type: "text" | "math"; value: string }> = [];
+  let lastIndex = 0;
+
+  for (const match of prompt.matchAll(expressionPattern)) {
+    const index = match.index ?? 0;
+    if (index > lastIndex) parts.push({ type: "text", value: prompt.slice(lastIndex, index) });
+    parts.push({ type: "math", value: match[0].trim() });
+    lastIndex = index + match[0].length;
+  }
+
+  if (lastIndex < prompt.length) parts.push({ type: "text", value: prompt.slice(lastIndex) });
+  if (!parts.some((part) => part.type === "math")) return <div className="promptText">{prompt}</div>;
+
   return (
     <div className="promptStack">
-      {before && <div className="promptText">{before}</div>}
-      <div className="mathLine" dir="ltr" lang="en">{expression}</div>
-      {after && <div className="promptText">{after}</div>}
+      {parts.map((part, index) =>
+        part.type === "math"
+          ? <div className="mathLine" dir="ltr" lang="en" key={`math-${index}`}>{part.value}</div>
+          : part.value.trim()
+            ? <div className="promptText" key={`text-${index}`}>{part.value.trim()}</div>
+            : null,
+      )}
     </div>
   );
 }
@@ -310,7 +323,7 @@ export default function Home() {
 
               <div className="panel exerciseCard">
                 <h2>{exercise.title}</h2>
-                <div className="teachingNote"><Lightbulb size={20} /><div><strong>רגע של הסבר</strong><p>{exercise.teachingNote}</p></div></div>
+                <div className="teachingNote"><Lightbulb size={20} /><div><strong>רגע של הסבר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
@@ -322,8 +335,8 @@ export default function Home() {
                   <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה <ChevronLeft size={18} /></button>
                 </div>
 
-                {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><p>{errorGuidance(exercise, answer)}</p><p>{hint === 1 ? exercise.hint1 : exercise.hint2}</p>{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
-                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><p>{exercise.explanation}</p><button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
+                {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
+                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} /><button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>
 
