@@ -131,7 +131,15 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       hint2: `כדי לבטל חיסור של ${n}, הוסף ${n} לתוצאה.`,
       explanation: `נכון. ${n + 2} + ${n} = ${n + 2 + n}, ולכן X = ${n + 2 + n}.`, generated: true,
     },
-    operation: {
+    operation: topic === "חילוק במשוואות" ? {
+      id: `generated-${topic}-operation-${seed}`, topic, level: 0, title: "חיזוק הפעולה ההפוכה",
+      teachingNote: "כדי למצוא את X, נשתמש בפעולה ההפוכה לפעולה שנעשתה עליו.",
+      prompt: `X ÷ ${n} = 4. איזה מספר הוא X?`,
+      accepted: [String(n * 4)],
+      hint1: "מה הפעולה שנעשתה על X?",
+      hint2: `כדי לבטל חילוק ב־${n}, כפל את התוצאה ב־${n}.`,
+      explanation: `נכון. 4 × ${n} = ${n * 4}.`, generated: true,
+    } : {
       id: `generated-${topic}-operation-${seed}`, topic, level: 0, title: "חיזוק הפעולה ההפוכה",
       teachingNote: "כדי למצוא את X, נשתמש בפעולה ההפוכה לפעולה שנעשתה עליו.",
       prompt: `${n} × X = ${n * 4}. איזה מספר הוא X?`,
