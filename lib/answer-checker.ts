@@ -1,11 +1,35 @@
 export type AcceptedAnswers = string[];
 
-function stripUnit(value: string): string {
-  return value
+type ParsedQuantity = {
+  number: number;
+  unit: string | null;
+};
+
+function normalizeUnit(unit: string): string {
+  const value = unit.trim().toLowerCase();
+  if (["a", "amp", "אמפר"].includes(value)) return "a";
+  if (["v", "volt", "וולט"].includes(value)) return "v";
+  if (["w", "וואט"].includes(value)) return "w";
+  return value;
+}
+
+function parseQuantity(value: string): ParsedQuantity | null {
+  const cleaned = value
     .trim()
     .toLowerCase()
     .replace(/\s+/g, "")
-    .replace(/^(?:\+)?(\d+(?:[.,]\d+)?)\s*(?:אמפר|amp|a|וולט|volt|v|וואט|w)$/i, "$1");
+    .replace(/,/g, ".");
+
+  const match = cleaned.match(/^([+-]?(?:\d+(?:\.\d+)?|\.\d+))(a|amp|אמפר|v|volt|וולט|w|וואט)?$/i);
+  if (!match) return null;
+
+  const number = Number(match[1]);
+  if (!Number.isFinite(number)) return null;
+
+  return {
+    number,
+    unit: match[2] ? normalizeUnit(match[2]) : null,
+  };
 }
 
 function normalizeText(value: string): string {
@@ -18,13 +42,6 @@ function normalizeText(value: string): string {
     .replace(/÷/g, "/")
     .replace(/²/g, "^2")
     .replace(/[!?]+$/g, "");
-}
-
-function parseNumber(value: string): number | null {
-  const cleaned = stripUnit(value).replace(",", ".");
-  if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(cleaned)) return null;
-  const number = Number(cleaned);
-  return Number.isFinite(number) ? number : null;
 }
 
 function parseFraction(value: string): number | null {
@@ -41,13 +58,16 @@ export function normalizeAnswer(value: string): string {
 export function answerMatches(answer: string, accepted: AcceptedAnswers): boolean {
   if (!answer.trim()) return false;
 
-  const answerNumber = parseNumber(answer);
+  const answerQuantity = parseQuantity(answer);
   const answerFraction = parseFraction(answer);
 
   return accepted.some((expected) => {
-    const expectedNumber = parseNumber(expected);
-    if (answerNumber !== null && expectedNumber !== null) {
-      return Object.is(answerNumber, expectedNumber) || Math.abs(answerNumber - expectedNumber) < 1e-12;
+    const expectedQuantity = parseQuantity(expected);
+
+    if (answerQuantity && expectedQuantity) {
+      if (answerQuantity.unit && expectedQuantity.unit && answerQuantity.unit !== expectedQuantity.unit) return false;
+      if (!expectedQuantity.unit && answerQuantity.unit) return false;
+      return Math.abs(answerQuantity.number - expectedQuantity.number) < 1e-12;
     }
 
     const expectedFraction = parseFraction(expected);
