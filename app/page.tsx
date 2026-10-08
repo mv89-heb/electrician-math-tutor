@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
+import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, type LearningState } from "../lib/learning";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
@@ -49,6 +50,10 @@ export default function Home() {
   const [hint, setHint] = useState<1 | 2 | 0>(0);
   const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">("idle");
   const [ready, setReady] = useState(false);
+  const [diagnosticOpen, setDiagnosticOpen] = useState(false);
+  const [diagnosticIndex, setDiagnosticIndex] = useState(0);
+  const [diagnosticAnswer, setDiagnosticAnswer] = useState("");
+  const [diagnosticDone, setDiagnosticDone] = useState(false);
 
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
@@ -84,16 +89,70 @@ export default function Home() {
 
   function reset() {
     setLearning(emptyLearningState); setAnswer(""); setHint(0); setFeedback("idle");
+    setDiagnosticOpen(false); setDiagnosticIndex(0); setDiagnosticAnswer(""); setDiagnosticDone(false);
+  }
+
+  function submitDiagnostic() {
+    const question = diagnosticQuestions[diagnosticIndex];
+    if (!diagnosticAnswer.trim() || !question) return;
+    const correct = diagnosticAnswerIsCorrect(diagnosticAnswer, question);
+    setLearning((previous) => ({
+      ...previous,
+      diagnosticResults: [...previous.diagnosticResults, { skill: question.skill, correct }],
+    }));
+    if (diagnosticIndex === diagnosticQuestions.length - 1) {
+      setDiagnosticDone(true);
+      return;
+    }
+    setDiagnosticIndex((index) => index + 1);
+    setDiagnosticAnswer("");
+  }
+
+  function closeDiagnostic() {
+    setDiagnosticOpen(false);
+    setDiagnosticIndex(0);
+    setDiagnosticAnswer("");
+    setDiagnosticDone(false);
   }
 
   return (
     <main className="shell">
+      {diagnosticOpen && (
+        <div className="diagnosticOverlay" role="dialog" aria-modal="true" aria-label="בדיקת רמה קצרה">
+          <div className="diagnosticModal">
+            <button className="diagnosticClose" onClick={closeDiagnostic} aria-label="סגור">×</button>
+            {!diagnosticDone ? (
+              <>
+                <div className="eyebrow"><Target size={16} /> בדיקה קצרה • בלי ציון</div>
+                <h2>רק כדי שאדע מאיפה להתחיל</h2>
+                <p>אין כאן נכשל או עובר. השאלות קצרות מאוד, והמטרה היא לזהות מה כבר מוכר לך ומה כדאי לחזק.</p>
+                <div className="diagnosticProgress">שאלה {diagnosticIndex + 1} מתוך {diagnosticQuestions.length}</div>
+                <div className="diagnosticQuestion">{diagnosticQuestions[diagnosticIndex].prompt}</div>
+                <input className="diagnosticInput" dir="ltr" autoFocus value={diagnosticAnswer}
+                  onChange={(event) => setDiagnosticAnswer(event.target.value)}
+                  onKeyDown={(event) => event.key === "Enter" && submitDiagnostic()}
+                  placeholder="התשובה שלך..." />
+                <button className="primary diagnosticSubmit" onClick={submitDiagnostic} disabled={!diagnosticAnswer.trim()}>
+                  {diagnosticIndex === diagnosticQuestions.length - 1 ? "סיים בדיקה" : "המשך"} <ChevronLeft size={18} />
+                </button>
+              </>
+            ) : (
+              <>
+                <div className="completionIcon"><Target size={38} /></div>
+                <h2>סיימנו את הבדיקה 🎯</h2>
+                <p>מעולה. עכשיו המערכת יכולה לתת יותר משקל לנושאים שבהם כדאי לחזק את הבסיס.</p>
+                <button className="primary" onClick={closeDiagnostic}>חזרה ללמידה <ChevronLeft size={18} /></button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
       <header className="topbar">
         <div className="brand">
           <div className="logo"><Zap size={22} /></div>
           <div><strong>מתמטיקה לחשמלאי מוסמך</strong><span>מורה פרטי אינטראקטיבי</span></div>
         </div>
-        <button className="ghost" onClick={reset}><RotateCcw size={17} /> איפוס התקדמות</button>
+        <div className="topActions"><button className="ghost" onClick={() => setDiagnosticOpen(true)}><Target size={17} /> בדיקת רמה קצרה</button><button className="ghost" onClick={reset}><RotateCcw size={17} /> איפוס התקדמות</button></div>
       </header>
 
       <section className="hero">
