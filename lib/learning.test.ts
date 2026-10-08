@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
 import { generateReinforcement } from "./exercise-generator";
+import { buildTopicMasteryTest } from "./mastery";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
 
 describe("active exercise resolution", () => {
