@@ -551,3 +551,25 @@ body{color:var(--ink)}
   .sceneCopy strong{font-size:12px}
   .sceneCopy>span:last-child{font-size:10px}
 }
+
+@media (prefers-reduced-motion:no-preference){
+  .sceneCircuit::after{
+    content:"";
+    position:absolute;
+    width:7px;height:7px;border-radius:50%;
+    background:#2457d6;
+    box-shadow:0 0 0 4px rgba(36,87,214,.10),0 0 12px rgba(36,87,214,.24);
+    left:19px;top:50%;
+    transform:translateY(-50%);
+    animation:currentFlow 2.2s linear infinite;
+  }
+  @keyframes currentFlow{
+    0%{left:18px;opacity:0}
+    8%{opacity:1}
+    46%{left:72px;opacity:1}
+    48%{left:72px;opacity:.35}
+    50%{left:72px;opacity:1}
+    92%{left:106px;opacity:1}
+    100%{left:106px;opacity:0}
+  }
+}
