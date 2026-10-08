@@ -321,7 +321,7 @@ export const curriculum: Exercise[] = [
     id:"formula-3", topic:"שינוי נושא נוסחה", level:2, title:"מבודדים את הזרם",
     teachingNote:"כשמחפשים את I בחוק אוהם, צריך להשאיר את I לבד.",
     prompt:"ב־V = I × R, אם רוצים להשאיר את I לבד, באיזו פעולה נחלק את שני הצדדים?",
-    accepted:["חילוק ב-R","חילוק ב-R","divide by R","R"],
+    accepted:["חילוק","divide","division","÷","חילוק ב-R"],
     hint1:"I מוכפל ב־R. איזו פעולה הפוכה לכפל ב־R?", hint2:"נחלק את שני הצדדים ב־R.",
     explanation:"נכון. חלוקה ב־R נותנת I = V / R.", next:"ohm-1"
   },
