@@ -389,13 +389,21 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="lessonMeta"><span className="badge">רמה {exercise.level}</span><span>{exercise.topic}</span><span className="dot" /> {generated ? "תרגול חיזוק" : `תרגיל ${completedCount + 1}`}</div>
+              {!masteryOpen && (
+                <div className="lessonMeta"><span>{exercise.topic}</span><span className="dot" /> {generated ? "תרגול חיזוק" : `תרגיל ${completedCount + 1}`}</div>
+              )}
 
-              <div className="panel exerciseCard">
-                <div className="sparkyLessonIntro">
-                  <span className="sparkyMini">👨‍🔧</span>
-                  <div><strong>ספארקי אומר:</strong><span>נתחיל הכי פשוט שאפשר. אין צורך לנחש — אני איתך בכל צעד.</span></div>
+              {masteryOpen ? (
+                <div className="panel exerciseCard masteryFocusCard">
+                  <div className="masteryIntro"><span className="masteryBadge">🎯</span><div><strong>נקודת שליטה</strong><span>סיימת את התרגול. עכשיו נוודא שהידע באמת יושב.</span></div></div>
+                  <div className="masteryHeader"><strong>{masteryQuestions[0]?.topic}</strong><span>שאלה {masteryIndex + 1} / {masteryQuestions.length}</span></div>
+                  <div className="question"><MathPrompt prompt={masteryQuestions[masteryIndex]?.prompt ?? ""} /></div>
+                  <div className="answerRow"><input dir="ltr" autoComplete="off" value={masteryAnswer} onChange={(e)=>{setMasteryAnswer(e.target.value);setMasteryFeedback("idle")}} onKeyDown={(e)=>e.key==="Enter"&&submitMastery()} placeholder="התשובה שלך..." disabled={masteryFeedback==="correct"} /><button className="primary" onClick={submitMastery} disabled={!masteryAnswer.trim()||masteryFeedback==="correct"}>{masteryFeedback==="correct" ? "נכון" : "בדוק"} <ChevronLeft size={18} /></button></div>
+                  {masteryFeedback==="wrong" && <div className="feedback hint"><Lightbulb size={20}/><div><strong>כמעט 💡</strong><span>לא אתן את הפתרון. נסה לחשוב שוב על הפעולה שעשית.</span></div></div>}
+                  {masteryFeedback==="correct" && <div className="feedback success"><CheckCircle2 size={22}/><div><strong>נכון! ⚡</strong><span>מעולה. ממשיכים לשאלת השליטה הבאה.</span><button onClick={nextMastery} className="nextBtn">{masteryIndex === masteryQuestions.length-1 ? "סיום מבחן" : "השאלה הבאה"} <ChevronLeft size={18} /></button></div></div>}
                 </div>
+              ) : (
+              <div className="panel exerciseCard">
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
