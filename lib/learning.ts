@@ -22,6 +22,7 @@ export type LearningState = {
   mistakes: string[];
   stats: Record<string, TopicStats>;
   diagnosticResults: DiagnosticResult[];
+  checkpointsCompleted: number[];
 };
 
 export const emptyLearningState: LearningState = {
@@ -32,6 +33,7 @@ export const emptyLearningState: LearningState = {
   mistakes: [],
   stats: {},
   diagnosticResults: [],
+  checkpointsCompleted: [],
 };
 
 export function recordAttempt(
@@ -140,6 +142,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
       stats: parsed.stats && typeof parsed.stats === "object" ? parsed.stats : {},
       diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
+      checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
     };
   } catch {
     return emptyLearningState;
