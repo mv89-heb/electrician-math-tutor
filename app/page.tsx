@@ -321,6 +321,22 @@ export default function Home() {
           </div>
         </div>
       )}
+      <section className="sparkyWelcome panel">
+        <div className="sparkyAvatar" aria-hidden="true">👨‍🔧⚡</div>
+        <div className="sparkyMessage">
+          <div className="eyebrow">⚡ היי! אני ספארקי</div>
+          <h2>ברוך הבא למסע שלך ל־100 🎯</h2>
+          <p><strong>אני ספארקי</strong>, חשמלאי מנוסה והמלווה שלך בדרך. אני מניח שלא צריך לזכור שום דבר — נבנה הכל יחד, לאט, ברור ובלי לחץ.</p>
+          <p>נתחיל כמו בעבודה בשטח: קודם מסתכלים ומבינים, אחר כך מחשבים. כל פעם <strong>תרגיל אחד בלבד</strong>.</p>
+        </div>
+      </section>
+
+      <section className="journeyMeter panel" aria-label="מד התקדמות">
+        <div className="journeyMeterHead"><strong>🛠️ מסע ספארקי ל־100</strong><span>שלב 1 מתוך 8</span></div>
+        <div className="journeyBlocks" aria-hidden="true"><span className="filled">■</span><span>■</span><span>■</span><span>■</span><span>■</span><span>■</span><span>■</span><span>■</span></div>
+        <small>יסודות מוחלטים → אלגברה → מתמטיקה לחשמל → חוק אוהם → הספק → תרגול מתקדם → סימולציות → 100 🎯</small>
+      </section>
+
       <header className="topbar">
         <div className="brand">
           <div className="logo"><Zap size={22} /></div>
@@ -372,6 +388,10 @@ export default function Home() {
               <div className="lessonMeta"><span className="badge">רמה {exercise.level}</span><span>{exercise.topic}</span><span className="dot" /> {generated ? "תרגול חיזוק" : `תרגיל ${completedCount + 1}`}</div>
 
               <div className="panel exerciseCard">
+                <div className="sparkyLessonIntro">
+                  <span className="sparkyMini">👨‍🔧</span>
+                  <div><strong>ספארקי אומר:</strong><span>נתחיל הכי פשוט שאפשר. אין צורך לנחש — אני איתך בכל צעד.</span></div>
+                </div>
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={20} /><div><strong>רגע של הסבר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div><ElectricalBridge topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
