@@ -142,6 +142,10 @@ export default function Home() {
     () => topics.map((topic) => ({ topic, mastery: topicMastery(learning.stats[topic]) })).sort((a, b) => a.mastery - b.mastery)[0],
     [learning.stats],
   );
+  const currentStage = exercise.level >= 3 ? 3 : (exercise.topic === "נוסחאות בסיסיות" || exercise.topic === "שינוי נושא נוסחה") ? 2 : 1;
+  const averageMastery = topics.length
+    ? Math.round(topics.reduce((sum, topic) => sum + topicMastery(learning.stats[topic]), 0) / topics.length)
+    : 0;
 
   useEffect(() => {
     if (!ready || diagnosticOpen || checkpointOpen) return;
@@ -315,9 +319,9 @@ export default function Home() {
         <div className="roadmap">
           <div className="roadmapTitle">תוכנית הדרך ל־100</div>
           <div className="roadmapGrid">
-            <div className="roadmapStep active"><span>1</span><div><strong>יסודות מוחלטים</strong><small>מספרים, פעולות, X, משוואות ושברים</small></div></div>
-            <div className="roadmapStep"><span>2</span><div><strong>מתמטיקה לחשמל</strong><small>אלגברה, נוסחאות, חזקות, טריגונומטריה וחוק אוהם</small></div></div>
-            <div className="roadmapStep"><span>3</span><div><strong>שליטה ובחינת 100</strong><small>תרגול חשמלאי, מבחני סימולציה, תיקון טעויות וחיזוק</small></div></div>
+            <div className={`roadmapStep ${currentStage === 1 ? "active" : ""}`}><span>1</span><div><strong>יסודות מוחלטים</strong><small>מספרים, פעולות, X, משוואות ושברים</small></div></div>
+            <div className={`roadmapStep ${currentStage === 2 ? "active" : ""}`}><span>2</span><div><strong>מתמטיקה לחשמל</strong><small>אלגברה, נוסחאות, חזקות, טריגונומטריה וחוק אוהם</small></div></div>
+            <div className={`roadmapStep ${currentStage === 3 ? "active" : ""}`}><span>3</span><div><strong>שליטה ובחינת 100</strong><small>תרגול חשמלאי, מבחני סימולציה, תיקון טעויות וחיזוק</small></div></div>
           </div>
         </div>
       </section>
@@ -325,8 +329,9 @@ export default function Home() {
       <div className="layout">
         <aside className="panel progressPanel">
           <div className="panelTitle">ההתקדמות שלך</div>
-          <div className="progressCircle"><span>{progress}%</span><small>שליטה</small></div>
+          <div className="progressCircle"><span>{progress}%</span><small>התקדמות</small></div>
           <div className="stat"><span>תרגילים שהושלמו</span><b>{completedCount} / {curriculum.length}</b></div>
+          <div className="stat"><span>שליטה ממוצעת</span><b>{averageMastery}%</b></div>
           <div className="stat"><span>ניסיונות</span><b>{learning.attempts}</b></div>
           <div className="topics">
             <div className="topicHead">מה אנחנו לומדים</div>
@@ -345,7 +350,7 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="lessonMeta"><span className="badge">רמה {exercise.level}</span><span>{exercise.topic}</span><span className="dot" /> תרגיל {completedCount + 1}</div>
+              <div className="lessonMeta"><span className="badge">רמה {exercise.level}</span><span>{exercise.topic}</span><span className="dot" /> {generated ? "תרגול חיזוק" : `תרגיל ${completedCount + 1}`}</div>
 
               <div className="panel exerciseCard">
                 <h2>{exercise.title}</h2>
