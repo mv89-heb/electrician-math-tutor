@@ -1,3 +1,5 @@
+import { answerMatches } from "./answer-checker";
+
 export type DiagnosticSkill = "חיבור" | "חיסור" | "כפל" | "חילוק" | "נעלם" | "נוסחה";
 
 export type DiagnosticQuestion = {
@@ -18,6 +20,5 @@ export const diagnosticQuestions: DiagnosticQuestion[] = [
 ];
 
 export function diagnosticAnswerIsCorrect(answer: string, question: DiagnosticQuestion) {
-  const normalized = answer.trim().toLowerCase().replaceAll(" ", "");
-  return question.accepted.some((value) => value.toLowerCase() === normalized);
+  return answerMatches(answer, question.accepted);
 }
