@@ -5,9 +5,10 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, checkpointPasses, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, recordFinalExam, type LearningState } from "../lib/learning";
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
+import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { stageForExercise, stageGateSatisfied, stageProgress, stageExercises } from "../lib/stages";
 
@@ -121,6 +122,13 @@ export default function Home() {
   const [masteryAnswer, setMasteryAnswer] = useState("");
   const [masteryCorrectCount, setMasteryCorrectCount] = useState(0);
   const [masteryFeedback, setMasteryFeedback] = useState<"idle" | "wrong" | "correct">("idle");
+  const [finalExamOpen, setFinalExamOpen] = useState(false);
+  const [finalExamQuestions, setFinalExamQuestions] = useState<FinalExamQuestion[]>([]);
+  const [finalExamIndex, setFinalExamIndex] = useState(0);
+  const [finalExamAnswer, setFinalExamAnswer] = useState("");
+  const [finalExamCorrectCount, setFinalExamCorrectCount] = useState(0);
+  const [finalExamFeedback, setFinalExamFeedback] = useState<"idle" | "wrong" | "correct">("idle");
+  const [finalExamScore, setFinalExamScore] = useState<number | null>(null);
 
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
