@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, type LearningState } from "../lib/learning";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
@@ -54,11 +54,14 @@ export default function Home() {
   const [diagnosticIndex, setDiagnosticIndex] = useState(0);
   const [diagnosticAnswer, setDiagnosticAnswer] = useState("");
   const [diagnosticDone, setDiagnosticDone] = useState(false);
+  const [diagnosticAttempts, setDiagnosticAttempts] = useState(0);
+  const [diagnosticFeedback, setDiagnosticFeedback] = useState<"idle" | "wrong">("idle");
 
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
     setLearning(restored);
     setReady(true);
+    if (restored.diagnosticResults.length === 0) setDiagnosticOpen(true);
   }, []);
 
   useEffect(() => {
@@ -90,6 +93,7 @@ export default function Home() {
   function reset() {
     setLearning(emptyLearningState); setAnswer(""); setHint(0); setFeedback("idle");
     setDiagnosticOpen(false); setDiagnosticIndex(0); setDiagnosticAnswer(""); setDiagnosticDone(false);
+    setDiagnosticAttempts(0); setDiagnosticFeedback("idle");
   }
 
   function submitDiagnostic() {
@@ -100,12 +104,23 @@ export default function Home() {
       ...previous,
       diagnosticResults: [...previous.diagnosticResults, { skill: question.skill, correct }],
     }));
+    if (!correct && diagnosticAttempts === 0) {
+      setDiagnosticAttempts(1);
+      setDiagnosticFeedback("wrong");
+      return;
+    }
     if (diagnosticIndex === diagnosticQuestions.length - 1) {
+      setLearning((previous) => ({
+        ...previous,
+        currentIndex: recommendedStartingIndex(previous.diagnosticResults, curriculum),
+      }));
       setDiagnosticDone(true);
       return;
     }
     setDiagnosticIndex((index) => index + 1);
     setDiagnosticAnswer("");
+    setDiagnosticAttempts(0);
+    setDiagnosticFeedback("idle");
   }
 
   function closeDiagnostic() {
@@ -113,6 +128,8 @@ export default function Home() {
     setDiagnosticIndex(0);
     setDiagnosticAnswer("");
     setDiagnosticDone(false);
+    setDiagnosticAttempts(0);
+    setDiagnosticFeedback("idle");
   }
 
   return (
@@ -128,6 +145,9 @@ export default function Home() {
                 <p>אין כאן נכשל או עובר. השאלות קצרות מאוד, והמטרה היא לזהות מה כבר מוכר לך ומה כדאי לחזק.</p>
                 <div className="diagnosticProgress">שאלה {diagnosticIndex + 1} מתוך {diagnosticQuestions.length}</div>
                 <div className="diagnosticQuestion">{diagnosticQuestions[diagnosticIndex].prompt}</div>
+                {diagnosticFeedback === "wrong" && (
+                  <div className="feedback wrong">לא נורא — זו בדיוק הסיבה לבדיקה. נסה פעם נוספת. אפשר לחשוב לאט, בלי לחץ.</div>
+                )}
                 <input className="diagnosticInput" dir="ltr" autoFocus value={diagnosticAnswer}
                   onChange={(event) => setDiagnosticAnswer(event.target.value)}
                   onKeyDown={(event) => event.key === "Enter" && submitDiagnostic()}
