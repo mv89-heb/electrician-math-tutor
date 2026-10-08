@@ -34,3 +34,26 @@ describe("learning engine", () => {
     expect(chooseNextExercise(curriculum, state)).toBe(1);
   });
 });
+
+
+describe("diagnostic placement", () => {
+  it("starts at the relevant foundation when a diagnostic skill is weak", async () => {
+    const { recommendedStartingIndex } = await import("./learning");
+    const index = recommendedStartingIndex([
+      { skill: "חילוק", correct: false },
+      { skill: "חילוק", correct: false },
+      { skill: "חיבור", correct: true },
+    ], curriculum);
+    expect(curriculum[index].topic).toBe("חילוק במשוואות");
+  });
+
+  it("keeps the absolute beginner start when the diagnostic is strong", async () => {
+    const { recommendedStartingIndex } = await import("./learning");
+    const results = [
+      { skill: "חיבור", correct: true }, { skill: "חיסור", correct: true },
+      { skill: "כפל", correct: true }, { skill: "חילוק", correct: true },
+      { skill: "נעלם", correct: true }, { skill: "נוסחה", correct: true },
+    ];
+    expect(recommendedStartingIndex(results, curriculum)).toBe(0);
+  });
+});
