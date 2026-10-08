@@ -291,7 +291,8 @@ export function loadLearningState(storage: Storage | null): LearningState {
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
       reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
       errors: Array.isArray(parsed.errors) ? parsed.errors as ErrorRecord[] : [],
-      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},\n      finalExamPassed: Boolean(parsed.finalExamPassed),
+      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},
+      finalExamPassed: Boolean(parsed.finalExamPassed),
     };
   } catch {
     return emptyLearningState;
