@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
+import { checkpointPasses } from "./checkpoints";
 import { generateReinforcement } from "./exercise-generator";
 import { buildTopicMasteryTest } from "./mastery";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
@@ -242,6 +243,15 @@ describe("reinforcement topic alignment", () => {
   });
 });
 
+
+describe("checkpoint integrity", () => {
+  it("requires at least two correct answers to pass a checkpoint", () => {
+    expect(checkpointPasses(0)).toBe(false);
+    expect(checkpointPasses(1)).toBe(false);
+    expect(checkpointPasses(2)).toBe(true);
+    expect(checkpointPasses(3)).toBe(true);
+  });
+});
 
 describe("learning flow integrity", () => {
   it("does not start a three-question mastery test for topics with fewer than three source exercises", () => {

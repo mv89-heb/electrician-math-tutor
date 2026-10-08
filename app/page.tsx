@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
-import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
+import { buildCheckpoint, checkpointPasses, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
@@ -229,7 +229,7 @@ export default function Home() {
     }
     if (checkpointIndex >= checkpointQuestions.length - 1) {
       const number = Math.floor(learning.completed.length / 5);
-      const passed = checkpointCorrectCount >= 2;
+      const passed = checkpointPasses(checkpointCorrectCount);
       if (passed) {
         setLearning((previous) => previous.checkpointsCompleted.includes(number) ? previous : ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
         setCheckpointOpen(false);
@@ -245,8 +245,11 @@ export default function Home() {
   function nextCheckpoint() {
     if (checkpointIndex >= checkpointQuestions.length - 1) {
       const number = Math.floor(learning.completed.length / 5);
-      setLearning((previous) => previous.checkpointsCompleted.includes(number) ? previous : ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
-      setCheckpointOpen(false); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0);
+      const finalScore = checkpointCorrectCount + (checkpointFeedback === "correct" ? 1 : 0);
+      if (checkpointPasses(finalScore)) {
+        setLearning((previous) => previous.checkpointsCompleted.includes(number) ? previous : ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
+        setCheckpointOpen(false);
+      } setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0);
       return;
     }
     setCheckpointIndex((index) => index + 1); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
