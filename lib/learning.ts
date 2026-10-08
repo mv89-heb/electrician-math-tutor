@@ -168,8 +168,8 @@ export function topicNeedsRemediation(stats?: TopicStats): boolean {
   return !!stats && stats.attempts >= 2 && !topicMasteryGate(stats) && topicMastery(stats) < 80;
 }
 
-export function generatedReinforcement(topic: string, seed: number): Exercise | null {
-  return generateReinforcement(topic, seed);
+export function generatedReinforcement(topic: string, seed: number, errorType?: ErrorType): Exercise | null {
+  return generateReinforcement(topic, seed, errorType);
 }
 
 export function topicMastery(stats?: TopicStats): number {
