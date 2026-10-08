@@ -36,3 +36,15 @@
 .promptStack{display:flex;flex-direction:column;align-items:stretch;gap:10px}.promptText{line-height:1.7;text-align:center;direction:rtl}.mathLine{direction:ltr;unicode-bidi:isolate;text-align:center;font-family:Arial,"Segoe UI",sans-serif;font-size:1.35em;font-weight:900;letter-spacing:.04em;white-space:nowrap;padding:10px 14px;border-radius:10px;background:#fff;border:1px solid #e1eaff}.diagnosticQuestion .promptStack{gap:12px}.diagnosticQuestion .mathLine{font-size:1.15em}@media(max-width:600px){.mathLine{font-size:1.15em;overflow-x:auto}.promptText{font-size:.95em}}
 
 .electricalBridge{display:flex;gap:10px;align-items:flex-start;margin:-7px 0 20px;padding:13px 15px;border-radius:12px;background:#f2fbf8;border:1px solid #cdeee2;color:#145b48;line-height:1.6;font-size:14px}.electricalBridge svg{flex:none;margin-top:2px}.electricalBridge strong{display:block;margin-bottom:2px;color:#0b5d47}.promptStack{width:100%}.teachingNote .promptText,.feedback .promptText{font-size:16px}.teachingNote .mathLine,.feedback .mathLine{font-size:1.05em;background:#fff;border-color:#dbe5f5}.feedback .promptStack{margin:6px 0}.question .promptText{font-size:18px}@media(max-width:600px){.electricalBridge{font-size:13px}.question .promptText{font-size:16px}}
+
+.sparkyWelcome{display:flex;align-items:center;gap:18px;margin:22px auto 14px;max-width:1100px;padding:20px 22px;border:1px solid rgba(255,193,7,.28);background:linear-gradient(135deg,rgba(255,193,7,.10),rgba(255,255,255,.72));}
+.sparkyAvatar{width:74px;height:74px;display:grid;place-items:center;border-radius:22px;background:#fff;font-size:36px;box-shadow:0 8px 24px rgba(0,0,0,.08);flex:0 0 auto;}
+.sparkyMessage h2{margin:3px 0 7px}.sparkyMessage p{margin:5px 0;line-height:1.6}
+.journeyMeter{max-width:1100px;margin:0 auto 22px;padding:14px 18px;}
+.journeyMeterHead{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:8px}
+.journeyBlocks{font-size:24px;letter-spacing:4px;direction:ltr;line-height:1}
+.journeyBlocks span{opacity:.18}.journeyBlocks .filled{opacity:1}
+.journeyMeter small{display:block;margin-top:8px;opacity:.72;line-height:1.5}
+.sparkyLessonIntro{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;padding:12px 14px;border-radius:14px;background:rgba(255,193,7,.08)}
+.sparkyMini{font-size:25px;line-height:1}.sparkyLessonIntro div{display:flex;flex-direction:column;gap:2px}.sparkyLessonIntro span{line-height:1.5}
+@media(max-width:700px){.sparkyWelcome{align-items:flex-start}.sparkyAvatar{width:58px;height:58px;font-size:28px}.journeyMeterHead{align-items:flex-start;flex-direction:column}.journeyBlocks{font-size:20px;letter-spacing:2px}}
