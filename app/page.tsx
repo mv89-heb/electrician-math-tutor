@@ -5,7 +5,7 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
@@ -98,6 +98,7 @@ export default function Home() {
   const [hint, setHint] = useState<1 | 2 | 0>(0);
   const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">("idle");
   const [ready, setReady] = useState(false);
+  const [activeExercise, setActiveExercise] = useState<Exercise>(firstExercise);
   const [diagnosticOpen, setDiagnosticOpen] = useState(false);
   const [diagnosticIndex, setDiagnosticIndex] = useState(0);
   const [diagnosticAnswer, setDiagnosticAnswer] = useState("");
@@ -121,6 +122,7 @@ export default function Home() {
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
     setLearning(restored);
+    setActiveExercise(resolveExercise(curriculum, restored));
     setReady(true);
   }, []);
 
@@ -128,20 +130,8 @@ export default function Home() {
     if (ready) saveLearningState(window.localStorage, learning);
   }, [learning, ready]);
 
-  const baseExercise = curriculum[learning.currentIndex] ?? firstExercise;
-  const generated = useMemo(() => {
-    const stats = learning.stats[baseExercise.topic];
-    if (!shouldGenerateReinforcement(stats)) return null;
-    const topicError = learning.errors
-      .filter((error) => error.topic === baseExercise.topic)
-      .sort((a, b) => b.count - a.count)[0];
-    return generatedReinforcement(
-      baseExercise.topic,
-      learning.attempts + baseExercise.level + learning.completed.length,
-      topicError?.type,
-    );
-  }, [baseExercise, learning.attempts, learning.completed.length, learning.stats, learning.errors]);
-  const exercise = generated ?? baseExercise;
+  const exercise = activeExercise;
+  const generated = exercise.id.startsWith("generated-") ? exercise : null;
   const completedCount = learning.completed.length;
   const dueReviews = dueReviewIds(learning);
   const topError = learning.errors.slice().sort((a, b) => b.count - a.count)[0];
@@ -200,8 +190,11 @@ export default function Home() {
     const topic = masteryQuestions[0]?.topic;
     if (topic) setLearning((previous) => recordMasteryTest(previous, topic, score));
     if (masteryPasses(score)) {
+      const nextIndex = chooseNextExercise(curriculum, learning);
+      const nextState = { ...learning, currentIndex: nextIndex };
       setMasteryOpen(false);
-      setLearning((previous) => ({ ...previous, currentIndex: chooseNextExercise(curriculum, previous) }));
+      setLearning(nextState);
+      setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
       setAnswer(""); setHint(0); setFeedback("idle");
     } else {
       setMasteryOpen(false); setMasteryIndex(0); setMasteryAnswer(""); setMasteryFeedback("idle");
@@ -215,7 +208,9 @@ export default function Home() {
       return;
     }
     const nextIndex = chooseNextExercise(curriculum, learning);
-    setLearning((previous) => ({ ...previous, currentIndex: nextIndex }));
+    const nextState = { ...learning, currentIndex: nextIndex };
+    setLearning(nextState);
+    setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
     setAnswer(""); setHint(0); setFeedback("idle");
   }
 
@@ -258,7 +253,7 @@ export default function Home() {
   }
 
   function reset() {
-    setLearning(emptyLearningState); setAnswer(""); setHint(0); setFeedback("idle");
+    setLearning(emptyLearningState); setActiveExercise(firstExercise); setAnswer(""); setHint(0); setFeedback("idle");
     setDiagnosticOpen(false); setDiagnosticIndex(0); setDiagnosticAnswer(""); setDiagnosticDone(false);
     setDiagnosticAttempts(0); setDiagnosticFeedback("idle");
     setCheckpointOpen(false); setCheckpointQuestions([]); setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0);
@@ -278,13 +273,11 @@ export default function Home() {
       return;
     }
     if (diagnosticIndex === diagnosticQuestions.length - 1) {
-      setLearning((previous) => ({
-        ...previous,
-        currentIndex: recommendedStartingIndex(
-          [...previous.diagnosticResults, { skill: question.skill, correct }],
-          curriculum,
-        ),
-      }));
+      const diagnosticResults = [...learning.diagnosticResults, { skill: question.skill, correct }];
+      const nextIndex = recommendedStartingIndex(diagnosticResults, curriculum);
+      const nextState = { ...learning, diagnosticResults, currentIndex: nextIndex };
+      setLearning(nextState);
+      setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
       setDiagnosticDone(true);
       return;
     }
