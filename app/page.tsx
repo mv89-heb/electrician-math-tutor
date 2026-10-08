@@ -5,7 +5,7 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, classifyError, type LearningState } from "../lib/learning";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
@@ -139,6 +139,7 @@ export default function Home() {
   const exercise = generated ?? baseExercise;
   const completedCount = learning.completed.length;
   const dueReviews = dueReviewIds(learning);
+  const topError = learning.errors.slice().sort((a, b) => b.count - a.count)[0];
   const progress = Math.min(100, Math.round((completedCount / curriculum.length) * 100));
   const weakTopic = useMemo(
     () => topics.map((topic) => ({ topic, mastery: topicMastery(learning.stats[topic]) })).sort((a, b) => a.mastery - b.mastery)[0],
@@ -161,7 +162,7 @@ export default function Home() {
   function check() {
     if (!answer.trim() || feedback === "correct") return;
     const correct = isCorrect(answer, exercise);
-    setLearning((previous) => recordAttempt(previous, exercise, correct, hint > 0));
+    setLearning((previous) => recordAttempt(previous, exercise, correct, hint > 0, correct ? undefined : classifyError(answer, exercise), answer));
     if (correct) setFeedback("correct");
     else { setFeedback("wrong"); if (hint === 0) setHint(1); }
   }
@@ -343,6 +344,7 @@ export default function Home() {
           <div className="stat"><span>שליטה ממוצעת</span><b>{averageMastery}%</b></div>
           <div className="stat"><span>ניסיונות</span><b>{learning.attempts}</b></div>
           <div className="stat"><span>חזרות חכמות להיום</span><b>{dueReviews.length}</b></div>
+          {topError && <div className="teacherTip"><strong>המורה מזהה דפוס</strong><span>{topError.type === "sign" ? "יש לך נטייה להתבלבל בסימנים." : topError.type === "operation" ? "יש נטייה לבחור פעולה הפוכה." : topError.type === "arithmetic" ? "הכיוון נכון, אבל כדאי להאט בחישוב." : topError.type === "unit" ? "כדאי לשים לב ליחידות." : "יש כאן בלבול רעיוני שכדאי לפרק לצעד קטן יותר."}</span></div>}
           <div className="topics">
             <div className="topicHead">מה אנחנו לומדים</div>
             {topics.map((topic) => <div className="topic" key={topic}><span>{topic}</span><b>{topicMastery(learning.stats[topic])}%</b></div>)}
