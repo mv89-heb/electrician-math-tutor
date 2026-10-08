@@ -5,7 +5,7 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
-import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, type LearningState } from "../lib/learning";
+import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, type LearningState } from "../lib/learning";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
@@ -137,6 +137,7 @@ export default function Home() {
   }, [baseExercise, learning.attempts, learning.completed.length, learning.stats]);
   const exercise = generated ?? baseExercise;
   const completedCount = learning.completed.length;
+  const dueReviews = dueReviewIds(learning);
   const progress = Math.min(100, Math.round((completedCount / curriculum.length) * 100));
   const weakTopic = useMemo(
     () => topics.map((topic) => ({ topic, mastery: topicMastery(learning.stats[topic]) })).sort((a, b) => a.mastery - b.mastery)[0],
@@ -333,6 +334,7 @@ export default function Home() {
           <div className="stat"><span>תרגילים שהושלמו</span><b>{completedCount} / {curriculum.length}</b></div>
           <div className="stat"><span>שליטה ממוצעת</span><b>{averageMastery}%</b></div>
           <div className="stat"><span>ניסיונות</span><b>{learning.attempts}</b></div>
+          <div className="stat"><span>חזרות חכמות להיום</span><b>{dueReviews.length}</b></div>
           <div className="topics">
             <div className="topicHead">מה אנחנו לומדים</div>
             {topics.map((topic) => <div className="topic" key={topic}><span>{topic}</span><b>{topicMastery(learning.stats[topic])}%</b></div>)}
@@ -367,7 +369,7 @@ export default function Home() {
                 </div>
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
-                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} /><button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
+                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{learning.reviews[exercise.id] && <small>החזרה הבאה בנושא מתוזמנת אוטומטית — המערכת תביא אותו שוב כדי לוודא שהידע נשאר.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>
 
