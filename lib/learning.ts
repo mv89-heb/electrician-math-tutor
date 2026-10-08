@@ -149,6 +149,12 @@ function firstIncomplete(curriculum: Exercise[], state: LearningState) {
 }
 
 export function chooseNextExercise(curriculum: Exercise[], state: LearningState): number {
+  const due = dueReviewIds(state);
+  const dueExercise = due
+    .map((id) => curriculum.findIndex((exercise) => exercise.id === id))
+    .find((index) => index >= 0);
+  if (dueExercise !== undefined) return dueExercise;
+
   const next = firstIncomplete(curriculum, state);
   if (!next) return 0;
 
