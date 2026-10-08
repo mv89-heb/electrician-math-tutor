@@ -16,8 +16,15 @@ export type DiagnosticResult = {
   correct: boolean;
 };
 
+export type ReviewCard = {
+  dueAt: number;
+  intervalDays: number;
+  repetitions: number;
+  lapses: number;
+};
+
 export type LearningState = {
-  version: 4;
+  version: 5;
   currentIndex: number;
   attempts: number;
   completed: string[];
@@ -25,6 +32,7 @@ export type LearningState = {
   stats: Record<string, TopicStats>;
   diagnosticResults: DiagnosticResult[];
   checkpointsCompleted: number[];
+  reviews: Record<string, ReviewCard>;
 };
 
 export const emptyLearningState: LearningState = {
@@ -36,6 +44,7 @@ export const emptyLearningState: LearningState = {
   stats: {},
   diagnosticResults: [],
   checkpointsCompleted: [],
+  reviews: {},
 };
 
 export function recordAttempt(
@@ -56,7 +65,7 @@ export function recordAttempt(
 
   return {
     ...state,
-    version: 4,
+    version: 5,
     attempts: state.attempts + 1,
     completed,
     mistakes,
@@ -70,7 +79,40 @@ export function recordAttempt(
         unassistedCorrect: previous.unassistedCorrect + (correct && !usedHint ? 1 : 0),
       },
     },
+    reviews: {
+      ...state.reviews,
+      ...(isCurriculumExercise ? {
+        [exercise.id]: scheduleReview(state.reviews[exercise.id], correct, usedHint),
+      } : {}),
+    },
   };
+}
+
+export function scheduleReview(card: ReviewCard | undefined, correct: boolean, usedHint: boolean): ReviewCard {
+  const previous = card ?? { dueAt: Date.now(), intervalDays: 0, repetitions: 0, lapses: 0 };
+  if (!correct) {
+    return { dueAt: Date.now() + 10 * 60 * 1000, intervalDays: 0, repetitions: 0, lapses: previous.lapses + 1 };
+  }
+  const nextInterval = previous.repetitions === 0
+    ? 1
+    : previous.repetitions === 1
+      ? 3
+      : usedHint
+        ? Math.max(2, Math.round(previous.intervalDays * 1.5))
+        : Math.max(4, Math.round(previous.intervalDays * 2.4));
+  return {
+    dueAt: Date.now() + nextInterval * 24 * 60 * 60 * 1000,
+    intervalDays: nextInterval,
+    repetitions: previous.repetitions + 1,
+    lapses: previous.lapses,
+  };
+}
+
+export function dueReviewIds(state: LearningState, now = Date.now()): string[] {
+  return Object.entries(state.reviews)
+    .filter(([id, card]) => !id.startsWith("generated-") && card.dueAt <= now)
+    .sort((a, b) => a[1].dueAt - b[1].dueAt)
+    .map(([id]) => id);
 }
 
 export function shouldGenerateReinforcement(stats?: TopicStats): boolean {
@@ -157,7 +199,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
     if (!raw) return emptyLearningState;
     const parsed = JSON.parse(raw) as Partial<LearningState>;
     const storedVersion = Number(parsed.version);
-    if (storedVersion !== 3 && storedVersion !== 4) return emptyLearningState;
+    if (storedVersion !== 3 && storedVersion !== 4 && storedVersion !== 5) return emptyLearningState;
 
     const rawStats = parsed.stats && typeof parsed.stats === "object" ? parsed.stats as Record<string, TopicStats> : {};
     const stats = Object.fromEntries(Object.entries(rawStats).map(([topic, value]) => [topic, {
@@ -171,12 +213,13 @@ export function loadLearningState(storage: Storage | null): LearningState {
     return {
       ...emptyLearningState,
       ...parsed,
-      version: 4,
+      version: 5,
       stats,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
       diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
+      reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
     };
   } catch {
     return emptyLearningState;
@@ -185,7 +228,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
 
 export function saveLearningState(storage: Storage | null, state: LearningState) {
   if (!storage) return;
-  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 4 }));
+  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 5 }));
 }
 
 export function diagnosticScore(results: DiagnosticResult[], skill: DiagnosticSkill): number {
