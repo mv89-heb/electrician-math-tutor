@@ -265,7 +265,7 @@ export default function Home() {
             <div className="roadmapStep"><span>3</span><div><strong>שליטה ובחינת 100</strong><small>תרגול חשמלאי, מבחני סימולציה, תיקון טעויות וחיזוק</small></div></div>
           </div>
         </div>
-      </section>>
+      </section>
 
       <div className="layout">
         <aside className="panel progressPanel">
