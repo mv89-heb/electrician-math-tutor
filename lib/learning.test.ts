@@ -3,6 +3,7 @@ import { curriculum } from "./curriculum";
 import { checkpointPasses } from "./checkpoints";
 import { generateReinforcement } from "./exercise-generator";
 import { buildTopicMasteryTest } from "./mastery";
+import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
 
 describe("active exercise resolution", () => {
@@ -262,5 +263,26 @@ describe("learning flow integrity", () => {
   it("builds mastery tests without duplicate source questions", () => {
     const questions = buildTopicMasteryTest(curriculum, "מהו נעלם?", 0);
     expect(new Set(questions.map((question) => question.prompt)).size).toBe(questions.length);
+  });
+});
+
+
+describe("eight-stage progression", () => {
+  it("does not unlock stage 2 before stage 1 mastery is genuinely established", () => {
+    let state = emptyLearningState;
+    for (const exercise of curriculum.filter((item) => ["מהו נעלם?", "חיבור וחיסור במשוואות"].includes(item.topic))) {
+      state = recordAttempt(state, exercise, true, false);
+    }
+    expect(stageGateSatisfied(2, state, curriculum)).toBe(false);
+    for (const topic of ["מהו נעלם?", "חיבור וחיסור במשוואות"]) {
+      const topicExercises = curriculum.filter((item) => item.topic === topic);
+      const needed = Math.max(0, 3 - (state.stats[topic]?.attempts ?? 0));
+      for (let i = 0; i < needed; i++) state = recordAttempt(state, topicExercises[0], true, false);
+    }
+    expect(stageGateSatisfied(2, state, curriculum)).toBe(true);
+  });
+
+  it("keeps stage 3 locked until stage 2 topics are complete and mastered", () => {
+    expect(stageGateSatisfied(3, emptyLearningState, curriculum)).toBe(false);
   });
 });
