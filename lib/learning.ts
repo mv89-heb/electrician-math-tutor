@@ -7,22 +7,31 @@ export type TopicStats = {
   streak: number;
 };
 
+export type DiagnosticSkill = "חיבור" | "חיסור" | "כפל" | "חילוק" | "נעלם" | "נוסחה";
+
+export type DiagnosticResult = {
+  skill: DiagnosticSkill;
+  correct: boolean;
+};
+
 export type LearningState = {
-  version: 2;
+  version: 3;
   currentIndex: number;
   attempts: number;
   completed: string[];
   mistakes: string[];
   stats: Record<string, TopicStats>;
+  diagnosticResults: DiagnosticResult[];
 };
 
 export const emptyLearningState: LearningState = {
-  version: 2,
+  version: 3,
   currentIndex: 0,
   attempts: 0,
   completed: [],
   mistakes: [],
   stats: {},
+  diagnosticResults: [],
 };
 
 export function recordAttempt(
@@ -42,7 +51,7 @@ export function recordAttempt(
 
   return {
     ...state,
-    version: 2,
+    version: 3,
     attempts: state.attempts + 1,
     completed,
     mistakes,
@@ -71,16 +80,7 @@ function firstIncomplete(curriculum: Exercise[], state: LearningState) {
     .find(({ exercise }) => !state.completed.includes(exercise.id));
 }
 
-/**
- * Adaptive selection stays gentle:
- * 1. Never jumps to a later topic just because it exists.
- * 2. If a topic is genuinely weak after at least two attempts, reinforce it.
- * 3. Otherwise continue with the first unfinished lesson.
- */
-export function chooseNextExercise(
-  curriculum: Exercise[],
-  state: LearningState,
-): number {
+export function chooseNextExercise(curriculum: Exercise[], state: LearningState): number {
   const next = firstIncomplete(curriculum, state);
   if (!next) return 0;
 
@@ -111,19 +111,17 @@ export function loadLearningState(storage: Storage | null): LearningState {
   try {
     const raw = storage.getItem("electrician-math-learning");
     if (!raw) return emptyLearningState;
-
     const parsed = JSON.parse(raw) as Partial<LearningState>;
-
-    // A curriculum change should never leave a learner in an incompatible state.
-    if (parsed.version !== 2) return emptyLearningState;
+    if (parsed.version !== 3) return emptyLearningState;
 
     return {
       ...emptyLearningState,
       ...parsed,
-      version: 2,
+      version: 3,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
       stats: parsed.stats && typeof parsed.stats === "object" ? parsed.stats : {},
+      diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
     };
   } catch {
     return emptyLearningState;
@@ -132,5 +130,18 @@ export function loadLearningState(storage: Storage | null): LearningState {
 
 export function saveLearningState(storage: Storage | null, state: LearningState) {
   if (!storage) return;
-  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 2 }));
+  storage.setItem("electrician-math-learning", JSON.stringify({ ...state, version: 3 }));
+}
+
+export function weakestDiagnosticSkills(results: DiagnosticResult[]): DiagnosticSkill[] {
+  const skills: DiagnosticSkill[] = ["חיבור", "חיסור", "כפל", "חילוק", "נעלם", "נוסחה"];
+  return skills
+    .map((skill) => ({
+      skill,
+      correct: results.filter((result) => result.skill === skill && result.correct).length,
+      total: results.filter((result) => result.skill === skill).length,
+    }))
+    .filter((item) => item.total > 0 && item.correct < item.total)
+    .sort((a, b) => a.correct - b.correct)
+    .map((item) => item.skill);
 }
