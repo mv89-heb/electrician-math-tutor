@@ -25,6 +25,16 @@ describe("learning engine", () => {
     expect(state.stats[generated.topic].correct).toBe(1);
   });
 
+  it("requires repeated independent success for a mastery gate", async () => {
+    const { topicMasteryGate } = await import("./learning");
+    let state = emptyLearningState;
+    state = recordAttempt(state, curriculum[0], true, false);
+    state = recordAttempt(state, curriculum[0], true, false);
+    expect(topicMasteryGate(state.stats[curriculum[0].topic])).toBe(false);
+    state = recordAttempt(state, curriculum[0], true, false);
+    expect(topicMasteryGate(state.stats[curriculum[0].topic])).toBe(true);
+  });
+
   it("does not count a hinted correct answer as unassisted mastery", () => {
     const state = recordAttempt(emptyLearningState, curriculum[0], true, true);
     expect(state.stats[curriculum[0].topic].correct).toBe(1);
