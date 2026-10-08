@@ -26,6 +26,10 @@ export function buildCheckpoint(exercises: Exercise[], checkpointNumber: number,
   }));
 }
 
+export function checkpointPasses(correctCount: number, requiredCorrect = 2): boolean {
+  return correctCount >= requiredCorrect;
+}
+
 export function shouldRunCheckpoint(completedCount: number, completedCheckpoints: number[]): boolean {
   if (completedCount < 5) return false;
   const checkpointNumber = Math.floor(completedCount / 5);
