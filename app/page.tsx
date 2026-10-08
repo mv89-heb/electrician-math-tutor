@@ -7,27 +7,17 @@ import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnosti
 import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, generatedReinforcement, shouldGenerateReinforcement, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, type LearningState } from "../lib/learning";
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
+import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
 function normalize(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replaceAll(" ", "")
-    .replaceAll("×", "*")
-    .replaceAll("÷", "/")
-    .replaceAll("²", "^2")
-    .replaceAll("−", "-")
-    .replace(/(אמפר|amp|a|וולט|volt|v|וואט|w)$/i, "")
-    .replace(/[.,!?]/g, "");
+  return normalizeAnswer(value);
 }
 
 function isCorrect(answer: string, exercise: Exercise) {
-  const normalized = normalize(answer);
-  return exercise.accepted.some((value) => normalize(value) === normalized);
+  return answerMatches(answer, exercise.accepted);
 }
-
 
 function MathPrompt({ prompt }: { prompt: string }) {
   const expressionPattern = /(?:[A-Za-z0-9]+\\s*)?(?:[=+\\-−×÷*/]\\s*[A-Za-z0-9]+(?:\\s*[=+\\-−×÷*/]\\s*[A-Za-z0-9]+)*)/g;
@@ -194,7 +184,7 @@ export default function Home() {
   function submitMastery() {
     const question = masteryQuestions[masteryIndex];
     if (!question || !masteryAnswer.trim() || masteryFeedback === "correct") return;
-    const correct = question.accepted.some((value) => normalize(value) === normalize(masteryAnswer));
+    const correct = answerMatches(masteryAnswer, question.accepted);
     if (!correct) { setMasteryFeedback("wrong"); return; }
     setMasteryCorrectCount((count) => count + 1);
     setMasteryFeedback("correct");
@@ -231,7 +221,7 @@ export default function Home() {
   function submitCheckpoint() {
     const question = checkpointQuestions[checkpointIndex];
     if (!question || !checkpointAnswer.trim() || checkpointFeedback === "correct") return;
-    const correct = normalize(checkpointAnswer) && question.accepted.some((value) => normalize(value) === normalize(checkpointAnswer));
+    const correct = answerMatches(checkpointAnswer, question.accepted);
     if (correct) {
       setCheckpointCorrectCount((count) => count + 1);
       setCheckpointFeedback("correct");
