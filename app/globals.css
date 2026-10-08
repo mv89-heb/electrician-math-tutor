@@ -21,3 +21,15 @@
 .diagnosticInput:focus{border-color:#94a3b8}
 .diagnosticSubmit{width:100%;justify-content:center}
 @media(max-width:700px){.topActions{flex-wrap:wrap}.diagnosticModal{padding:28px 20px}.diagnosticQuestion{font-size:21px}}
+
+.roadmap{margin-top:24px;text-align:right}
+.roadmapTitle{font-weight:800;margin-bottom:10px}
+.roadmapGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.roadmapStep{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.72);border:1px solid rgba(148,163,184,.28);border-radius:14px;padding:12px}
+.roadmapStep.active{border-color:rgba(37,99,235,.45);box-shadow:0 5px 20px rgba(37,99,235,.08)}
+.roadmapStep>span{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:#e2e8f0;font-weight:800;flex:none}
+.roadmapStep.active>span{background:#2563eb;color:#fff}
+.roadmapStep strong,.roadmapStep small{display:block}
+.roadmapStep small{margin-top:3px;color:#64748b;line-height:1.35}
+.checkpointHint{margin-top:12px;color:#64748b;line-height:1.5}
+@media(max-width:800px){.roadmapGrid{grid-template-columns:1fr}.roadmapStep small{font-size:13px}}
