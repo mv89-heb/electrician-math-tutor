@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
-import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery } from "./learning";
+import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds } from "./learning";
 
 describe("learning engine", () => {
   it("records correct answers and prevents duplicate completion", () => {
     const first = recordAttempt(emptyLearningState, curriculum[0], true, false);
     const second = recordAttempt(first, curriculum[0], true, true);
 
-    expect(second.version).toBe(4);
+    expect(second.version).toBe(5);
     expect(second.completed).toEqual([curriculum[0].id]);
     expect(second.stats[curriculum[0].topic].correct).toBe(2);
     expect(second.stats[curriculum[0].topic].hints).toBe(1);
@@ -61,6 +61,18 @@ describe("learning engine", () => {
 
     expect(chooseNextExercise(curriculum, state)).toBe(1);
   });
+  it("schedules spaced review after correct answers and quick review after mistakes", async () => {
+    const { scheduleReview } = await import("./learning");
+    const first = scheduleReview(undefined, true, false);
+    expect(first.intervalDays).toBe(1);
+    expect(first.repetitions).toBe(1);
+    const failed = scheduleReview(first, false, false);
+    expect(failed.intervalDays).toBe(0);
+    expect(failed.dueAt).toBeLessThan(Date.now() + 11 * 60 * 1000);
+    const state = recordAttempt(emptyLearningState, curriculum[0], true, false);
+    expect(dueReviewIds(state, Date.now())).toEqual([]);
+  });
+
 });
 
 
