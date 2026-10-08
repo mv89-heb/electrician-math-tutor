@@ -145,7 +145,8 @@ export function loadLearningState(storage: Storage | null): LearningState {
     const raw = storage.getItem("electrician-math-learning");
     if (!raw) return emptyLearningState;
     const parsed = JSON.parse(raw) as Partial<LearningState>;
-    if (parsed.version !== 3 && parsed.version !== 4) return emptyLearningState;
+    const storedVersion = Number(parsed.version);
+    if (storedVersion !== 3 && storedVersion !== 4) return emptyLearningState;
 
     const rawStats = parsed.stats && typeof parsed.stats === "object" ? parsed.stats as Record<string, TopicStats> : {};
     const stats = Object.fromEntries(Object.entries(rawStats).map(([topic, value]) => [topic, {
