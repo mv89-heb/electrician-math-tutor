@@ -7,7 +7,7 @@ describe("learning engine", () => {
     const first = recordAttempt(emptyLearningState, curriculum[0], true, false);
     const second = recordAttempt(first, curriculum[0], true, true);
 
-    expect(second.version).toBe(5);
+    expect(second.version).toBe(6);
     expect(second.completed).toEqual([curriculum[0].id]);
     expect(second.stats[curriculum[0].topic].correct).toBe(2);
     expect(second.stats[curriculum[0].topic].hints).toBe(1);
@@ -115,5 +115,35 @@ describe("adaptive diagnostic scoring", () => {
       { skill: "חילוק", correct: false },
       { skill: "חילוק", correct: true },
     ], "חילוק")).toBe(100);
+  });
+});
+
+
+describe("topic mastery tests", () => {
+  it("requires a mastered topic before opening its mastery test", async () => {
+    const { canStartMasteryTest } = await import("./learning");
+    let state = emptyLearningState;
+    expect(canStartMasteryTest(curriculum[0].topic, state)).toBe(false);
+    state = recordAttempt(state, curriculum[0], true, false);
+    state = recordAttempt(state, curriculum[0], true, false);
+    state = recordAttempt(state, curriculum[0], true, false);
+    expect(canStartMasteryTest(curriculum[0].topic, state)).toBe(true);
+  });
+
+  it("requires 3 out of 3 for foundational topic mastery", async () => {
+    const { masteryPasses, buildTopicMasteryTest } = await import("./mastery");
+    const questions = buildTopicMasteryTest(curriculum, "חיבור וחיסור במשוואות", 1);
+    expect(questions).toHaveLength(3);
+    expect(masteryPasses(2)).toBe(false);
+    expect(masteryPasses(3)).toBe(true);
+  });
+
+  it("stores the latest mastery test result without erasing the best score", async () => {
+    const { recordMasteryTest } = await import("./learning");
+    let state = recordMasteryTest(emptyLearningState, "שברים", 3);
+    state = recordMasteryTest(state, "שברים", 2);
+    expect(state.masteryTests["שברים"].passed).toBe(false);
+    expect(state.masteryTests["שברים"].bestScore).toBe(3);
+    expect(state.masteryTests["שברים"].attempts).toBe(2);
   });
 });
