@@ -522,7 +522,7 @@ export default function Home() {
               </div>
 
               )}
-
+              )}
 
               {learning.mistakes.length > 0 && <div className="panel mistakesCard"><div className="panelTitle">דברים שנרצה לחזק</div><p>אין כאן ציונים ואין כישלון. המערכת פשוט זוכרת איפה היה קשה וחוזרת לשם בהמשך.</p><div className="mistakeList">{learning.mistakes.slice(-4).map((id) => { const item = curriculum.find((candidate) => candidate.id === id); return item ? <span key={id}>{item.topic}</span> : null; })}</div></div>}
             </>
