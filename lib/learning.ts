@@ -206,7 +206,7 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
     const topicErrors = state.errors
       .filter((error) => error.topic === current.topic)
       .sort((a, b) => b.count - a.count);
-    if (topicErrors.length) return current.index;
+    if (topicErrors.length) return state.currentIndex;
 
     const sameTopic = curriculum.findIndex((exercise) => exercise.topic === current.topic);
     if (sameTopic >= 0) return sameTopic;
