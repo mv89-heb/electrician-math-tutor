@@ -309,7 +309,7 @@ export function recommendedStartingIndex(results: DiagnosticResult[], curriculum
   };
   const target = topicMap[weakest.skill];
   const index = curriculum.findIndex((exercise) => exercise.topic === target);
-  return index >= 0 ? Math.max(0, index - 1) : 0;
+  return index >= 0 ? index : 0;
 }
 
 export function weakestDiagnosticSkills(results: DiagnosticResult[]): DiagnosticSkill[] {
