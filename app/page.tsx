@@ -151,7 +151,7 @@ export default function Home() {
     if (!ready || diagnosticOpen || checkpointOpen) return;
     if (shouldRunCheckpoint(learning.completed.length, learning.checkpointsCompleted)) {
       const number = Math.floor(learning.completed.length / 5);
-      setCheckpointQuestions(buildCheckpoint(curriculum, number));
+      setCheckpointQuestions(buildCheckpoint(curriculum, number, learning.completed));
       setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointOpen(true);
     }
   }, [ready, diagnosticOpen, checkpointOpen, learning.completed.length, learning.checkpointsCompleted]);
