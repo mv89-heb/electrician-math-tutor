@@ -47,6 +47,13 @@ export const curriculum: Exercise[] = [
     next:"zero-3"
   },
   {
+    id:"zero-2c", topic:"מהו נעלם?", level:0, title:"X עם מספר קצת יותר גדול",
+    teachingNote:"אותו עיקרון: אנחנו מחפשים את המספר שמסתתר במקום X.",
+    prompt:"X + 5 = 9. איזה מספר צריך להיות במקום X?", accepted:["4"],
+    hint1:"איזה מספר ועוד 5 נותן 9?", hint2:"9 − 5 = ?",
+    explanation:"נכון. 4 + 5 = 9, ולכן X = 4.", next:"zero-3b"
+  },
+  {
     id:"zero-3b", topic:"חיבור וחיסור במשוואות", level:0,
     title:"אותו רעיון, מספר אחר",
     teachingNote:"כדי למצוא X, נשתמש בפעולה ההפוכה. אם הוסיפו מספר, נחסיר אותו.",
@@ -69,6 +76,13 @@ export const curriculum: Exercise[] = [
     next:"zero-5"
   },
   {
+    id:"zero-4c", topic:"חיבור וחיסור במשוואות", level:0, title:"עוד צעד עם חיסור",
+    teachingNote:"כשיש חיסור ליד X, החיבור הוא הדרך לחזור אל המספר המקורי.",
+    prompt:"X − 5 = 7. איזה מספר צריך להיות במקום X?", accepted:["12"],
+    hint1:"אם הורידו 5 ונשאר 7, צריך להחזיר את ה־5.", hint2:"7 + 5 = ?",
+    explanation:"נכון. 7 + 5 = 12, ולכן X = 12.", next:"zero-5b"
+  },
+  {
     id:"zero-5b", topic:"כפל במשוואות", level:0,
     title:"כפל קטן",
     teachingNote:"כשמספר מוכפל ב־3, הפעולה ההפוכה היא חילוק ב־3.",
@@ -78,6 +92,13 @@ export const curriculum: Exercise[] = [
     hint2:"12 ÷ 3 = ?",
     explanation:"נכון. 12 ÷ 3 = 4, ולכן X = 4.",
     next:"zero-6"
+  },
+  {
+    id:"zero-5c", topic:"כפל במשוואות", level:0, title:"כפל במספר אחר",
+    teachingNote:"כדי למצוא X כשהוא מוכפל, נשתמש בחילוק — הפעולה ההפוכה לכפל.",
+    prompt:"4 × X = 20. איזה מספר צריך להיות במקום X?", accepted:["5"],
+    hint1:"איזו פעולה מבטלת כפל ב־4?", hint2:"20 ÷ 4 = ?",
+    explanation:"נכון. 20 ÷ 4 = 5, ולכן X = 5.", next:"zero-6"
   },
   {
     id:"zero-3", topic:"חיבור וחיסור במשוואות", level:0,
@@ -124,6 +145,13 @@ export const curriculum: Exercise[] = [
     next:"zero-7"
   },
   {
+    id:"zero-6b", topic:"חילוק במשוואות", level:0, title:"חילוק במספר אחר",
+    teachingNote:"גם כשמחלקים ב־3, כפל ב־3 מחזיר אותנו למספר המקורי.",
+    prompt:"X ÷ 3 = 5. איזה מספר צריך להיות במקום X?", accepted:["15"],
+    hint1:"הפעולה ההפוכה לחילוק היא כפל.", hint2:"5 × 3 = ?",
+    explanation:"נכון. 5 × 3 = 15, ולכן X = 15.", next:"zero-7"
+  },
+  {
     id:"zero-7", topic:"משוואות פשוטות", level:1,
     title:"שני צעדים קטנים",
     teachingNote:"עכשיו נחבר את מה שלמדנו. במשוואה עושים בכל פעם פעולה שמבטלת את מה שנעשה ל־X.",
@@ -135,6 +163,13 @@ export const curriculum: Exercise[] = [
     next:"zero-8"
   },
   {
+    id:"zero-7b", topic:"משוואות פשוטות", level:1, title:"שני צעדים — עוד פעם",
+    teachingNote:"נפרק את המשוואה לשני צעדים: קודם מבטלים חיבור או חיסור, ואז מטפלים בכפל.",
+    prompt:"3 × X − 2 = 10. מה הערך של X?", accepted:["4"],
+    hint1:"קודם החזר את ה־2: 10 + 2 = 12.", hint2:"עכשיו נשאר 3X = 12. חלק ב־3.",
+    explanation:"12 ÷ 3 = 4, ולכן X = 4.", next:"zero-8"
+  },
+  {
     id:"zero-8", topic:"סדר פעולות", level:1,
     title:"מספרים בסדר",
     teachingNote:"לפני שמגיעים לחשמל, חשוב להרגיש בנוח עם פעולות בסיסיות. כפל וחילוק הם פשוט דרכים מהירות לחיבור או חלוקה לקבוצות.",
@@ -144,6 +179,20 @@ export const curriculum: Exercise[] = [
     hint2:"אחרי הכפל, הוסף 1.",
     explanation:"2 × 3 = 6, ואז 6 + 1 = 7.",
     next:"formula-1"
+  },
+  {
+    id:"zero-8b", topic:"סדר פעולות", level:1, title:"כפל לפני חיבור",
+    teachingNote:"כשיש כפל וחיבור יחד, הכפל מתבצע קודם.",
+    prompt:"מה התוצאה של 4 + 2 × 3?", accepted:["10"],
+    hint1:"בצע קודם את הכפל.", hint2:"2 × 3 = 6, ואז 4 + 6.",
+    explanation:"נכון. התוצאה היא 10.", next:"fraction-1"
+  },
+  {
+    id:"zero-8c", topic:"סדר פעולות", level:1, title:"סדר פעולות עם סוגריים",
+    teachingNote:"סוגריים אומרים לנו מה לבצע קודם.",
+    prompt:"מה התוצאה של (2 + 3) × 2?", accepted:["10"],
+    hint1:"קודם פותרים את מה שבתוך הסוגריים.", hint2:"2 + 3 = 5, ואז 5 × 2.",
+    explanation:"נכון. התוצאה היא 10.", next:"fraction-1"
   },
   {
     id:"fraction-1", topic:"שברים", level:0,
@@ -168,6 +217,13 @@ export const curriculum: Exercise[] = [
     next:"power-0"
   },
   {
+    id:"fraction-3", topic:"שברים", level:0, title:"שליש מתוך שלם",
+    teachingNote:"שבר מתאר חלק מתוך שלם. הפעם חילקנו את השלם לשלושה חלקים שווים.",
+    prompt:"איזה שבר מתאר שני חלקים מתוך 3 חלקים שווים?", accepted:["2/3"],
+    hint1:"למעלה כותבים כמה חלקים יש לנו.", hint2:"יש לנו 2 חלקים מתוך 3.",
+    explanation:"נכון. השבר הוא 2/3.", next:"power-0"
+  },
+  {
     id:"power-0", topic:"חזקות", level:1,
     title:"חזקה היא כפל חוזר",
     teachingNote:"חזקה אומרת כמה פעמים כופלים מספר בעצמו. לדוגמה, 2² פירושו 2 × 2.",
@@ -190,6 +246,13 @@ export const curriculum: Exercise[] = [
     next:"formula-1"
   },
   {
+    id:"power-2", topic:"חזקות", level:1, title:"חזקה של 4",
+    teachingNote:"חזקה 2 פירושה כפל של המספר בעצמו.",
+    prompt:"מה הערך של 4²?", accepted:["16"],
+    hint1:"4² פירושו 4 × 4.", hint2:"חשב 4 כפול 4.",
+    explanation:"נכון. 4 × 4 = 16.", next:"decimal-1"
+  },
+  {
     id:"decimal-1", topic:"מספרים עשרוניים", level:0,
     title:"מספרים עשרוניים",
     teachingNote:"מספר עשרוני הוא דרך לכתוב חלקים של שלם. לדוגמה, 0.5 הוא חצי.",
@@ -199,6 +262,13 @@ export const curriculum: Exercise[] = [
     hint2:"חבר 5 עשיריות ועוד 5 עשיריות.",
     explanation:"נכון. 0.5 ועוד 0.5 שווה 1.",
     next:"percent-1"
+  },
+  {
+    id:"decimal-2", topic:"מספרים עשרוניים", level:0, title:"חיבור עשרוני נוסף",
+    teachingNote:"במספרים עשרוניים חשוב לשמור על הערך של הספרות אחרי הנקודה.",
+    prompt:"מה הערך של 0.2 + 0.3?", accepted:["0.5"],
+    hint1:"חבר שתי עשיריות ועוד שלוש עשיריות.", hint2:"2 עשיריות + 3 עשיריות = 5 עשיריות.",
+    explanation:"נכון. 0.2 + 0.3 = 0.5.", next:"percent-1"
   },
   {
     id:"percent-1", topic:"אחוזים", level:1,
@@ -212,6 +282,13 @@ export const curriculum: Exercise[] = [
     next:"formula-1"
   },
   {
+    id:"percent-2", topic:"אחוזים", level:1, title:"עשרה אחוזים",
+    teachingNote:"10% הוא עשירית מהכמות.",
+    prompt:"כמה זה 10% מתוך 200?", accepted:["20"],
+    hint1:"10% הוא עשירית.", hint2:"חלק את 200 ב־10.",
+    explanation:"נכון. עשירית מתוך 200 היא 20.", next:"formula-1"
+  },
+  {
     id:"formula-1", topic:"נוסחאות בסיסיות", level:1,
     title:"היכרות ראשונה עם נוסחה",
     teachingNote:"נוסחה היא דרך קצרה לתאר קשר בין מספרים. בחשמל נפגוש הרבה נוסחאות. בשלב הזה רק נתרגל לזהות את האות שאנחנו רוצים למצוא.",
@@ -221,6 +298,13 @@ export const curriculum: Exercise[] = [
     hint2:"הנוסחה היא V = I × R. איזו אות נשארת כשמחפשים את ההתנגדות?",
     explanation:"נכון. R מייצגת את ההתנגדות, ובהמשך נלמד לבודד אותה צעד־צעד.",
     next:"formula-2"
+  },
+  {
+    id:"formula-1b", topic:"נוסחאות בסיסיות", level:1, title:"מזהים את המתח",
+    teachingNote:"אנחנו לומדים לקרוא את הסמלים לפני שמחשבים. V מייצגת מתח.",
+    prompt:"בנוסחה V = I × R, איזו אות מייצגת את המתח?", accepted:["V","v"],
+    hint1:"חפש את האות בצד שמאל.", hint2:"V היא האות שמייצגת מתח.",
+    explanation:"נכון. V מייצגת מתח חשמלי.", next:"formula-2"
   },
   {
     id:"formula-2", topic:"שינוי נושא נוסחה", level:2,
@@ -234,6 +318,14 @@ export const curriculum: Exercise[] = [
     next:"ohm-1"
   },
   {
+    id:"formula-3", topic:"שינוי נושא נוסחה", level:2, title:"מבודדים את הזרם",
+    teachingNote:"כשמחפשים את I בחוק אוהם, צריך להשאיר את I לבד.",
+    prompt:"ב־V = I × R, אם רוצים להשאיר את I לבד, באיזו פעולה נחלק את שני הצדדים?",
+    accepted:["חילוק","divide","division","÷","חילוק ב-R"],
+    hint1:"I מוכפל ב־R. איזו פעולה הפוכה לכפל ב־R?", hint2:"נחלק את שני הצדדים ב־R.",
+    explanation:"נכון. חלוקה ב־R נותנת I = V / R.", next:"ohm-1"
+  },
+  {
     id:"ohm-1", topic:"חשמל — חוק אוהם", level:3,
     title:"המספרים נכנסים לחשמל",
     teachingNote:"עכשיו נשתמש במתמטיקה שכבר תרגלנו. חוק אוהם עוזר לנו לחשב זרם: I = V ÷ R. לא צריך לזכור הכול עכשיו — נשתמש בנוסחה מול העיניים.",
@@ -243,6 +335,20 @@ export const curriculum: Exercise[] = [
     hint2:"20 חלקי 10 שווה ל־?",
     explanation:"20 ÷ 10 = 2, ולכן הזרם הוא 2 אמפר.",
     next:"power-1"
+  },
+  {
+    id:"ohm-2", topic:"חשמל — חוק אוהם", level:3, title:"מוצאים התנגדות",
+    teachingNote:"אם יודעים מתח וזרם, אפשר למצוא התנגדות בעזרת R = V ÷ I.",
+    prompt:"V = 12V ו־I = 3A. לפי R = V ÷ I, מהי ההתנגדות?", accepted:["4","4Ω","4ohm"],
+    hint1:"הצב בנוסחה: 12 ÷ 3.", hint2:"12 חלקי 3 שווה ל־4.",
+    explanation:"נכון. ההתנגדות היא 4Ω.", next:"power-1"
+  },
+  {
+    id:"power-2", topic:"חשמל — הספק", level:3, title:"הספק עם מספרים אחרים",
+    teachingNote:"נשתמש שוב ב־P = V × I. הנוסחה נשארת מול העיניים.",
+    prompt:"מכשיר עובד במתח 12V ובזרם 3A. לפי P = V × I, מה ההספק?", accepted:["36","36W","36 וואט"],
+    hint1:"הצב: 12 × 3.", hint2:"12 כפול 3 = ?",
+    explanation:"נכון. 12 × 3 = 36, ולכן ההספק הוא 36W."
   },
   {
     id:"power-1", topic:"חשמל — הספק", level:3,
