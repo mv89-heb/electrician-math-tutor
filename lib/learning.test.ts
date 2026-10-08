@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
+import { generateReinforcement } from "./exercise-generator";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError } from "./learning";
 
 describe("learning engine", () => {
