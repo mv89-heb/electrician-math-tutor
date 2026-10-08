@@ -5,6 +5,7 @@ import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trop
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
+import { generatedReinforcement, shouldGenerateReinforcement } from "../lib/learning";
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, type LearningState } from "../lib/learning";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
@@ -74,7 +75,13 @@ export default function Home() {
     if (ready) saveLearningState(window.localStorage, learning);
   }, [learning, ready]);
 
-  const exercise = curriculum[learning.currentIndex] ?? firstExercise;
+  const baseExercise = curriculum[learning.currentIndex] ?? firstExercise;
+  const generated = useMemo(() => {
+    const stats = learning.stats[baseExercise.topic];
+    if (!shouldGenerateReinforcement(stats)) return null;
+    return generatedReinforcement(baseExercise.topic, learning.attempts + baseExercise.level + learning.completed.length);
+  }, [baseExercise, learning.attempts, learning.completed.length, learning.stats]);
+  const exercise = generated ?? baseExercise;
   const completedCount = learning.completed.length;
   const progress = Math.min(100, Math.round((completedCount / curriculum.length) * 100));
   const weakTopic = useMemo(
