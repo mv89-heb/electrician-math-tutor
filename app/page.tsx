@@ -403,7 +403,7 @@ export default function Home() {
                   {masteryFeedback==="correct" && <div className="feedback success"><CheckCircle2 size={22}/><div><strong>נכון! ⚡</strong><span>מעולה. ממשיכים לשאלת השליטה הבאה.</span><button onClick={nextMastery} className="nextBtn">{masteryIndex === masteryQuestions.length-1 ? "סיום מבחן" : "השאלה הבאה"} <ChevronLeft size={18} /></button></div></div>}
                 </div>
               ) : (
-              <div className="panel exerciseCard">
+              <div key={exercise.id} className="panel exerciseCard exerciseEnter">
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
