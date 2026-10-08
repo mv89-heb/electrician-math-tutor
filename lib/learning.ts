@@ -154,7 +154,7 @@ export function saveLearningState(storage: Storage | null, state: LearningState)
 export function diagnosticScore(results: DiagnosticResult[], skill: DiagnosticSkill): number {
   const relevant = results.filter((result) => result.skill === skill);
   if (!relevant.length) return 50;
-  return Math.round((relevant.filter((result) => result.correct).length / relevant.length) * 100);
+  return relevant[relevant.length - 1].correct ? 100 : 0;
 }
 
 export function recommendedStartingIndex(results: DiagnosticResult[], curriculum: Exercise[]): number {
