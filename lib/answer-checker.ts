@@ -71,6 +71,12 @@ export function answerMatches(answer: string, accepted: AcceptedAnswers): boolea
     }
 
     const expectedFraction = parseFraction(expected);
+    if (answerQuantity && expectedFraction !== null) {
+      return Math.abs(answerQuantity.number - expectedFraction) < 1e-12;
+    }
+    if (answerFraction !== null && expectedQuantity) {
+      return Math.abs(answerFraction - expectedQuantity.number) < 1e-12;
+    }
     if (answerFraction !== null && expectedFraction !== null) {
       return Math.abs(answerFraction - expectedFraction) < 1e-12;
     }

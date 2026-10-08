@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
+import { generateReinforcement } from "./exercise-generator";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError } from "./learning";
 
 describe("learning engine", () => {
@@ -195,5 +196,26 @@ describe("generated exercise correctness", () => {
     const division = generateReinforcement("חילוק במשוואות", 9, "unknown")!;
     expect(division.prompt).toBe("X + 5 = 10. איזה מספר הוא X?");
     expect(division.accepted).toEqual(["5"]);
+  });
+});
+
+describe("reinforcement topic alignment", () => {
+  it("does not inject an unrelated operation exercise into a fractions topic", () => {
+    const exercise = generateReinforcement("שברים", 9, "operation");
+    expect(exercise?.topic).toBe("שברים");
+    expect(exercise?.prompt).toContain("חלק אחד מתוך 4 חלקים");
+    expect(exercise?.accepted).toEqual(["1/4"]);
+  });
+
+  it("uses division when reinforcing division equations", () => {
+    const exercise = generateReinforcement("חילוק במשוואות", 9, "operation");
+    expect(exercise?.prompt).toContain("X ÷");
+    expect(exercise?.accepted).toEqual(["20"]);
+  });
+
+  it("does not inject a unit exercise into a non-electrical topic", () => {
+    const exercise = generateReinforcement("חזקות", 9, "unit");
+    expect(exercise?.topic).toBe("חזקות");
+    expect(exercise?.prompt).toContain("²");
   });
 });

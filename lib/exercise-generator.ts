@@ -63,11 +63,11 @@ const templates: Template[] = [
   {
     topic: "שברים", level: 0, title: "שבר קטן לתרגול",
     teachingNote: "שבר הוא חלק מתוך שלם. המספר למעלה אומר כמה חלקים יש לנו.",
-    prompt: (n) => `איזה שבר מתאר ${n} חלק מתוך 2 חלקים שווים?`,
-    answer: () => "1/2",
-    hint1: "החלק שאנחנו מחפשים הוא חצי.",
-    hint2: "כתוב את המספר 1 למעלה ואת המספר 2 למטה.",
-    explanation: "נכון. זהו שבר שמתאר חצי.",
+    prompt: (n) => `איזה שבר מתאר חלק אחד מתוך ${n} חלקים שווים?`,
+    answer: (n) => `1/${n}`,
+    hint1: "המונה הוא 1 כי אנחנו מחפשים חלק אחד.",
+    hint2: "המכנה הוא מספר החלקים השווים שאליהם חילקנו את השלם.",
+    explanation: "נכון. כשיש חלק אחד מתוך מספר החלקים השווים, המונה הוא 1 והמכנה הוא מספר החלקים.",
   },
   {
     topic: "חזקות", level: 1, title: "חזקה ככפל חוזר",
@@ -113,6 +113,14 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
   if (!errorType) return generateExercise(topic, seed);
 
   const n = 2 + (seed % 6);
+  const equationTopics = new Set(["מהו נעלם?", "חיבור וחיסור במשוואות", "כפל במשוואות", "חילוק במשוואות", "משוואות פשוטות"]);
+  const electricalTopics = new Set(["חשמל — חוק אוהם", "חשמל — הספק", "נוסחאות בסיסיות", "שינוי נושא נוסחה"]);
+  if (errorType === "sign" && !equationTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "operation" && !["כפל במשוואות", "חילוק במשוואות"].includes(topic)) return generateExercise(topic, seed);
+  if (errorType === "arithmetic" && !["סדר פעולות", "כפל במשוואות", "חיבור וחיסור במשוואות", "חילוק במשוואות", "משוואות פשוטות"].includes(topic)) return generateExercise(topic, seed);
+  if (errorType === "unit" && !electricalTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "concept" && topic !== "מהו נעלם?") return generateExercise(topic, seed);
+  if (errorType === "unknown" && !equationTopics.has(topic)) return generateExercise(topic, seed);
   const targeted: Record<string, GeneratedExercise> = {
     sign: {
       id: `generated-${topic}-sign-${seed}`, topic, level: 0, title: "חיזוק סימנים",
@@ -123,7 +131,15 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       hint2: `כדי לבטל חיסור של ${n}, הוסף ${n} לתוצאה.`,
       explanation: `נכון. ${n + 2} + ${n} = ${n + 2 + n}, ולכן X = ${n + 2 + n}.`, generated: true,
     },
-    operation: {
+    operation: topic === "חילוק במשוואות" ? {
+      id: `generated-${topic}-operation-${seed}`, topic, level: 0, title: "חיזוק הפעולה ההפוכה",
+      teachingNote: "כדי למצוא את X, נשתמש בפעולה ההפוכה לפעולה שנעשתה עליו.",
+      prompt: `X ÷ ${n} = 4. איזה מספר הוא X?`,
+      accepted: [String(n * 4)],
+      hint1: "מה הפעולה שנעשתה על X?",
+      hint2: `כדי לבטל חילוק ב־${n}, כפל את התוצאה ב־${n}.`,
+      explanation: `נכון. 4 × ${n} = ${n * 4}.`, generated: true,
+    } : {
       id: `generated-${topic}-operation-${seed}`, topic, level: 0, title: "חיזוק הפעולה ההפוכה",
       teachingNote: "כדי למצוא את X, נשתמש בפעולה ההפוכה לפעולה שנעשתה עליו.",
       prompt: `${n} × X = ${n * 4}. איזה מספר הוא X?`,
