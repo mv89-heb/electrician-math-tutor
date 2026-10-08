@@ -41,26 +41,32 @@ function OhmSimulator() {
 }
 
 function PowerSimulator() {
-  const [voltage, setVoltage] = useState(10);
-  const [current, setCurrent] = useState(2);
-  const power = voltage * current;
+  const [apparentPower, setApparentPower] = useState(100);
+  const [angle, setAngle] = useState(30);
+  const radians = angle * Math.PI / 180;
+  const activePower = apparentPower * Math.cos(radians);
+  const reactivePower = apparentPower * Math.sin(radians);
 
   return (
-    <section className="miniSimulator" aria-label="סימולטור הספק חשמלי">
+    <section className="miniSimulator" aria-label="סימולטור משולש הספקים">
       <div className="simHeader">
-        <div><span className="simKicker">🔋 מעבדה קטנה</span><h3>נראה מה קורה להספק</h3></div>
-        <div className="simFormula" dir="ltr">P = U × I</div>
+        <div><span className="simKicker">🔋 מעבדה קטנה</span><h3>משולש ההספקים בפעולה</h3></div>
+        <div className="simFormula" dir="ltr">S² = P² + Q²</div>
       </div>
-      <p className="simIntro">שנה את המתח או הזרם וראה איך ההספק משתנה בזמן אמת.</p>
-      <div className="powerVisual">
-        <div className="powerOrb" style={{ ["--power-level" as string]: Math.min(100, Math.max(10, power / 2)) + "%" }}>⚡</div>
-        <div className="powerReadout" dir="ltr"><strong>{power.toFixed(0)}</strong><span>W</span></div>
+      <p className="simIntro">שנה את ההספק המדומה ואת הזווית וראה איך P, Q ו־S משתנים יחד.</p>
+      <div className="powerTriangle" style={{ ["--triangle-angle" as string]: angle + "deg" }}>
+        <div className="triangleShape" aria-hidden="true"><span>P</span><span>Q</span><span>S</span></div>
+        <div className="triangleReadout" dir="ltr">
+          <div><b>P</b><strong>{activePower.toFixed(1)}</strong><span>W</span></div>
+          <div><b>Q</b><strong>{reactivePower.toFixed(1)}</strong><span>var</span></div>
+          <div><b>S</b><strong>{apparentPower.toFixed(1)}</strong><span>VA</span></div>
+        </div>
       </div>
       <div className="simControls">
-        <label><span><b>מתח U</b><output dir="ltr">{voltage} V</output></span><input type="range" min="1" max="30" value={voltage} onChange={(e) => setVoltage(Number(e.target.value))} /></label>
-        <label><span><b>זרם I</b><output dir="ltr">{current} A</output></span><input type="range" min="1" max="10" value={current} onChange={(e) => setCurrent(Number(e.target.value))} /></label>
+        <label><span><b>הספק מדומה S</b><output dir="ltr">{apparentPower} VA</output></span><input type="range" min="10" max="500" step="10" value={apparentPower} onChange={(e) => setApparentPower(Number(e.target.value))} /></label>
+        <label><span><b>זווית φ</b><output dir="ltr">{angle}°</output></span><input type="range" min="0" max="80" step="1" value={angle} onChange={(e) => setAngle(Number(e.target.value))} /></label>
       </div>
-      <div className="simCoach">ספארקי: ההספק הוא תוצאה של הכפלת המתח בזרם. שנה אחד מהם ובדוק איך המספר משתנה.</div>
+      <div className="simCoach">ספארקי: כשהזווית גדלה, חלק גדול יותר מ־S הופך להספק תגובתי Q ופחות נשאר כהספק פעיל P.</div>
     </section>
   );
 }
