@@ -188,10 +188,10 @@ export default function Home() {
     }
     const score = masteryCorrectCount + (masteryFeedback === "correct" ? 1 : 0);
     const topic = masteryQuestions[0]?.topic;
-    if (topic) setLearning((previous) => recordMasteryTest(previous, topic, score));
+    const testedState = topic ? recordMasteryTest(learning, topic, score) : learning;
     if (masteryPasses(score)) {
-      const nextIndex = chooseNextExercise(curriculum, learning);
-      const nextState = { ...learning, currentIndex: nextIndex };
+      const nextIndex = chooseNextExercise(curriculum, testedState);
+      const nextState = { ...testedState, currentIndex: nextIndex };
       setMasteryOpen(false);
       setLearning(nextState);
       setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
