@@ -45,10 +45,11 @@ export function recordAttempt(
 ): LearningState {
   const previous = state.stats[exercise.topic] ?? { attempts: 0, correct: 0, hints: 0, streak: 0 };
   const nextStreak = correct ? previous.streak + 1 : 0;
-  const completed = correct && !state.completed.includes(exercise.id)
+  const isCurriculumExercise = !exercise.id.startsWith("generated-");
+  const completed = correct && isCurriculumExercise && !state.completed.includes(exercise.id)
     ? [...state.completed, exercise.id]
     : state.completed;
-  const mistakes = !correct && !state.mistakes.includes(exercise.id)
+  const mistakes = !correct && isCurriculumExercise && !state.mistakes.includes(exercise.id)
     ? [...state.mistakes, exercise.id]
     : state.mistakes;
 
