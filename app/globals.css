@@ -96,3 +96,8 @@
 @keyframes hintSlide{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
 @keyframes tinySpark{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-4px) rotate(8deg)}}
 @media(prefers-reduced-motion:reduce){.sparkyWelcome::before,.sparkyWelcome::after,.sparkyAvatar,.sparkyBody,.sparkyBolt,.sparkyPulse,.journeyFill,.journeyFill::after,.journeyBlocks .filled,.exerciseCard,.feedback.success,.feedback.hint,.question::after{animation:none!important;transition:none!important}}
+
+
+.masteryCard{margin-top:18px;border:1px solid rgba(255,193,7,.35);background:linear-gradient(135deg,rgba(255,193,7,.08),rgba(255,255,255,.9));animation:cardEnter .45s ease both}
+.masteryHeader{display:flex;justify-content:space-between;gap:12px;margin:12px 0;font-weight:700}
+.masteryCard .question{border-color:rgba(255,193,7,.28);box-shadow:0 8px 26px rgba(255,193,7,.08)}
