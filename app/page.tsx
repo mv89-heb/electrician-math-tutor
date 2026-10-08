@@ -56,6 +56,32 @@ function MathPrompt({ prompt }: { prompt: string }) {
   );
 }
 
+function ElectricalBridge({ topic }: { topic: string }) {
+  const text =
+    topic === "מהו נעלם?"
+      ? "בעולם החשמל גם אות יכולה לייצג מספר שעדיין לא ידוע. בהמשך נמצא כך ערכים כמו מתח, זרם והתנגדות."
+      : topic === "חיבור וחיסור במשוואות"
+        ? "בחשמל לפעמים צריך להוסיף או להוריד ערך כדי למצוא את החסר. כאן אנחנו בונים את היכולת הזאת בבסיס."
+        : topic === "כפל במשוואות"
+          ? "כפל מופיע בחישובי חשמל רבים, למשל כשמחשבים הספק. אנחנו קודם שולטים בכפל על מספרים פשוטים."
+          : topic === "חילוק במשוואות"
+            ? "חילוק הוא כלי מרכזי בחוק אוהם: בעזרתו אפשר למצוא זרם או התנגדות כשמכירים את שאר הערכים."
+            : topic === "משוואות פשוטות"
+              ? "משוואות עם כמה צעדים הן הבסיס לסידור נוסחאות חשמל ולמציאת הערך שחסר במעגל."
+              : topic === "סדר פעולות"
+                ? "כשמחשבים נוסחת חשמל, חשוב לבצע את הפעולות בסדר הנכון כדי לא לקבל תוצאה שגויה."
+                : topic === "נוסחאות בסיסיות"
+                  ? "נוסחאות הן השפה של חישובי חשמל. אנחנו לומדים לקרוא אותן לפני שנדרוש ממך לזכור אותן."
+                  : topic === "שינוי נושא נוסחה"
+                    ? "בתרגילי חשמל נצטרך לעיתים לסדר נוסחה מחדש כדי למצוא את המשתנה הרצוי."
+                    : topic === "חשמל — חוק אוהם"
+                      ? "כאן המתמטיקה נכנסת ישירות למעגל חשמלי: חוק אוהם מחבר בין מתח, זרם והתנגדות."
+                      : topic === "חשמל — הספק"
+                        ? "כאן נשתמש במתמטיקה כדי לחשב כמה הספק מכשיר חשמלי צורך."
+                        : "כל מה שאנחנו לומדים כאן נועד בהמשך לשמש אותנו בחישובי חשמל אמיתיים.";
+  return <div className="electricalBridge"><Zap size={18} /><span><strong>חיבור לחשמל</strong>{text}</span></div>;
+}
+
 function errorGuidance(exercise: Exercise, answer: string) {
   const normalized = normalize(answer);
 
@@ -323,7 +349,7 @@ export default function Home() {
 
               <div className="panel exerciseCard">
                 <h2>{exercise.title}</h2>
-                <div className="teachingNote"><Lightbulb size={20} /><div><strong>רגע של הסבר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
+                <div className="teachingNote"><Lightbulb size={20} /><div><strong>רגע של הסבר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div><ElectricalBridge topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
