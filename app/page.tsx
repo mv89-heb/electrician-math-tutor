@@ -430,12 +430,22 @@ export default function Home() {
       </section>
       <div className="layout focusLayout">
         <section className="lesson">
-          {completedCount === curriculum.length ? (
+          {completedCount === curriculum.length && !finalExamOpen ? (
             <div className="panel exerciseCard completion">
               <div className="completionIcon"><Trophy size={42} /></div>
-              <h2>סיימת את מסלול הבסיס 🎉</h2>
-              <p>בשלב הבא נוכל להעמיק בהדרגה ולהכניס יותר ויותר שאלות מעולם החשמל.</p>
-              <button className="primary" onClick={reset}>התחל שוב <ChevronLeft size={18} /></button>
+              {learning.finalExamPassed ? (
+                <>
+                  <h2>100 🎯 הושג!</h2>
+                  <p>עברת את מבחן הגמר והוכחת שליטה במסלול הבסיס — כולל אלגברה, נוסחאות וחישובי חשמל.</p>
+                  <button className="primary" onClick={reset}>התחל מסלול חדש <ChevronLeft size={18} /></button>
+                </>
+              ) : (
+                <>
+                  <h2>הגיע הזמן למבחן 100 🎯</h2>
+                  <p>12 שאלות מעורבות, ללא רמזים. צריך לפחות {FINAL_EXAM_REQUIRED} תשובות נכונות.</p>
+                  <button className="primary" onClick={openFinalExam}>התחל מבחן 100 <ChevronLeft size={18} /></button>
+                </>
+              )}
             </div>
           ) : (
             <>
