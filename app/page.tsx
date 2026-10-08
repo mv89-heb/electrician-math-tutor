@@ -118,6 +118,7 @@ export default function Home() {
   const [checkpointAnswer, setCheckpointAnswer] = useState("");
   const [checkpointFeedback, setCheckpointFeedback] = useState<"idle" | "wrong" | "correct">("idle");
   const [checkpointAttempts, setCheckpointAttempts] = useState(0);
+  const [checkpointCorrectCount, setCheckpointCorrectCount] = useState(0);
 
   useEffect(() => {
     const restored = loadLearningState(window.localStorage);
@@ -153,7 +154,7 @@ export default function Home() {
     if (shouldRunCheckpoint(learning.completed.length, learning.checkpointsCompleted)) {
       const number = Math.floor(learning.completed.length / 5);
       setCheckpointQuestions(buildCheckpoint(curriculum, number, learning.completed));
-      setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointOpen(true);
+      setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0); setCheckpointOpen(true);
     }
   }, [ready, diagnosticOpen, checkpointOpen, learning.completed.length, learning.checkpointsCompleted]);
 
@@ -176,6 +177,7 @@ export default function Home() {
     if (!question || !checkpointAnswer.trim() || checkpointFeedback === "correct") return;
     const correct = normalize(checkpointAnswer) && question.accepted.some((value) => normalize(value) === normalize(checkpointAnswer));
     if (correct) {
+      setCheckpointCorrectCount((count) => count + 1);
       setCheckpointFeedback("correct");
       return;
     }
@@ -185,8 +187,14 @@ export default function Home() {
     }
     if (checkpointIndex >= checkpointQuestions.length - 1) {
       const number = Math.floor(learning.completed.length / 5);
-      setLearning((previous) => ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
-      setCheckpointOpen(false); setCheckpointFeedback("idle"); setCheckpointAnswer(""); setCheckpointAttempts(0);
+      const passed = checkpointCorrectCount >= 2;
+      if (passed) {
+        setLearning((previous) => previous.checkpointsCompleted.includes(number) ? previous : ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
+        setCheckpointOpen(false);
+      } else {
+        setCheckpointFeedback("wrong");
+      }
+      setCheckpointAnswer(""); setCheckpointAttempts(0);
       return;
     }
     setCheckpointIndex((index) => index + 1); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
@@ -196,7 +204,7 @@ export default function Home() {
     if (checkpointIndex >= checkpointQuestions.length - 1) {
       const number = Math.floor(learning.completed.length / 5);
       setLearning((previous) => previous.checkpointsCompleted.includes(number) ? previous : ({ ...previous, checkpointsCompleted: [...previous.checkpointsCompleted, number] }));
-      setCheckpointOpen(false); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
+      setCheckpointOpen(false); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0);
       return;
     }
     setCheckpointIndex((index) => index + 1); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
@@ -206,7 +214,7 @@ export default function Home() {
     setLearning(emptyLearningState); setAnswer(""); setHint(0); setFeedback("idle");
     setDiagnosticOpen(false); setDiagnosticIndex(0); setDiagnosticAnswer(""); setDiagnosticDone(false);
     setDiagnosticAttempts(0); setDiagnosticFeedback("idle");
-    setCheckpointOpen(false); setCheckpointQuestions([]); setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0);
+    setCheckpointOpen(false); setCheckpointQuestions([]); setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0);
   }
 
   function submitDiagnostic() {
@@ -258,7 +266,7 @@ export default function Home() {
             <p>אין ציון. אנחנו בודקים מה נשאר בזיכרון אחרי הלמידה, כדי לדעת אם לחזור קצת או להתקדם.</p>
             <div className="diagnosticProgress">שאלה {checkpointIndex + 1} מתוך {checkpointQuestions.length}</div>
             <div className="diagnosticQuestion"><MathPrompt prompt={checkpointQuestions[checkpointIndex].prompt} /></div>
-            {checkpointFeedback === "wrong" && <div className="feedback wrong">כמעט. קח רגע לחשוב שוב — אני לא נותן את הפתרון.</div>}
+            {checkpointFeedback === "wrong" && <div className="feedback wrong">{checkpointIndex === checkpointQuestions.length - 1 && checkpointAttempts > 0 ? "הבוחן עדיין לא עבר. זה לא כישלון — נחזור על הנקודות החלשות וננסה שוב." : "כמעט. קח רגע לחשוב שוב — אני לא נותן את הפתרון."}</div>}
             {checkpointFeedback === "correct" && <div className="feedback success">מעולה. זה יושב טוב. אפשר להמשיך.</div>}
             {checkpointFeedback !== "correct" && <input className="diagnosticInput" dir="ltr" autoFocus value={checkpointAnswer}
               onChange={(event) => setCheckpointAnswer(event.target.value)}
