@@ -397,7 +397,7 @@ export default function Home() {
                   <div><strong>ספארקי אומר:</strong><span>נתחיל הכי פשוט שאפשר. אין צורך לנחש — אני איתך בכל צעד.</span></div>
                 </div>
                 <h2>{exercise.title}</h2>
-                <div className="teachingNote"><Lightbulb size={20} /><div><strong>רגע של הסבר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div><ElectricalBridge topic={exercise.topic} />
+                <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
