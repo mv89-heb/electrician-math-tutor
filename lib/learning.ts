@@ -16,6 +16,16 @@ export type DiagnosticResult = {
   correct: boolean;
 };
 
+export type ErrorType = "sign" | "operation" | "unknown" | "unit" | "arithmetic" | "concept";
+
+export type ErrorRecord = {
+  type: ErrorType;
+  exerciseId: string;
+  topic: string;
+  count: number;
+  lastAnswer: string;
+};
+
 export type ReviewCard = {
   dueAt: number;
   intervalDays: number;
@@ -33,6 +43,7 @@ export type LearningState = {
   diagnosticResults: DiagnosticResult[];
   checkpointsCompleted: number[];
   reviews: Record<string, ReviewCard>;
+  errors: ErrorRecord[];
 };
 
 export const emptyLearningState: LearningState = {
@@ -45,6 +56,7 @@ export const emptyLearningState: LearningState = {
   diagnosticResults: [],
   checkpointsCompleted: [],
   reviews: {},
+  errors: [],
 };
 
 export function recordAttempt(
@@ -52,6 +64,8 @@ export function recordAttempt(
   exercise: Exercise,
   correct: boolean,
   usedHint: boolean,
+  errorType?: ErrorType,
+  lastAnswer = "",
 ): LearningState {
   const previous = state.stats[exercise.topic] ?? { attempts: 0, correct: 0, hints: 0, streak: 0, unassistedCorrect: 0 };
   const nextStreak = correct ? previous.streak + 1 : 0;
@@ -85,7 +99,31 @@ export function recordAttempt(
         [exercise.id]: scheduleReview(state.reviews[exercise.id], correct, usedHint),
       } : {}),
     },
+    errors: correct || !errorType || !isCurriculumExercise
+      ? state.errors
+      : upsertError(state.errors, { type: errorType, exerciseId: exercise.id, topic: exercise.topic, count: 1, lastAnswer }),
   };
+}
+
+export function upsertError(errors: ErrorRecord[], incoming: ErrorRecord): ErrorRecord[] {
+  const existing = errors.find((error) => error.exerciseId === incoming.exerciseId && error.type === incoming.type);
+  if (!existing) return [...errors, incoming];
+  return errors.map((error) => error === existing ? { ...error, count: error.count + 1, lastAnswer: incoming.lastAnswer } : error);
+}
+
+export function classifyError(answer: string, exercise: Exercise): ErrorType {
+  const normalized = answer.trim().toLowerCase().replaceAll(" ", "");
+  if (/(אמפר|amp|וולט|volt|וואט|w|v|a)$/.test(normalized)) return "unit";
+  if (normalized.includes("-") || normalized.includes("−")) return "sign";
+  if (exercise.topic.includes("כפל") && (normalized.includes("/") || normalized.includes("÷"))) return "operation";
+  if (exercise.topic.includes("חילוק") && (normalized.includes("*") || normalized.includes("×"))) return "operation";
+  if (/^[0-9.,]+$/.test(normalized)) return "arithmetic";
+  if (/[a-zא-ת]/i.test(normalized)) return "concept";
+  return "unknown";
+}
+
+export function topErrorTypes(errors: ErrorRecord[]): ErrorType[] {
+  return [...new Set([...errors].sort((a, b) => b.count - a.count).map((error) => error.type))];
 }
 
 export function scheduleReview(card: ReviewCard | undefined, correct: boolean, usedHint: boolean): ReviewCard {
@@ -226,6 +264,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
       diagnosticResults: Array.isArray(parsed.diagnosticResults) ? parsed.diagnosticResults : [],
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
       reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
+      errors: Array.isArray(parsed.errors) ? parsed.errors as ErrorRecord[] : [],
     };
   } catch {
     return emptyLearningState;
