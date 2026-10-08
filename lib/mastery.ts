@@ -7,7 +7,6 @@ export type MasteryQuestion = {
   accepted: string[];
 };
 
-const byTopic: Record<string, Exercise[]> = {};
 
 export function buildTopicMasteryTest(exercises: Exercise[], topic: string, seed = 0): MasteryQuestion[] {
   const source = exercises.filter((exercise) => exercise.topic === topic);
