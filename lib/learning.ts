@@ -43,7 +43,7 @@ export type ReviewCard = {
 };
 
 export type LearningState = {
-  version: 6;
+  version: 7;
   currentIndex: number;
   attempts: number;
   completed: string[];
@@ -54,6 +54,7 @@ export type LearningState = {
   reviews: Record<string, ReviewCard>;
   errors: ErrorRecord[];
   masteryTests: Record<string, MasteryTestResult>;
+  finalExamPassed: boolean;
 };
 
 export const emptyLearningState: LearningState = {
@@ -68,6 +69,7 @@ export const emptyLearningState: LearningState = {
   reviews: {},
   errors: [],
   masteryTests: {},
+  finalExamPassed: false,
 };
 
 export function recordAttempt(
@@ -90,7 +92,7 @@ export function recordAttempt(
 
   return {
     ...state,
-    version: 6,
+    version: 7,
     attempts: state.attempts + 1,
     completed,
     mistakes,
@@ -283,7 +285,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
     return {
       ...emptyLearningState,
       ...parsed,
-      version: 6,
+      version: 7,
       stats,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
@@ -291,7 +293,8 @@ export function loadLearningState(storage: Storage | null): LearningState {
       checkpointsCompleted: Array.isArray(parsed.checkpointsCompleted) ? parsed.checkpointsCompleted : [],
       reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
       errors: Array.isArray(parsed.errors) ? parsed.errors as ErrorRecord[] : [],
-      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},\n      finalExamPassed: Boolean(parsed.finalExamPassed),
+      masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},
+      finalExamPassed: Boolean(parsed.finalExamPassed),
     };
   } catch {
     return emptyLearningState;
@@ -354,7 +357,7 @@ export function recordMasteryTest(state: LearningState, topic: string, score: nu
   const passed = score >= requiredCorrect;
   return {
     ...state,
-    version: 6,
+    version: 7,
     masteryTests: {
       ...state.masteryTests,
       [topic]: {
