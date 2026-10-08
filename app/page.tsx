@@ -422,16 +422,8 @@ export default function Home() {
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>
 
-              {masteryOpen && (
-                <div className="panel masteryCard">
-                  <div className="sparkyLessonIntro"><span className="sparkyMini">🏆⚡</span><div><strong>ספארקי אומר:</strong><span>הגעת לנקודת שליטה! עכשיו נבדוק אם הידע באמת יושב.</span></div></div>
-                  <div className="masteryHeader"><strong>מבחן שליטה: {masteryQuestions[0]?.topic}</strong><span>שאלה {masteryIndex + 1} מתוך {masteryQuestions.length}</span></div>
-                  <div className="question"><MathPrompt prompt={masteryQuestions[masteryIndex]?.prompt ?? ""} /></div>
-                  <div className="answerRow"><input dir="ltr" autoComplete="off" value={masteryAnswer} onChange={(e)=>{setMasteryAnswer(e.target.value);setMasteryFeedback("idle")}} onKeyDown={(e)=>e.key==="Enter"&&submitMastery()} placeholder="התשובה שלך..." disabled={masteryFeedback==="correct"} /><button className="primary" onClick={submitMastery} disabled={!masteryAnswer.trim()||masteryFeedback==="correct"}>בדוק</button></div>
-                  {masteryFeedback==="wrong" && <div className="feedback hint"><Lightbulb size={20}/><div><strong>ספארקי: כמעט! 💡</strong><span>לא אתן את הפתרון. נסה לחשוב שוב על הפעולה שעשית.</span></div></div>}
-                  {masteryFeedback==="correct" && <div className="feedback success"><CheckCircle2 size={22}/><div><strong>נכון! ⚡</strong><span>מעולה. ממשיכים לשאלת השליטה הבאה.</span><button onClick={nextMastery} className="nextBtn">{masteryIndex === masteryQuestions.length-1 ? "סיום מבחן" : "השאלה הבאה"} <ChevronLeft size={18}/></button></div></div>}
-                </div>
               )}
+
 
               {learning.mistakes.length > 0 && <div className="panel mistakesCard"><div className="panelTitle">דברים שנרצה לחזק</div><p>אין כאן ציונים ואין כישלון. המערכת פשוט זוכרת איפה היה קשה וחוזרת לשם בהמשך.</p><div className="mistakeList">{learning.mistakes.slice(-4).map((id) => { const item = curriculum.find((candidate) => candidate.id === id); return item ? <span key={id}>{item.topic}</span> : null; })}</div></div>}
             </>
