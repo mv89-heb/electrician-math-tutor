@@ -372,3 +372,98 @@ body{color:var(--ink)}
   .focusLayout .answerRow input{width:100%;height:48px}
   .focusLayout .teacherTip{justify-content:center!important;text-align:center!important}
 }
+
+
+/* Sparky motion layer — subtle, purposeful, never noisy */
+@media (prefers-reduced-motion: no-preference){
+  .exerciseEnter{
+    animation:tutorCardIn .42s cubic-bezier(.22,.8,.32,1) both;
+  }
+  .exerciseEnter .teachingNote{
+    animation:tutorContentIn .38s .07s ease-out both;
+  }
+  .exerciseEnter .question{
+    animation:tutorQuestionIn .42s .12s cubic-bezier(.22,.8,.32,1) both;
+  }
+  .sparkyFocusAvatar{
+    animation:sparkyFloat 3.8s ease-in-out infinite!important;
+  }
+  .sparkyFocus .sparkyBolt{
+    animation:sparkyBoltPulse 2.2s ease-in-out infinite;
+    transform-origin:center;
+  }
+  .sparkyMood-celebrate .sparkyFocusAvatar{
+    animation:sparkyCelebrate .55s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+  .sparkyMood-celebrate .sparkyBolt{
+    animation:sparkyBoltCelebrate .7s ease-out both;
+  }
+  .sparkyMood-think .sparkyBolt{
+    animation:sparkyThink .9s ease-in-out infinite;
+  }
+  .focusTrack>div{
+    animation:progressGrow .7s cubic-bezier(.22,.8,.32,1) both;
+  }
+  .feedback.success{
+    animation:feedbackIn .35s cubic-bezier(.22,.8,.32,1) both;
+  }
+  .feedback.hint{
+    animation:hintIn .28s ease-out both;
+  }
+  .primary:not(:disabled):active{
+    transform:translateY(1px)!important;
+  }
+}
+@keyframes tutorCardIn{
+  from{opacity:0;transform:translateY(10px) scale(.992)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes tutorContentIn{
+  from{opacity:0;transform:translateY(5px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes tutorQuestionIn{
+  from{opacity:0;transform:translateY(7px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes sparkyFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+@keyframes sparkyBoltPulse{
+  0%,100%{opacity:.72;transform:scale(1) rotate(0)}
+  50%{opacity:1;transform:scale(1.1) rotate(-5deg)}
+}
+@keyframes sparkyThink{
+  0%,100%{transform:translateY(0) rotate(0)}
+  50%{transform:translateY(-2px) rotate(-8deg)}
+}
+@keyframes sparkyCelebrate{
+  0%{transform:scale(1)}
+  35%{transform:scale(1.12) rotate(-4deg)}
+  65%{transform:scale(.98) rotate(3deg)}
+  100%{transform:scale(1)}
+}
+@keyframes sparkyBoltCelebrate{
+  0%{opacity:.5;transform:scale(.7) rotate(-15deg)}
+  45%{opacity:1;transform:scale(1.35) rotate(8deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes progressGrow{
+  from{transform:scaleX(.92);transform-origin:right center}
+  to{transform:scaleX(1);transform-origin:right center}
+}
+@keyframes feedbackIn{
+  from{opacity:0;transform:translateY(5px) scale(.99)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes hintIn{
+  from{opacity:0;transform:translateX(5px)}
+  to{opacity:1;transform:translateX(0)}
+}
+@media (prefers-reduced-motion: reduce){
+  .exerciseEnter,.exerciseEnter .teachingNote,.exerciseEnter .question,
+  .sparkyFocusAvatar,.sparkyFocus .sparkyBolt,.focusTrack>div,
+  .feedback.success,.feedback.hint{animation:none!important}
+  *{scroll-behavior:auto!important}
+}
