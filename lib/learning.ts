@@ -36,7 +36,7 @@ export type LearningState = {
 };
 
 export const emptyLearningState: LearningState = {
-  version: 4,
+  version: 5,
   currentIndex: 0,
   attempts: 0,
   completed: [],
