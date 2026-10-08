@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
 import { generateReinforcement } from "./exercise-generator";
-import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise } from "./learning";
+import { buildTopicMasteryTest } from "./mastery";
+import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -10,7 +11,7 @@ describe("active exercise resolution", () => {
     const updated = recordAttempt(initial, curriculum[0], true, false);
     expect(active.id).toBe("zero-1");
     expect(resolveExercise(curriculum, updated, 0).id).toBe("zero-1");
-    expect(active.prompt).toBe("איזה מספר נמצא במקום X?");
+    expect(active.prompt).toBe(curriculum[0].prompt);
   });
 
   it("resolves the new exercise only when navigation changes the index", () => {
@@ -238,5 +239,18 @@ describe("reinforcement topic alignment", () => {
     const exercise = generateReinforcement("חזקות", 9, "unit");
     expect(exercise?.topic).toBe("חזקות");
     expect(exercise?.prompt).toContain("²");
+  });
+});
+
+
+describe("learning flow integrity", () => {
+  it("does not start a three-question mastery test for topics with fewer than three source exercises", () => {
+    const state = { ...emptyLearningState, stats: { "נוסחאות בסיסיות": { attempts: 3, correct: 3, hints: 0, streak: 3, unassistedCorrect: 3 } } };
+    expect(canStartMasteryTest("נוסחאות בסיסיות", state, curriculum)).toBe(false);
+  });
+
+  it("builds mastery tests without duplicate source questions", () => {
+    const questions = buildTopicMasteryTest(curriculum, "מהו נעלם?", 0);
+    expect(new Set(questions.map((question) => question.prompt)).size).toBe(questions.length);
   });
 });

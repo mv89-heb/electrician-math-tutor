@@ -344,8 +344,9 @@ export function weakestDiagnosticSkills(results: DiagnosticResult[]): Diagnostic
 }
 
 
-export function canStartMasteryTest(topic: string, state: LearningState): boolean {
-  return topicMasteryGate(state.stats[topic]) && !state.masteryTests[topic]?.passed;
+export function canStartMasteryTest(topic: string, state: LearningState, exercises?: Exercise[]): boolean {
+  const hasEnoughQuestions = exercises ? new Set(exercises.filter((exercise) => exercise.topic === topic).map((exercise) => exercise.id)).size >= 3 : true;
+  return hasEnoughQuestions && topicMasteryGate(state.stats[topic]) && !state.masteryTests[topic]?.passed;
 }
 
 export function recordMasteryTest(state: LearningState, topic: string, score: number, requiredCorrect = 3): LearningState {

@@ -203,7 +203,7 @@ export default function Home() {
   }
 
   function next() {
-    if (canStartMasteryTest(exercise.topic, learning) && !generated) {
+    if (canStartMasteryTest(exercise.topic, learning, curriculum) && !generated) {
       openMasteryForTopic(exercise.topic);
       return;
     }
