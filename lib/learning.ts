@@ -183,6 +183,24 @@ export function generatedReinforcement(topic: string, seed: number, errorType?: 
   return generateReinforcement(topic, seed, errorType);
 }
 
+export function resolveExercise(curriculum: Exercise[], state: LearningState, index = state.currentIndex): Exercise {
+  const baseExercise = curriculum[index] ?? curriculum[0];
+  if (!baseExercise) throw new Error("Curriculum is empty");
+
+  const stats = state.stats[baseExercise.topic];
+  if (!shouldGenerateReinforcement(stats)) return baseExercise;
+
+  const topicError = state.errors
+    .filter((error) => error.topic === baseExercise.topic)
+    .sort((a, b) => b.count - a.count)[0];
+
+  return generateReinforcement(
+    baseExercise.topic,
+    state.attempts + baseExercise.level + state.completed.length,
+    topicError?.type,
+  ) ?? baseExercise;
+}
+
 export function topicMastery(stats?: TopicStats): number {
   if (!stats || stats.attempts === 0) return 0;
   const accuracy = stats.correct / stats.attempts;
