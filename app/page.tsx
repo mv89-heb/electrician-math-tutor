@@ -490,8 +490,7 @@ export default function Home() {
                     </div>
                   )}
                 </div>
-              ) : (
-              {masteryOpen ? (
+              ) : masteryOpen ? (
                 <div className="panel exerciseCard masteryFocusCard">
                   <div className="masteryIntro"><span className="masteryBadge">🎯</span><div><strong>נקודת שליטה</strong><span>סיימת את התרגול. עכשיו נוודא שהידע באמת יושב.</span></div></div>
                   <div className="masteryHeader"><strong>{masteryQuestions[0]?.topic}</strong><span>שאלה {masteryIndex + 1} / {masteryQuestions.length}</span></div>
