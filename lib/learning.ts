@@ -148,12 +148,12 @@ export function recommendedStartingIndex(results: DiagnosticResult[], curriculum
   if (!weakest || weakest.score >= 80) return 0;
 
   const topicMap: Partial<Record<DiagnosticSkill, string>> = {
-    "חיבור": "חיבור בסיסי",
-    "חיסור": "חיסור בסיסי",
+    "חיבור": "חיבור וחיסור במשוואות",
+    "חיסור": "חיבור וחיסור במשוואות",
     "כפל": "כפל במשוואות",
     "חילוק": "חילוק במשוואות",
     "נעלם": "מהו נעלם?",
-    "נוסחה": "נוסחאות",
+    "נוסחה": "נוסחאות בסיסיות",
   };
   const target = topicMap[weakest.skill];
   const index = curriculum.findIndex((exercise) => exercise.topic === target);
