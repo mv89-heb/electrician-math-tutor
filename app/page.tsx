@@ -8,12 +8,39 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
 function normalize(value: string) {
-  return value.trim().toLowerCase().replaceAll(" ", "").replaceAll("×", "*").replaceAll("÷", "/").replaceAll("²", "^2").replaceAll("−", "-").replace(/[.,!?]/g, "");
+  return value
+    .trim()
+    .toLowerCase()
+    .replaceAll(" ", "")
+    .replaceAll("×", "*")
+    .replaceAll("÷", "/")
+    .replaceAll("²", "^2")
+    .replaceAll("−", "-")
+    .replace(/(אמפר|amp|a|וולט|volt|v|וואט|w)$/i, "")
+    .replace(/[.,!?]/g, "");
 }
 
 function isCorrect(answer: string, exercise: Exercise) {
   const normalized = normalize(answer);
   return exercise.accepted.some((value) => normalize(value) === normalized);
+}
+
+function errorGuidance(exercise: Exercise, answer: string) {
+  const normalized = normalize(answer);
+
+  if (exercise.id.includes("zero-") && normalized.includes("-")) {
+    return "נראה שאולי הלכת לכיוון של חיסור. בוא נבדוק יחד מה הפעולה שמופיעה ליד X.";
+  }
+
+  if (exercise.topic === "כפל במשוואות" && normalized !== "") {
+    return "בתרגיל הזה X מוכפל במספר. חפש את הפעולה ההפוכה לכפל.";
+  }
+
+  if (exercise.topic === "חילוק במשוואות") {
+    return "כש-X מחולק ב־2, חשב איזו פעולה תחזיר אותנו למספר המקורי.";
+  }
+
+  return "זה לא התשובה הפעם — וזה בסדר. השתמש ברמז הראשון, ונסה שוב.";
 }
 
 export default function Home() {
@@ -114,7 +141,7 @@ export default function Home() {
                   <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה <ChevronLeft size={18} /></button>
                 </div>
 
-                {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><p>{hint === 1 ? exercise.hint1 : exercise.hint2}</p>{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
+                {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><p>{errorGuidance(exercise, answer)}</p><p>{hint === 1 ? exercise.hint1 : exercise.hint2}</p>{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
                 {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><p>{exercise.explanation}</p><button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>
