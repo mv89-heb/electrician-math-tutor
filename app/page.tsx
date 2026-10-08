@@ -9,6 +9,7 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
+import { stageForExercise, stageGateSatisfied, stageProgress } from "../lib/stages";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
@@ -141,7 +142,8 @@ export default function Home() {
     () => topics.map((topic) => ({ topic, mastery: topicMastery(learning.stats[topic]) })).sort((a, b) => a.mastery - b.mastery)[0],
     [learning.stats],
   );
-  const currentStage = Math.min(8, Math.floor((completedCount / Math.max(1, curriculum.length)) * 8) + 1);
+  const currentStage = stageForExercise(exercise).number;
+  const currentStageProgress = stageProgress(currentStage, learning, curriculum);
   const sparkyMood = feedback === "correct" ? "celebrate" : feedback === "wrong" ? "think" : "idle";
   const sparkyIcon = feedback === "correct" ? "🔋" : feedback === "wrong" ? "💡" : "⚡";
   const journeyLabels = ["יסודות", "פעולות", "X ומשוואות", "שברים וחזקות", "אלגברה", "מתמטיקה לחשמל", "תרגול חשמלאי", "100 🎯"];
@@ -209,6 +211,8 @@ export default function Home() {
       return;
     }
     const nextIndex = chooseNextExercise(curriculum, learning);
+    const nextExercise = curriculum[nextIndex] ?? curriculum[0];
+    if (nextExercise && nextExercise.topic !== exercise.topic && !stageGateSatisfied(stageForExercise(nextExercise).number, learning, curriculum)) return;
     const nextState = { ...learning, currentIndex: nextIndex };
     setLearning(nextState);
     setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
