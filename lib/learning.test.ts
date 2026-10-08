@@ -11,7 +11,7 @@ describe("active exercise resolution", () => {
     const updated = recordAttempt(initial, curriculum[0], true, false);
     expect(active.id).toBe("zero-1");
     expect(resolveExercise(curriculum, updated, 0).id).toBe("zero-1");
-    expect(active.prompt).toBe("איזה מספר נמצא במקום X?");
+    expect(active.prompt).toBe(curriculum[0].prompt);
   });
 
   it("resolves the new exercise only when navigation changes the index", () => {
