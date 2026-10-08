@@ -1,7 +1,28 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
 import { generateReinforcement } from "./exercise-generator";
-import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError } from "./learning";
+import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise } from "./learning";
+
+describe("active exercise resolution", () => {
+  it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
+    const initial = { ...emptyLearningState, currentIndex: 0 };
+    const active = resolveExercise(curriculum, initial, 0);
+    const updated = recordAttempt(initial, curriculum[0], true, false);
+    expect(active.id).toBe("zero-1");
+    expect(resolveExercise(curriculum, updated, 0).id).toBe("zero-1");
+    expect(active.prompt).toBe("איזה מספר נמצא במקום X?");
+  });
+
+  it("resolves the new exercise only when navigation changes the index", () => {
+    const state = { ...emptyLearningState, currentIndex: 0 };
+    const current = resolveExercise(curriculum, state, 0);
+    const next = resolveExercise(curriculum, { ...state, currentIndex: 1 }, 1);
+    expect(current.id).toBe("zero-1");
+    expect(next.id).toBe("zero-2");
+  });
+});
+
+
 
 describe("learning engine", () => {
   it("records correct answers and prevents duplicate completion", () => {
