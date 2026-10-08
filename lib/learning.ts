@@ -54,6 +54,7 @@ export type LearningState = {
   reviews: Record<string, ReviewCard>;
   errors: ErrorRecord[];
   masteryTests: Record<string, MasteryTestResult>;
+  finalExamPassed: boolean;
 };
 
 export const emptyLearningState: LearningState = {
@@ -68,6 +69,7 @@ export const emptyLearningState: LearningState = {
   reviews: {},
   errors: [],
   masteryTests: {},
+  finalExamPassed: false,
 };
 
 export function recordAttempt(
@@ -283,7 +285,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
     return {
       ...emptyLearningState,
       ...parsed,
-      version: 6,
+      version: 7,
       stats,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
