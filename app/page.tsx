@@ -9,7 +9,7 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
-import { stageForExercise, stageGateSatisfied, stageProgress } from "../lib/stages";
+import { stageForExercise, stageGateSatisfied, stageProgress, stageExercises } from "../lib/stages";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
 
@@ -98,6 +98,7 @@ export default function Home() {
   const [answer, setAnswer] = useState("");
   const [hint, setHint] = useState<1 | 2 | 0>(0);
   const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">("idle");
+  const [stageGateMessage, setStageGateMessage] = useState("");
   const [ready, setReady] = useState(false);
   const [activeExercise, setActiveExercise] = useState<Exercise>(firstExercise);
   const [diagnosticOpen, setDiagnosticOpen] = useState(false);
@@ -210,10 +211,22 @@ export default function Home() {
       openMasteryForTopic(exercise.topic);
       return;
     }
-    const nextIndex = chooseNextExercise(curriculum, learning);
+    let nextIndex = chooseNextExercise(curriculum, learning);
     const nextExercise = curriculum[nextIndex] ?? curriculum[0];
-    if (nextExercise && nextExercise.topic !== exercise.topic && !stageGateSatisfied(stageForExercise(nextExercise).number, learning, curriculum)) return;
+    if (nextExercise && nextExercise.topic !== exercise.topic && !stageGateSatisfied(stageForExercise(nextExercise).number, learning, curriculum)) {
+      const currentStage = stageForExercise(exercise);
+      const sameStage = stageExercises(currentStage, curriculum)
+        .map((item) => curriculum.findIndex((candidate) => candidate.id === item.id))
+        .find((index) => index >= 0 && !learning.completed.includes(curriculum[index].id));
+      if (sameStage !== undefined) {
+        nextIndex = sameStage;
+      } else {
+        setStageGateMessage("עוד צעד קטן לפני השלב הבא: ספארקי יחזק איתך את הנושא שעדיין לא יציב.");
+        return;
+      }
+    }
     const nextState = { ...learning, currentIndex: nextIndex };
+    setStageGateMessage("");
     setLearning(nextState);
     setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
     setAnswer(""); setHint(0); setFeedback("idle");
@@ -429,6 +442,7 @@ export default function Home() {
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
                 {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{learning.reviews[exercise.id] && <small>החזרה הבאה בנושא מתוזמנת אוטומטית — המערכת תביא אותו שוב כדי לוודא שהידע נשאר.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
+                {stageGateMessage && <div className="teacherTip"><Target size={18} /><span>{stageGateMessage}</span></div>}
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>
 
