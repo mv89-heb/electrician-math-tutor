@@ -110,41 +110,68 @@ export function generateExercise(topic: string, seed: number): GeneratedExercise
 }
 
 export function generateReinforcement(topic: string, seed: number, errorType?: "sign" | "operation" | "unknown" | "unit" | "arithmetic" | "concept"): GeneratedExercise | null {
-  const generated = generateExercise(topic, seed + 1);
-  if (!generated || !errorType) return generated;
+  if (!errorType) return generateExercise(topic, seed);
 
-  const targeted: Record<string, Partial<GeneratedExercise>> = {
+  const n = 2 + (seed % 6);
+  const targeted: Record<string, GeneratedExercise> = {
     sign: {
-      title: "חיזוק סימנים",
-      teachingNote: "הפעם אנחנו מתמקדים רק בסימן. קודם מזהים אם צריך להוסיף או להחסיר.",
-      hint1: "עצור רגע וקרא את הסימן שליד X.",
-      hint2: "אל תחשב עדיין. קודם קבע אם הפעולה היא חיבור או חיסור.",
+      id: `generated-${topic}-sign-${seed}`, topic, level: 0, title: "חיזוק סימנים",
+      teachingNote: "הפעם נתמקד רק בסימן. הסימן אומר לנו איזו פעולה לבצע.",
+      prompt: `X − ${n} = ${n + 2}. איזה מספר הוא X?`,
+      accepted: [String(n + 2 + n)],
+      hint1: "שים לב: כאן יש סימן חיסור.",
+      hint2: `כדי לבטל חיסור של ${n}, הוסף ${n} לתוצאה.`,
+      explanation: `נכון. ${n + 2} + ${n} = ${n + 2 + n}, ולכן X = ${n + 2 + n}.`, generated: true,
     },
     operation: {
-      title: "חיזוק הפעולה ההפוכה",
-      teachingNote: "המטרה היא לבחור את הפעולה שמחזירה אותנו צעד אחד אחורה.",
-      hint1: "איזו פעולה בוצעה על X?",
-      hint2: "כדי לבודד את X, השתמש בפעולה ההפוכה.",
+      id: `generated-${topic}-operation-${seed}`, topic, level: 0, title: "חיזוק הפעולה ההפוכה",
+      teachingNote: "כדי למצוא את X, נשתמש בפעולה ההפוכה לפעולה שנעשתה עליו.",
+      prompt: `${n} × X = ${n * 4}. איזה מספר הוא X?`,
+      accepted: ["4"],
+      hint1: "מה הפעולה שנעשתה על X?",
+      hint2: `כדי לבטל כפל ב־${n}, חלק את התוצאה ב־${n}.`,
+      explanation: `נכון. ${n * 4} ÷ ${n} = 4.`, generated: true,
     },
     arithmetic: {
-      title: "חיזוק דיוק בחישוב",
-      teachingNote: "הכיוון שלך חשוב. עכשיו נפתור לאט ובדיוק, בלי לדלג על שלבים.",
-      hint1: "חשב צעד אחד בכל פעם.",
-      hint2: "בדוק את התוצאה פעם נוספת לפני השליחה.",
+      id: `generated-${topic}-arithmetic-${seed}`, topic, level: 0, title: "חיזוק דיוק בחישוב",
+      teachingNote: "נפתור לאט, שלב אחד בכל פעם, ונבדוק את התוצאה לפני השליחה.",
+      prompt: `${n} + ${n + 3} = ?`,
+      accepted: [String(n + n + 3)],
+      hint1: "חבר את המספרים בלי לדלג על שלב.",
+      hint2: `התחל מ־${n} והוסף אליו ${n + 3}.`,
+      explanation: `נכון. ${n} + ${n + 3} = ${n + n + 3}.`, generated: true,
     },
     unit: {
-      title: "חיזוק יחידות",
-      teachingNote: "בחשמל המספר והיחידה צריכים להתאים זה לזה.",
-      hint1: "בדוק אם ביקשו מתח, זרם או הספק.",
-      hint2: "כתוב את הערך הנכון בלי להחליף בין יחידות.",
+      id: `generated-${topic}-unit-${seed}`, topic: "נוסחאות בסיסיות", level: 1, title: "חיזוק יחידות חשמל",
+      teachingNote: "בחשמל חשוב לזהות גם את הגודל וגם את היחידה שלו.",
+      prompt: "איזו יחידה מתאימה לזרם חשמלי: V, A או Ω?",
+      accepted: ["A", "a", "אמפר"],
+      hint1: "חשוב על האות I בחוק אוהם.",
+      hint2: "זרם נמדד באמפר.",
+      explanation: "נכון. זרם חשמלי נמדד באמפר, והסימון הוא A.",
+      generated: true,
     },
     concept: {
-      title: "חיזוק ההבנה",
-      teachingNote: "לפני החישוב, נסביר לעצמנו מה כל סימן מייצג.",
-      hint1: "מה בדיוק מבקשים למצוא?",
-      hint2: "סמן לעצמך מה ידוע ומה עדיין חסר.",
+      id: `generated-${topic}-concept-${seed}`, topic, level: 0, title: "חיזוק הבנת הנעלם",
+      teachingNote: "לפני החישוב נזהה מה ידוע ומה אנחנו מחפשים.",
+      prompt: "במשוואה X + 3 = 7, מהו הנעלם?",
+      accepted: ["X", "x"],
+      hint1: "איזה סימן מייצג את המספר שאנחנו עדיין לא יודעים?",
+      hint2: "חפש את האות שמייצגת את המספר החסר.",
+      explanation: "נכון. X הוא הנעלם שאנחנו רוצים למצוא.",
+      generated: true,
+    },
+    unknown: {
+      id: `generated-${topic}-unknown-${seed}`, topic, level: 0, title: "חיזוק מציאת הנעלם",
+      teachingNote: "נפרק את התרגיל לצעד אחד פשוט ונמצא את המספר החסר.",
+      prompt: `X + ${n} = ${n + 5}. איזה מספר הוא X?`,
+      accepted: ["5"],
+      hint1: "איזה מספר ועוד המספר שבצד נותן את התוצאה?",
+      hint2: `חשב ${n + 5} − ${n}.`,
+      explanation: "נכון. המספר שנשאר הוא 5.",
+      generated: true,
     },
   };
 
-  return { ...generated, ...targeted[errorType] };
+  return targeted[errorType] ?? generateExercise(topic, seed);
 }
