@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
-import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds } from "./learning";
+import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError } from "./learning";
 
 describe("learning engine", () => {
   it("records correct answers and prevents duplicate completion", () => {
@@ -54,12 +54,21 @@ describe("learning engine", () => {
     expect(chooseNextExercise(curriculum, state)).toBe(1);
   });
 
-  it("reinforces a weak topic before moving on when an unfinished exercise exists", () => {
+  it("keeps the student in the current topic until the mastery gate is passed", () => {
     let state = emptyLearningState;
-    state = recordAttempt(state, curriculum[0], false, false);
-    state = recordAttempt(state, curriculum[0], false, true);
-
+    state = recordAttempt(state, curriculum[0], true, false);
     expect(chooseNextExercise(curriculum, state)).toBe(1);
+    state = { ...state, currentIndex: 0 };
+    state = recordAttempt(state, curriculum[0], true, false);
+    state = { ...state, currentIndex: 0 };
+    state = recordAttempt(state, curriculum[0], true, false);
+    expect(chooseNextExercise(curriculum, state)).toBe(1);
+  });
+
+  it("does not let a wrong answer unlock the next topic", () => {
+    let state = emptyLearningState;
+    state = recordAttempt(state, curriculum[0], false, false, "arithmetic", "9");
+    expect(chooseNextExercise(curriculum, state)).toBe(0);
   });
   it("schedules spaced review after correct answers and quick review after mistakes", async () => {
     const { scheduleReview } = await import("./learning");
