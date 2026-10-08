@@ -7,10 +7,11 @@ describe("learning engine", () => {
     const first = recordAttempt(emptyLearningState, curriculum[0], true, false);
     const second = recordAttempt(first, curriculum[0], true, true);
 
-    expect(second.version).toBe(3);
+    expect(second.version).toBe(4);
     expect(second.completed).toEqual([curriculum[0].id]);
     expect(second.stats[curriculum[0].topic].correct).toBe(2);
     expect(second.stats[curriculum[0].topic].hints).toBe(1);
+    expect(second.stats[curriculum[0].topic].unassistedCorrect).toBe(1);
   });
 
   it("does not count generated reinforcement as curriculum completion", () => {
@@ -22,6 +23,12 @@ describe("learning engine", () => {
 
     expect(state.completed).toEqual([]);
     expect(state.stats[generated.topic].correct).toBe(1);
+  });
+
+  it("does not count a hinted correct answer as unassisted mastery", () => {
+    const state = recordAttempt(emptyLearningState, curriculum[0], true, true);
+    expect(state.stats[curriculum[0].topic].correct).toBe(1);
+    expect(state.stats[curriculum[0].topic].unassistedCorrect).toBe(0);
   });
 
   it("records mistakes and gives zero mastery after a first failed attempt", () => {
