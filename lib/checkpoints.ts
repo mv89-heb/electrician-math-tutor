@@ -9,8 +9,10 @@ export type CheckpointQuestion = {
   hint2: string;
 };
 
-export function buildCheckpoint(exercises: Exercise[], checkpointNumber: number): CheckpointQuestion[] {
-  const completed = exercises.filter((exercise) => exercise.level <= Math.max(1, checkpointNumber - 1));
+export function buildCheckpoint(exercises: Exercise[], checkpointNumber: number, completedIds?: string[]): CheckpointQuestion[] {
+  const completed = completedIds?.length
+    ? exercises.filter((exercise) => completedIds.includes(exercise.id))
+    : exercises.filter((exercise) => exercise.level <= Math.max(1, checkpointNumber - 1));
   const source = completed.length ? completed : exercises;
   return source.slice(0, 3).map((exercise, index) => ({
     id: `checkpoint-${checkpointNumber}-${index + 1}-${exercise.id}`,
