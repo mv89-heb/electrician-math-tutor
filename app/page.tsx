@@ -134,8 +134,15 @@ export default function Home() {
   const generated = useMemo(() => {
     const stats = learning.stats[baseExercise.topic];
     if (!shouldGenerateReinforcement(stats)) return null;
-    return generatedReinforcement(baseExercise.topic, learning.attempts + baseExercise.level + learning.completed.length);
-  }, [baseExercise, learning.attempts, learning.completed.length, learning.stats]);
+    const topicError = learning.errors
+      .filter((error) => error.topic === baseExercise.topic)
+      .sort((a, b) => b.count - a.count)[0];
+    return generatedReinforcement(
+      baseExercise.topic,
+      learning.attempts + baseExercise.level + learning.completed.length,
+      topicError?.type,
+    );
+  }, [baseExercise, learning.attempts, learning.completed.length, learning.stats, learning.errors]);
   const exercise = generated ?? baseExercise;
   const completedCount = learning.completed.length;
   const dueReviews = dueReviewIds(learning);
