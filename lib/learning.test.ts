@@ -283,9 +283,12 @@ describe("eight-stage progression", () => {
     expect(stageGateSatisfied(2, state, curriculum)).toBe(false);
 
     // Independent, unassisted practice establishes the required mastery.
-    for (const topic of ["מהו נעלם?", "חיבור וחיסור במשוואות"]) {
+    for (const [topic, unassistedAttempts] of [
+      ["מהו נעלם?", 8],
+      ["חיבור וחיסור במשוואות", 6],
+    ] as const) {
       const topicExercise = curriculum.find((item) => item.topic === topic)!;
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < unassistedAttempts; i++) {
         state = recordAttempt(state, topicExercise, true, false);
       }
     }
