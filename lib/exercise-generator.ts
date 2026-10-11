@@ -94,14 +94,31 @@ export function generateExercise(topic: string, seed: number): GeneratedExercise
   if (!pool.length) return null;
   const template = pool[seed % pool.length];
   const n = 2 + (seed % 7);
+  const variant = seed % 5;
+  let prompt = template.prompt(n);
+  let answer = template.answer(n);
+  if (topic === "מספרים עשרוניים") {
+    const decimalVariants = [
+      ["0.5 + 0.5", "1"], ["0.2 + 0.3", "0.5"], ["1.2 + 0.3", "1.5"], ["2.5 - 0.5", "2"], ["0.8 + 0.2", "1"],
+    ];
+    [prompt, answer] = [`מה הערך של ${decimalVariants[variant][0]}?`, decimalVariants[variant][1]];
+  } else if (topic === "אחוזים") {
+    const percentVariants = [[10,100,10],[20,100,20],[10,200,20],[25,200,50],[50,80,40]];
+    const [percent,total,result] = percentVariants[variant];
+    [prompt, answer] = [`כמה זה ${percent}% מתוך ${total}?`, String(result)];
+  } else if (topic === "חילוק במשוואות") {
+    const divisor = 2 + variant;
+    const result = 3 + (seed % 4);
+    [prompt, answer] = [`X ÷ ${divisor} = ${result}. איזה מספר הוא X?`, String(divisor * result)];
+  }
   return {
     id: `generated-${topic}-${seed}`,
     topic: template.topic,
     level: template.level,
     title: template.title,
     teachingNote: template.teachingNote,
-    prompt: template.prompt(n),
-    accepted: [template.answer(n)],
+    prompt,
+    accepted: [answer],
     hint1: template.hint1,
     hint2: template.hint2,
     explanation: template.explanation,
