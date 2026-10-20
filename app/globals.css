@@ -810,3 +810,15 @@ body{color:var(--ink)}
   .guidedChoiceList { grid-template-columns: 1fr; }
   .guidedSolution { padding: .85rem; }
 }
+
+/* Cleaner guided lesson hierarchy */
+.guidedSolution{margin:1rem 0;padding:1.1rem;border:1px solid #d8e2f0;border-radius:16px;background:#fff;box-shadow:0 4px 16px rgba(24,45,80,.04)}
+.guidedSolutionHeader{align-items:center}
+.guidedStepTitle{margin-bottom:.45rem}
+.guidedChoiceList{grid-template-columns:1fr;gap:.55rem}
+.guidedChoice{text-align:right;min-height:50px;font-size:15px}
+.freeformToggle{display:flex;width:100%;align-items:center;justify-content:space-between;gap:1rem;margin:1rem 0;padding:14px 16px;border:1px solid #d8e2f0;border-radius:12px;background:#f7f9fd;color:#24334d;font:inherit;font-weight:750;cursor:pointer}
+.finalAnswerPanel{margin-top:1rem;padding:1rem;border:1px solid #d8e2f0;border-radius:14px;background:#f8faff}
+.finalAnswerPanel>label{display:block;margin-bottom:.55rem;font-weight:800}
+.solutionMethodField{margin-top:.5rem;padding:1rem;border:1px solid #e0e7f1;border-radius:14px;background:#fbfcff;display:grid;gap:.8rem}
+@media(max-width:600px){.guidedSolution{padding:.85rem}.finalAnswerPanel{padding:.85rem}}
