@@ -8,7 +8,7 @@ export const learningStages: LearningStage[] = [
   { number: 2, label: "פעולות", topics: ["כפל במשוואות", "חילוק במשוואות", "סדר פעולות"] },
   { number: 3, label: "X ומשוואות", topics: ["משוואות פשוטות"] },
   { number: 4, label: "שברים וחזקות", topics: ["שברים", "חזקות", "מספרים עשרוניים", "אחוזים"] },
-  { number: 5, label: "אלגברה", topics: ["נוסחאות בסיסיות", "שינוי נושא נוסחה"] },
+  { number: 5, label: "אלגברה וגאומטריה", topics: ["נוסחאות בסיסיות", "שינוי נושא נוסחה", "גאומטריה ומידות"] },
   { number: 6, label: "מתמטיקה לחשמל", topics: ["חשמל — חוק אוהם"] },
   { number: 7, label: "תרגול חשמלאי", topics: ["חשמל — הספק"] },
   { number: 8, label: "100 🎯", topics: [] },

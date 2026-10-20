@@ -332,3 +332,24 @@ describe("final 100 exam", () => {
     expect(recordFinalExam(passed, false).finalExamPassed).toBe(true);
   });
 });
+
+
+describe("expanded beginner curriculum coverage", () => {
+  it("covers fraction reduction, fraction operations, geometry, diameter, units and formula rearrangement", () => {
+    const ids = new Set(curriculum.map((exercise) => exercise.id));
+    for (const id of [
+      "fraction-reduce-1", "fraction-reduce-2", "fraction-add-same-1",
+      "fraction-sub-same-1", "fraction-common-1", "fraction-multiply-1",
+      "fraction-divide-1", "geometry-area-rectangle-1", "geometry-diameter-1",
+      "geometry-radius-1", "geometry-area-circle-1", "formula-subject-1",
+      "formula-subject-2", "units-mm-cm-1", "units-cm-m-1",
+      "electrical-ohm-sub-1", "electrical-power-sub-1", "electrical-units-1"
+    ]) expect(ids.has(id), `missing curriculum exercise: ${id}`).toBe(true);
+  });
+
+  it("includes geometry in the learning stage gates", async () => {
+    const { learningStages } = await import("./stages");
+    expect(learningStages.some((stage) => stage.topics.includes("גאומטריה ומידות"))).toBe(true);
+    expect(learningStages.some((stage) => stage.topics.includes("שברים"))).toBe(true);
+  });
+});

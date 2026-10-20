@@ -10,7 +10,7 @@ export type FinalExamQuestion = {
 
 const finalExamIds = [
   "zero-2c","zero-4c","zero-5c","zero-6b","zero-7b","zero-8c",
-  "fraction-3","power-2","decimal-2","percent-2","formula-3","ohm-2","power-2"
+  "fraction-3","fraction-reduce-1","fraction-common-1","fraction-sub-same-1","geometry-area-rectangle-1","geometry-diameter-1","geometry-radius-1","formula-3","formula-subject-1","decimal-2","percent-2","ohm-2","electrical-power-sub-1","power-2"
 ];
 
 export const FINAL_EXAM_TOTAL = 12;
