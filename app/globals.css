@@ -667,3 +667,9 @@ body{color:var(--ink)}
 .labEquation b:first-child{background:#dbeafe}.labEquation b:last-child{background:#dcfce7;border-color:#86efac;color:#166534}
 .labSingle{margin-bottom:12px}
 @media(max-width:560px){.interactiveLab{padding:13px}.labControls{grid-template-columns:1fr}.labAnswer{align-items:flex-start;flex-direction:column}.labAnswer strong{font-size:16px}}
+
+
+.fractionLabBar{display:flex;gap:4px;max-width:420px;margin:12px auto;direction:ltr}
+.fractionLabBar span{height:38px;flex:1;min-width:8px;border:1px solid #b8c8df;border-radius:5px;background:#fff}
+.fractionLabBar span.isFilled{background:#3b82f6;border-color:#2563eb}
+.labCorrect{background:#dcfce7;border-color:#86efac}.labCorrect small,.labCorrect strong{color:#166534}
