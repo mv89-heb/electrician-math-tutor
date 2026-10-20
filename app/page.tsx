@@ -704,14 +704,6 @@ export default function Home() {
                 <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
-                <label htmlFor="answer">התשובה הסופית שלך</label>
-                <div className="answerRow">
-                  <input id="answer" dir="ltr" autoComplete="off" value={answer}
-                    onChange={(event) => { setAnswer(event.target.value); setFeedback("idle"); }}
-                    onKeyDown={(event) => event.key === "Enter" && check()}
-                    placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
-                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
-                </div>
                 <section className="guidedSolution" aria-label="פתרון מודרך לפי שלבים">
                   <div className="guidedSolutionHeader">
                     <div><strong>נפתור יחד, לפי הסדר</strong><span>בחר אפשרות בכל שלב. אחרי בחירה נכונה ייפתח השלב הבא.</span></div>
@@ -732,6 +724,16 @@ export default function Home() {
                     </div>
                   ) : null}
                 </section>
+                <div className="finalAnswerPanel">
+                <label htmlFor="answer">התשובה הסופית שלך</label>
+                <div className="answerRow">
+                  <input id="answer" dir="ltr" autoComplete="off" value={answer}
+                    onChange={(event) => { setAnswer(event.target.value); setFeedback("idle"); }}
+                    onKeyDown={(event) => event.key === "Enter" && check()}
+                    placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
+                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
+                </div>
+                </div>
                 <div className="solutionMethodField">
                   <div className="solutionBuilderHeading">
                     <label htmlFor="solution-method">רוצה גם לכתוב את הדרך במילים שלך?</label>
