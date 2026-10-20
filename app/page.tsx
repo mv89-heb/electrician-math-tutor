@@ -133,7 +133,6 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     methodExplanation = "חזקה שנייה פירושה כפל של המספר בעצמו.";
   }
 
-  const hintOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
   let nextStepQuestion = "מהו הצעד הבא בדרך לפתרון?";
   let nextStepCorrect = exercise.hint1;
   let nextStepOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
