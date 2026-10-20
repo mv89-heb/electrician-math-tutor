@@ -23,19 +23,19 @@ function isCorrect(answer: string, exercise: Exercise) {
 }
 
 function MathPrompt({ prompt }: { prompt: string }) {
-  const expressionPattern = /(?:[A-Za-z0-9]+\\s*)?(?:[=+\\-−×÷*/]\\s*[A-Za-z0-9]+(?:\\s*[=+\\-−×÷*/]\\s*[A-Za-z0-9]+)*)/g;
+  const normalizedPrompt = prompt.replace(/\\n/g, "\n"); const expressionPattern = /(?:[A-Za-z0-9]+\s*)?(?:[=+\-−×÷*/]\s*[A-Za-z0-9]+(?:\s*[=+\-−×÷*/]\s*[A-Za-z0-9]+)*)/g;
   const parts: Array<{ type: "text" | "math"; value: string }> = [];
   let lastIndex = 0;
 
-  for (const match of prompt.matchAll(expressionPattern)) {
+  for (const match of normalizedPrompt.matchAll(expressionPattern)) {
     const index = match.index ?? 0;
-    if (index > lastIndex) parts.push({ type: "text", value: prompt.slice(lastIndex, index) });
+    if (index > lastIndex) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex, index) });
     parts.push({ type: "math", value: match[0].trim() });
     lastIndex = index + match[0].length;
   }
 
-  if (lastIndex < prompt.length) parts.push({ type: "text", value: prompt.slice(lastIndex) });
-  if (!parts.some((part) => part.type === "math")) return <div className="promptText">{prompt}</div>;
+  if (lastIndex < prompt.length) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex) });
+  if (!parts.some((part) => part.type === "math")) return <div className="promptText">{normalizedPrompt.split("\n").map((line, index) => <span className="promptParagraph" key={index}>{line}</span>)}</div>;
 
   return (
     <div className="promptStack">
@@ -461,7 +461,7 @@ export default function Home() {
             {checkpointFeedback === "correct" ? (
               <button className="primary diagnosticSubmit" onClick={nextCheckpoint}>המשך <ChevronLeft size={18} /></button>
             ) : (
-              <button className="primary diagnosticSubmit" onClick={submitCheckpoint} disabled={!checkpointAnswer.trim()}>בדוק תשובה <ChevronLeft size={18} /></button>
+              <button className="primary diagnosticSubmit" onClick={submitCheckpoint} disabled={!checkpointAnswer.trim()}>בדוק תשובה</button>
             )}
             {checkpointFeedback === "wrong" && <p className="checkpointHint">{checkpointQuestions[checkpointIndex].hint1}</p>}
           </div>
