@@ -356,7 +356,7 @@ export default function Home() {
     setStageGateMessage("");
     setLearning(nextState);
     setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
-    setAnswer(""); setHint(0); setFeedback("idle");
+    setAnswer(""); setSolutionMethod(""); setHint(0); setFeedback("idle");
   }
 
   function submitCheckpoint() {
