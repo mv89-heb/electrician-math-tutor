@@ -246,7 +246,7 @@ export const curriculum: Exercise[] = [
     next:"formula-1"
   },
   {
-    id:"power-2", topic:"חזקות", level:1, title:"חזקה של 4",
+    id:"power-square-4", topic:"חזקות", level:1, title:"חזקה של 4",
     teachingNote:"חזקה 2 פירושה כפל של המספר בעצמו.",
     prompt:"מה הערך של 4²?", accepted:["16"],
     hint1:"4² פירושו 4 × 4.", hint2:"חשב 4 כפול 4.",
@@ -449,14 +449,14 @@ export const curriculum: Exercise[] = [
     id:"formula-subject-1", topic:"שינוי נושא נוסחה", level:2, title:"מבודדים משתנה בחילוק",
     teachingNote:"כדי לבודד משתנה, מבצעים פעולה הפוכה בשני אגפי המשוואה ושומרים על שוויון.",
     prompt:"במשוואה A = B × C, כיצד נבודד את C כאשר B אינו אפס? כתוב נוסחה.",
-    accepted:["A/B","A÷B","A / B"], hint1:"C מוכפל ב־B. הפעולה ההפוכה היא חילוק.", hint2:"חלק את שני אגפי המשוואה ב־B.",
+    accepted:["A/B","A÷B","A / B","C=A/B","C = A/B"], hint1:"C מוכפל ב־B. הפעולה ההפוכה היא חילוק.", hint2:"חלק את שני אגפי המשוואה ב־B.",
     explanation:"מחלקים את שני האגפים ב־B ומקבלים C = A/B."
   },
   {
     id:"formula-subject-2", topic:"שינוי נושא נוסחה", level:2, title:"מבודדים משתנה בנוסחת שטח",
     teachingNote:"אם שטח מלבן A שווה לאורך L כפול רוחב W, אפשר למצוא את הרוחב על ידי חלוקת השטח באורך.",
     prompt:"A = L × W. בידוד W נותן איזו נוסחה?",
-    accepted:["A/L","A÷L","A / L"], hint1:"W מוכפל ב־L.", hint2:"חלק את שני הצדדים ב־L.",
+    accepted:["A/L","A÷L","A / L","W=A/L","W = A/L"], hint1:"W מוכפל ב־L.", hint2:"חלק את שני הצדדים ב־L.",
     explanation:"W = A/L, כאשר L אינו אפס."
   },
   {
