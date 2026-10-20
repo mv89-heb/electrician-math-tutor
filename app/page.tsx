@@ -134,6 +134,21 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
   }
 
   const hintOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
+  let nextStepQuestion = "מהו הצעד הבא בדרך לפתרון?";
+  let nextStepCorrect = exercise.hint1;
+  let nextStepOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
+  let nextStepExplanation = exercise.hint1;
+  const sameDenominatorAddition = prompt.match(/(\\d+)\\s*\\/\\s*(\\d+)\\s*\\+\\s*(\\d+)\\s*\\/\\s*(\\d+)/);
+  if (sameDenominatorAddition && sameDenominatorAddition[2] === sameDenominatorAddition[4]) {
+    const numeratorA = Number(sameDenominatorAddition[1]);
+    const denominator = Number(sameDenominatorAddition[2]);
+    const numeratorB = Number(sameDenominatorAddition[3]);
+    const step = `(${numeratorA} + ${numeratorB}) / ${denominator} = ${numeratorA + numeratorB} / ${denominator}`;
+    nextStepQuestion = "איך כותבים את החיבור כשיש לשני השברים אותו מכנה?";
+    nextStepCorrect = step;
+    nextStepOptions = [step, `${numeratorA + numeratorB} / ${denominator + 1}`, `${numeratorA} / ${denominator + numeratorB}`];
+    nextStepExplanation = "מחברים את המונים ומשאירים את המכנה כפי שהוא.";
+  }
   const accepted = exercise.accepted[0] ?? "";
   const answerOptions = [accepted];
   const normalizedAccepted = accepted.trim().toLowerCase();
@@ -145,7 +160,7 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
 
   return [
     { title: "שלב 1 מתוך 3 — בחירת דרך", question: firstQuestion, options: methodOptions, correct: correctMethod, explanation: methodExplanation },
-    { title: "שלב 2 מתוך 3 — הצעד הבא", question: "איזה כיוון יעזור לך להתקדם בחישוב?", options: hintOptions, correct: exercise.hint1, explanation: exercise.hint1 },
+    { title: "שלב 2 מתוך 3 — כותבים את הצעד", question: nextStepQuestion, options: nextStepOptions, correct: nextStepCorrect, explanation: nextStepExplanation },
     { title: "שלב 3 מתוך 3 — בחירת תשובה", question: "מהי התשובה לתרגיל?", options: answerOptions, correct: accepted, explanation: exercise.explanation },
   ];
 }
@@ -215,7 +230,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const [width, setWidth] = useState(3);
   const [x, setX] = useState(4);
   const isElectrical = /ohm|power|חשמל/i.test(exercise.id + " " + exercise.topic);
-  const isFraction = exercise.id.includes("fraction");
+  const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
   const isBeginner = exercise.id.startsWith("zero-");
   if (!isElectrical && !isArea && !isBeginner && !isFraction) return null;
