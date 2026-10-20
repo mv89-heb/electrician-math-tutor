@@ -333,8 +333,8 @@ export default function Home() {
       setGuidedFeedback("complete");
       return;
     }
-    setGuidedFeedback("correct");
     setGuidedStepIndex((step) => step + 1);
+    setGuidedFeedback("idle");
   }
   const generated = exercise.id.startsWith("generated-") ? exercise : null;
   const completedCount = learning.completed.length;
