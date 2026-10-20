@@ -179,6 +179,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
 export default function Home() {
   const [learning, setLearning] = useState<LearningState>(emptyLearningState);
   const [answer, setAnswer] = useState("");
+  const [solutionMethod, setSolutionMethod] = useState("");
   const [hint, setHint] = useState<1 | 2 | 0>(0);
   const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">("idle");
   const [stageGateMessage, setStageGateMessage] = useState("");
@@ -289,7 +290,7 @@ export default function Home() {
       setMasteryOpen(false);
       setLearning(nextState);
       setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
-      setAnswer(""); setHint(0); setFeedback("idle");
+      setAnswer(""); setSolutionMethod(""); setHint(0); setFeedback("idle");
     } else {
       setMasteryOpen(false); setMasteryIndex(0); setMasteryAnswer(""); setMasteryFeedback("idle");
     }
@@ -355,7 +356,7 @@ export default function Home() {
     setStageGateMessage("");
     setLearning(nextState);
     setActiveExercise(resolveExercise(curriculum, nextState, nextIndex));
-    setAnswer(""); setHint(0); setFeedback("idle");
+    setAnswer(""); setSolutionMethod(""); setHint(0); setFeedback("idle");
   }
 
   function submitCheckpoint() {
@@ -400,7 +401,7 @@ export default function Home() {
   }
 
   function reset() {
-    setLearning(emptyLearningState); setActiveExercise(firstExercise); setAnswer(""); setHint(0); setFeedback("idle");
+    setLearning(emptyLearningState); setActiveExercise(firstExercise); setAnswer(""); setSolutionMethod(""); setHint(0); setFeedback("idle");
     setDiagnosticOpen(false); setDiagnosticIndex(0); setDiagnosticAnswer(""); setDiagnosticDone(false);
     setDiagnosticAttempts(0); setDiagnosticFeedback("idle");
     setCheckpointOpen(false); setCheckpointQuestions([]); setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0); setCheckpointMessage("");
@@ -590,13 +591,21 @@ export default function Home() {
                 <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
-                <label htmlFor="answer">התשובה שלך</label>
+                <label htmlFor="answer">התשובה הסופית שלך</label>
                 <div className="answerRow">
                   <input id="answer" dir="ltr" autoComplete="off" value={answer}
                     onChange={(event) => { setAnswer(event.target.value); setFeedback("idle"); }}
                     onKeyDown={(event) => event.key === "Enter" && check()}
                     placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
                   <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
+                </div>
+                <div className="solutionMethodField">
+                  <label htmlFor="solution-method">הדרך לפתרון — אפשר לכתוב כל שלב בנפרד</label>
+                  <textarea id="solution-method" dir="auto" rows={3} value={solutionMethod}
+                    onChange={(event) => setSolutionMethod(event.target.value)}
+                    placeholder={"לדוגמה:\n1. בוחר את הפעולה ההפוכה\n2. מציב את המספרים\n3. מחשב ובודק"}
+                    aria-describedby="solution-method-help" />
+                  <small id="solution-method-help">השדה אופציונלי. אפשר לכתוב חישובים, נוסחה או הסבר במילים. בדיקת התשובה בודקת כרגע את התוצאה הסופית, ולא נותנת ציון אוטומטי לדרך שכתבת.</small>
                 </div>
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
