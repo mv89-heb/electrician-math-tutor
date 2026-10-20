@@ -140,13 +140,18 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const [length, setLength] = useState(5);
   const [width, setWidth] = useState(3);
   const [x, setX] = useState(4);
-  const isElectrical = /ohm|power|חשמל/i.test(exercise.id + " " + exercise.topic);\n  const isFraction = exercise.id.includes("fraction");
+  const isElectrical = /ohm|power|חשמל/i.test(exercise.id + " " + exercise.topic);
+  const isFraction = exercise.id.includes("fraction");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
   const isBeginner = exercise.id.startsWith("zero-");
   if (!isElectrical && !isArea && !isBeginner && !isFraction) return null;
   return <section className="interactiveLab" aria-label="מעבדת למידה אינטראקטיבית">
     <div className="labTitle"><span>{isElectrical ? "⚡" : isArea ? "📐" : isFraction ? "🧩" : "⚖️"}</span><div><strong>{isElectrical ? "מעבדת חוק אוהם" : isArea ? "מעבדת שטח" : isFraction ? "מעבדת שברים" : "מאזני הנעלם"}</strong><small>שנו את הערכים וראו מיד מה משתנה</small></div></div>
-    {isFraction ? <>\n      <div className="fractionLabBar" dir="ltr">{Array.from({length:b},(_,i)=><span key={i} className={i<a?"isFilled":""}/>)}</div>\n      <div className="labControls"><label>מונה — החלקים הצבועים <b>{Math.min(a,b)}</b><input aria-label="מונה השבר" type="range" min="1" max={b} value={Math.min(a,b)} onChange={e=>setA(Number(e.target.value))}/></label><label>מכנה — כל החלקים <b>{b}</b><input aria-label="מכנה השבר" type="range" min="2" max="12" value={b} onChange={e=>{const next=Number(e.target.value);setB(next);setA(Math.min(next,a))}}/></label></div>\n      <div className="labAnswer"><small>השבר שמוצג</small><strong>{Math.min(a,b)} / {b}</strong></div><p>כדי לצמצם שבר, מחלקים את המונה והמכנה באותו מספר. החלק של השלם נשאר שווה.</p>\n    </> : isElectrical ? <>
+    {isFraction ? <>
+      <div className="fractionLabBar" dir="ltr">{Array.from({length:b},(_,i)=><span key={i} className={i<a?"isFilled":""}/>)}</div>
+      <div className="labControls"><label>מונה — החלקים הצבועים <b>{Math.min(a,b)}</b><input aria-label="מונה השבר" type="range" min="1" max={b} value={Math.min(a,b)} onChange={e=>setA(Number(e.target.value))}/></label><label>מכנה — כל החלקים <b>{b}</b><input aria-label="מכנה השבר" type="range" min="2" max="12" value={b} onChange={e=>{const next=Number(e.target.value);setB(next);setA(Math.min(next,a))}}/></label></div>
+      <div className="labAnswer"><small>השבר שמוצג</small><strong>{Math.min(a,b)} / {b}</strong></div><p>כדי לצמצם שבר, מחלקים את המונה והמכנה באותו מספר. החלק של השלם נשאר שווה.</p>
+    </> : isElectrical ? <>
       <div className="labFormula" dir="ltr"><b>V = I × R</b></div>
       <div className="labControls">
         <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
@@ -580,7 +585,8 @@ export default function Home() {
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
                 <LessonVisual exercise={exercise} />
-                <InteractiveLab exercise={exercise} />\n                <ElectricalMiniSimulator topic={exercise.topic} />
+                <InteractiveLab exercise={exercise} />
+                <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
