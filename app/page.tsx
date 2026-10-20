@@ -169,8 +169,8 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
     </> : <>
       <div className="labEquation" dir="ltr"><b>{x}</b><span>+</span><b>3</b><span>=</span><b>7</b></div>
       <label className="labSingle">שנו את הנעלם x <b>{x}</b><input aria-label="ערך הנעלם" type="range" min="0" max="7" value={x} onChange={e=>setX(Number(e.target.value))}/></label>
-      <div className="labAnswer"><small>המשוואה נשארת מאוזנת</small><strong>{x} + {7-x} = 7</strong></div>
-      <p>שני הצדדים שווים, כמו שני צדדים של מאזניים.</p>
+      <div className={"labAnswer " + (x === 4 ? "labCorrect" : "")}><small>{x === 4 ? "מצוין — מצאתם את הפתרון" : "נסו למצוא מספר שמשלים ל־7"}</small><strong>{x} + 3 {x + 3 === 7 ? "=" : "≠"} 7</strong></div>
+      <p>כדי למצוא את x, חשבו 7 פחות 3. הפתרון הוא 4, כי 4 + 3 = 7.</p>
     </>}
   </section>;
 }
