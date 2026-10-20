@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
@@ -180,6 +180,22 @@ export default function Home() {
   const [learning, setLearning] = useState<LearningState>(emptyLearningState);
   const [answer, setAnswer] = useState("");
   const [solutionMethod, setSolutionMethod] = useState("");
+  const solutionTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  function insertSolutionText(text: string) {
+    const field = solutionTextareaRef.current;
+    const start = field?.selectionStart ?? solutionMethod.length;
+    const end = field?.selectionEnd ?? solutionMethod.length;
+    const next = solutionMethod.slice(0, start) + text + solutionMethod.slice(end);
+    setSolutionMethod(next);
+    requestAnimationFrame(() => {
+      const textarea = solutionTextareaRef.current;
+      if (!textarea) return;
+      textarea.focus();
+      const caret = start + text.length;
+      textarea.setSelectionRange(caret, caret);
+    });
+  }
   const [hint, setHint] = useState<1 | 2 | 0>(0);
   const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">("idle");
   const [stageGateMessage, setStageGateMessage] = useState("");
@@ -612,7 +628,7 @@ export default function Home() {
                       { label: "4. בדיקה", value: "בדיקה: " },
                     ].map((step) => (
                       <button key={step.label} type="button" className="solutionStepButton"
-                        onClick={() => setSolutionMethod((current) => current + (current && !current.endsWith("\n") ? "\n" : "") + step.value)}>
+                        onMouseDown={(event) => event.preventDefault()} onClick={() => insertSolutionText((solutionMethod && !solutionMethod.endsWith("\n") ? "\n" : "") + step.value)}>
                         {step.label}
                       </button>
                     ))}
@@ -633,16 +649,21 @@ export default function Home() {
                       { label: "Ω אוהם", value: "Ω" },
                     ].map((symbol) => (
                       <button key={symbol.label} type="button" className="solutionSymbolButton"
-                        onClick={() => setSolutionMethod((current) => current + symbol.value)}>
+                        onMouseDown={(event) => event.preventDefault()} onClick={() => insertSolutionText(symbol.value)}>
                         {symbol.label}
                       </button>
                     ))}
                   </div>
-                  <textarea id="solution-method" dir="auto" rows={4} value={solutionMethod}
+                  <textarea ref={solutionTextareaRef} id="solution-method" dir="auto" rows={5} value={solutionMethod}
                     onChange={(event) => setSolutionMethod(event.target.value)}
                     placeholder={"לדוגמה:\nנוסחה: U = R × I\nהצבה: U = 6 × 2\nחישוב: U = 12 V"}
                     aria-describedby="solution-method-help" />
-                  <small id="solution-method-help">הכפתורים מוסיפים שלבים וסימנים לטקסט. אפשר גם להקליד בחופשיות. כרגע המערכת בודקת את התשובה הסופית בלבד, ולא מדרגת אוטומטית את דרך הפתרון.</small>
+                  <div className="solutionWritingTips" id="solution-method-help">
+                    <strong>אפשר לכתוב ממש במילים שלך</strong>
+                    <span>למשל: „חילקתי את המתח בהתנגדות, ולכן הזרם הוא 2 אמפר”. לא חייבים להשתמש בנוסחה או בסימנים.</span>
+                    <span>טיפ: אפשר ללחוץ בתוך הטקסט ולהוסיף סימן במקום שבו הסמן נמצא. אפשר גם לסמן חלק מהטקסט ולהחליף אותו.</span>
+                    <small>בדיקת התרגיל בודקת כרגע את התשובה הסופית בלבד, ולא מדרגת אוטומטית את דרך הפתרון.</small>
+                  </div>
                 </div>
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
