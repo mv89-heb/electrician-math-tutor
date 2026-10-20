@@ -137,7 +137,7 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
   let nextStepCorrect = exercise.hint1;
   let nextStepOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
   let nextStepExplanation = exercise.hint1;
-  const sameDenominatorAddition = prompt.match(/(\\d+)\\s*\\/\\s*(\\d+)\\s*\\+\\s*(\\d+)\\s*\\/\\s*(\\d+)/);
+  const sameDenominatorAddition = prompt.match(/(\d+)\s*\/\s*(\d+)\s*\+\s*(\d+)\s*\/\s*(\d+)/);
   if (sameDenominatorAddition && sameDenominatorAddition[2] === sameDenominatorAddition[4]) {
     const numeratorA = Number(sameDenominatorAddition[1]);
     const denominator = Number(sameDenominatorAddition[2]);
