@@ -346,6 +346,8 @@ export default function Home() {
       return;
     }
     if (guidedStepIndex === guidedSolutionSteps.length - 1) {
+      setAnswer(option);
+      setFeedback("idle");
       setGuidedFeedback("complete");
       return;
     }
