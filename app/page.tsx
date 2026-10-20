@@ -244,12 +244,12 @@ export default function Home() {
 
   useEffect(() => {
     if (!ready || diagnosticOpen || checkpointOpen) return;
-    if (shouldRunCheckpoint(learning.completed.length, learning.checkpointsCompleted)) {
+    if (shouldRunCheckpoint(learning.completed.length, learning.checkpointsCompleted, learning.errors.reduce((sum, error) => sum + error.count, 0))) {
       const number = Math.floor(learning.completed.length / 5);
       setCheckpointQuestions(buildCheckpoint(curriculum, number, learning.completed));
       setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0); setCheckpointMessage(""); setCheckpointOpen(true);
     }
-  }, [ready, diagnosticOpen, checkpointOpen, learning.completed.length, learning.checkpointsCompleted]);
+  }, [ready, diagnosticOpen, checkpointOpen, learning.completed.length, learning.checkpointsCompleted, learning.errors]);
 
   function check() {
     if (!answer.trim() || feedback === "correct") return;
@@ -600,7 +600,7 @@ export default function Home() {
                 </div>
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
-                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{learning.reviews[exercise.id] && <small>החזרה הבאה בנושא מתוזמנת אוטומטית — המערכת תביא אותו שוב כדי לוודא שהידע נשאר.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
+                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{(learning.reviews[exercise.id]?.lapses ?? 0) >= 2 && <small>היו כמה טעויות בנושא הזה, אז נחזור אליו בקצרה בהמשך.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
                 {stageGateMessage && <div className="teacherTip"><Target size={18} /><span>{stageGateMessage}</span></div>}
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>
