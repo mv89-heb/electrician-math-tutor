@@ -72,6 +72,40 @@ export const emptyLearningState: LearningState = {
   finalExamPassed: false,
 };
 
+const OPTIONAL_PRACTICE: Record<string, string[]> = {
+  "zero-2": ["zero-2b", "zero-2c"],
+  "zero-3": ["zero-3b"],
+  "zero-4": ["zero-4b", "zero-4c"],
+  "zero-5": ["zero-5b", "zero-5c"],
+  "zero-6": ["zero-6b"],
+  "zero-7": ["zero-7b"],
+  "zero-8": ["zero-8b"],
+  "fraction-1": ["fraction-3"],
+  "power-0": ["power-1b", "power-square-4"],
+  "decimal-1": ["decimal-2"],
+  "formula-1": ["formula-1b"],
+  "fraction-reduce-1": ["fraction-reduce-2"],
+  "power-1": ["power-2"],
+};
+
+const CORE_LEARNING_ORDER = [
+  "zero-1", "zero-2", "zero-3", "zero-4", "zero-5", "zero-6", "zero-7", "zero-8", "zero-8c",
+  "fraction-1", "fraction-2", "fraction-reduce-1", "fraction-add-same-1", "fraction-sub-same-1",
+  "fraction-common-1", "fraction-multiply-1", "fraction-divide-1", "power-0", "decimal-1",
+  "percent-1", "percent-2", "formula-1", "formula-2", "formula-3", "formula-subject-1",
+  "formula-subject-2", "geometry-area-rectangle-1", "geometry-area-square-1", "geometry-diameter-1",
+  "geometry-radius-1", "geometry-area-circle-1", "units-mm-cm-1", "units-cm-m-1", "ohm-1", "ohm-2",
+  "electrical-ohm-sub-1", "electrical-units-1", "power-1", "electrical-power-sub-1",
+];
+
+function orderedExercises(curriculum: Exercise[]): Exercise[] {
+  const rank = new Map(CORE_LEARNING_ORDER.map((id, index) => [id, index]));
+  return [...curriculum].sort((a, b) =>
+    (rank.get(a.id) ?? CORE_LEARNING_ORDER.length + curriculum.indexOf(a)) -
+    (rank.get(b.id) ?? CORE_LEARNING_ORDER.length + curriculum.indexOf(b))
+  );
+}
+
 export function recordAttempt(
   state: LearningState,
   exercise: Exercise,
@@ -83,9 +117,10 @@ export function recordAttempt(
   const previous = state.stats[exercise.topic] ?? { attempts: 0, correct: 0, hints: 0, streak: 0, unassistedCorrect: 0 };
   const nextStreak = correct ? previous.streak + 1 : 0;
   const isCurriculumExercise = !exercise.id.startsWith("generated-");
-  const completed = correct && isCurriculumExercise && !state.completed.includes(exercise.id)
-    ? [...state.completed, exercise.id]
-    : state.completed;
+  const newlyCompleted = correct && isCurriculumExercise
+    ? [exercise.id, ...(!usedHint ? (OPTIONAL_PRACTICE[exercise.id] ?? []) : [])]
+    : [];
+  const completed = [...new Set([...state.completed, ...newlyCompleted])];
   const mistakes = !correct && isCurriculumExercise && !state.mistakes.includes(exercise.id)
     ? [...state.mistakes, exercise.id]
     : state.mistakes;
@@ -161,7 +196,7 @@ export function scheduleReview(card: ReviewCard | undefined, correct: boolean, u
 
 export function dueReviewIds(state: LearningState, now = Date.now()): string[] {
   return Object.entries(state.reviews)
-    .filter(([id, card]) => !id.startsWith("generated-") && card.dueAt <= now)
+    .filter(([id, card]) => !id.startsWith("generated-") && card.lapses >= 2 && card.dueAt <= now)
     .sort((a, b) => a[1].dueAt - b[1].dueAt)
     .map(([id]) => id);
 }
@@ -171,10 +206,8 @@ export function shouldGenerateReinforcement(stats?: TopicStats): boolean {
 }
 
 export function topicMasteryGate(stats?: TopicStats): boolean {
-  if (!stats || stats.attempts < 3) return false;
-  const accuracy = stats.correct / stats.attempts;
-  const unassisted = stats.unassistedCorrect / stats.attempts;
-  return accuracy >= 0.8 && unassisted >= 0.65 && stats.streak >= 2;
+  // One independent correct answer is enough to move on; repeated errors, not extra drills, trigger review.
+  return !!stats && stats.unassistedCorrect >= 1 && stats.streak >= 1;
 }
 
 export function topicNeedsRemediation(stats?: TopicStats): boolean {
@@ -218,6 +251,7 @@ function firstIncomplete(curriculum: Exercise[], state: LearningState) {
 }
 
 export function chooseNextExercise(curriculum: Exercise[], state: LearningState): number {
+  const ordered = orderedExercises(curriculum);
   const due = dueReviewIds(state);
   const dueExercise = due
     .map((id) => curriculum.findIndex((exercise) => exercise.id === id))
@@ -226,41 +260,28 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
 
   const current = curriculum[state.currentIndex] ?? curriculum[0];
   if (!current) return 0;
-
+  const currentRank = ordered.findIndex((exercise) => exercise.id === current.id);
   const currentStats = state.stats[current.topic];
+
   if (!topicMasteryGate(currentStats)) {
-    const sameTopicUnfinished = curriculum
-      .map((exercise, index) => ({ exercise, index }))
-      .find(({ exercise }) => exercise.topic === current.topic && !state.completed.includes(exercise.id));
-    if (sameTopicUnfinished) return sameTopicUnfinished.index;
+    const sameTopicUnfinished = ordered.find((exercise) =>
+      exercise.topic === current.topic && !state.completed.includes(exercise.id)
+    );
+    if (sameTopicUnfinished) return curriculum.findIndex((exercise) => exercise.id === sameTopicUnfinished.id);
 
-    const topicErrors = state.errors
+    const topicErrorCount = state.errors
       .filter((error) => error.topic === current.topic)
-      .sort((a, b) => b.count - a.count);
-    if (topicErrors.length) return state.currentIndex;
-
-    const sameTopic = curriculum.findIndex((exercise) => exercise.topic === current.topic);
-    if (sameTopic >= 0) return sameTopic;
+      .reduce((sum, error) => sum + error.count, 0);
+    if (topicErrorCount >= 3) return state.currentIndex;
   }
 
-  const weakErrorTopic = state.errors
-    .filter((error) => error.count >= 2)
-    .map((error) => error.topic)
-    .find((topic) => curriculum.some((exercise) => exercise.topic === topic && !state.completed.includes(exercise.id)));
-  if (weakErrorTopic) {
-    const targeted = curriculum.findIndex((exercise) => exercise.topic === weakErrorTopic && !state.completed.includes(exercise.id));
-    if (targeted >= 0) return targeted;
-  }
+  const next = ordered
+    .slice(Math.max(0, currentRank + 1))
+    .find((exercise) => !state.completed.includes(exercise.id));
+  if (next) return curriculum.findIndex((exercise) => exercise.id === next.id);
 
-  const next = curriculum
-    .map((exercise, index) => ({ exercise, index }))
-    .find(({ exercise, index }) => index > state.currentIndex && !state.completed.includes(exercise.id));
-  if (next) return next.index;
-
-  const first = curriculum.findIndex((exercise) => !state.completed.includes(exercise.id));
-  if (first >= 0) return first;
-
-  return 0;
+  const first = ordered.find((exercise) => !state.completed.includes(exercise.id));
+  return first ? curriculum.findIndex((exercise) => exercise.id === first.id) : 0;
 }
 
 export function loadLearningState(storage: Storage | null): LearningState {
@@ -349,7 +370,8 @@ export function weakestDiagnosticSkills(results: DiagnosticResult[]): Diagnostic
 
 export function canStartMasteryTest(topic: string, state: LearningState, exercises?: Exercise[]): boolean {
   const hasEnoughQuestions = exercises ? new Set(exercises.filter((exercise) => exercise.topic === topic).map((exercise) => exercise.id)).size >= 3 : true;
-  return hasEnoughQuestions && topicMasteryGate(state.stats[topic]) && !state.masteryTests[topic]?.passed;
+  const repeatedErrors = state.errors.filter((error) => error.topic === topic).reduce((sum, error) => sum + error.count, 0);
+  return hasEnoughQuestions && repeatedErrors >= 3 && topicNeedsRemediation(state.stats[topic]) && !state.masteryTests[topic]?.passed;
 }
 
 export function recordMasteryTest(state: LearningState, topic: string, score: number, requiredCorrect = 3): LearningState {
