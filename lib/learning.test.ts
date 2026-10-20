@@ -51,13 +51,9 @@ describe("learning engine", () => {
     expect(state.stats[generated.topic].correct).toBe(1);
   });
 
-  it("requires repeated independent success for a mastery gate", async () => {
+  it("moves on after one independent correct answer", async () => {
     const { topicMasteryGate } = await import("./learning");
-    let state = emptyLearningState;
-    state = recordAttempt(state, curriculum[0], true, false);
-    state = recordAttempt(state, curriculum[0], true, false);
-    expect(topicMasteryGate(state.stats[curriculum[0].topic])).toBe(false);
-    state = recordAttempt(state, curriculum[0], true, false);
+    const state = recordAttempt(emptyLearningState, curriculum[0], true, false);
     expect(topicMasteryGate(state.stats[curriculum[0].topic])).toBe(true);
   });
 
@@ -146,14 +142,13 @@ describe("adaptive diagnostic scoring", () => {
 
 
 describe("topic mastery tests", () => {
-  it("requires a mastered topic before opening its mastery test", async () => {
+  it("does not open a long mastery test unless the topic has repeated errors", async () => {
     const { canStartMasteryTest } = await import("./learning");
     let state = emptyLearningState;
-    expect(canStartMasteryTest(curriculum[0].topic, state)).toBe(false);
-    state = recordAttempt(state, curriculum[0], true, false);
-    state = recordAttempt(state, curriculum[0], true, false);
-    state = recordAttempt(state, curriculum[0], true, false);
-    expect(canStartMasteryTest(curriculum[0].topic, state)).toBe(true);
+    for (let i = 0; i < 4; i++) state = recordAttempt(state, curriculum[0], true, false);
+    expect(canStartMasteryTest(curriculum[0].topic, state, curriculum)).toBe(false);
+    for (let i = 0; i < 3; i++) state = recordAttempt(state, curriculum[0], false, false, "arithmetic", "9");
+    expect(canStartMasteryTest(curriculum[0].topic, state, curriculum)).toBe(true);
   });
 
   it("requires 3 out of 3 for foundational topic mastery", async () => {
@@ -253,6 +248,14 @@ describe("checkpoint integrity", () => {
     expect(checkpointPasses(2)).toBe(true);
     expect(checkpointPasses(3)).toBe(true);
   });
+
+  it("runs checkpoints only when a learner has made several mistakes", async () => {
+    const { shouldRunCheckpoint } = await import("./checkpoints");
+    expect(shouldRunCheckpoint(10, [])).toBe(false);
+    expect(shouldRunCheckpoint(10, [], 2)).toBe(false);
+    expect(shouldRunCheckpoint(10, [], 3)).toBe(true);
+    expect(shouldRunCheckpoint(15, [], 4)).toBe(false);
+  });
 });
 
 describe("learning flow integrity", () => {
@@ -335,8 +338,10 @@ describe("final 100 exam", () => {
 
 
 describe("expanded beginner curriculum coverage", () => {
-  it("covers fraction reduction, fraction operations, geometry, diameter, units and formula rearrangement", () => {
-    const ids = new Set(curriculum.map((exercise) => exercise.id));
+  it("has unique exercise IDs and covers fraction reduction, geometry, units and formula rearrangement", () => {
+    const idsList = curriculum.map((exercise) => exercise.id);
+    expect(new Set(idsList).size).toBe(idsList.length);
+    const ids = new Set(idsList);
     for (const id of [
       "fraction-reduce-1", "fraction-reduce-2", "fraction-add-same-1",
       "fraction-sub-same-1", "fraction-common-1", "fraction-multiply-1",
@@ -351,5 +356,37 @@ describe("expanded beginner curriculum coverage", () => {
     const { learningStages } = await import("./stages");
     expect(learningStages.some((stage) => stage.topics.includes("גאומטריה ומידות"))).toBe(true);
     expect(learningStages.some((stage) => stage.topics.includes("שברים"))).toBe(true);
+  });
+});
+
+
+describe("adaptive short learning path", () => {
+  it("marks redundant examples complete after an independent correct answer", () => {
+    const core = curriculum.find((exercise) => exercise.id === "zero-2")!;
+    const state = recordAttempt(emptyLearningState, core, true, false);
+    expect(state.completed).toContain("zero-2");
+    expect(state.completed).toContain("zero-2b");
+    expect(state.completed).toContain("zero-2c");
+  });
+
+  it("does not skip optional practice when the answer needed a hint", () => {
+    const core = curriculum.find((exercise) => exercise.id === "zero-2")!;
+    const state = recordAttempt(emptyLearningState, core, true, true);
+    expect(state.completed).toEqual(["zero-2"]);
+    expect(state.completed).not.toContain("zero-2b");
+  });
+
+  it("does not schedule a quick repeat after a single mistake", async () => {
+    const { dueReviewIds } = await import("./learning");
+    const failed = recordAttempt(emptyLearningState, curriculum[0], false, false, "arithmetic", "9");
+    expect(dueReviewIds(failed, Date.now() + 60 * 60 * 1000)).toEqual([]);
+  });
+
+  it("prioritizes a coherent beginner-to-electrical sequence", () => {
+    let state = recordAttempt(emptyLearningState, curriculum.find((item) => item.id === "zero-1")!, true, false);
+    expect(curriculum[chooseNextExercise(curriculum, state)].id).toBe("zero-2");
+    state = { ...state, currentIndex: curriculum.findIndex((item) => item.id === "zero-2") };
+    state = recordAttempt(state, curriculum.find((item) => item.id === "zero-2")!, true, false);
+    expect(curriculum[chooseNextExercise(curriculum, state)].id).toBe("zero-3");
   });
 });

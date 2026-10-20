@@ -30,8 +30,9 @@ export function checkpointPasses(correctCount: number, requiredCorrect = 2): boo
   return correctCount >= requiredCorrect;
 }
 
-export function shouldRunCheckpoint(completedCount: number, completedCheckpoints: number[]): boolean {
-  if (completedCount < 5) return false;
-  const checkpointNumber = Math.floor(completedCount / 5);
-  return !completedCheckpoints.includes(checkpointNumber);
+export function shouldRunCheckpoint(completedCount: number, completedCheckpoints: number[], errorCount = 0): boolean {
+  // Checkpoints are for struggling learners, not an automatic quiz every few questions.
+  if (completedCount < 10 || errorCount < 3) return false;
+  const checkpointNumber = Math.floor(completedCount / 10);
+  return completedCount % 10 === 0 && !completedCheckpoints.includes(checkpointNumber);
 }

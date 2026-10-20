@@ -23,19 +23,20 @@ function isCorrect(answer: string, exercise: Exercise) {
 }
 
 function MathPrompt({ prompt }: { prompt: string }) {
-  const expressionPattern = /(?:[A-Za-z0-9]+\\s*)?(?:[=+\\-−×÷*/]\\s*[A-Za-z0-9]+(?:\\s*[=+\\-−×÷*/]\\s*[A-Za-z0-9]+)*)/g;
+  const normalizedPrompt = prompt.replace(/\\n/g, "\n");
+  const expressionPattern = /(?:[A-Za-z0-9]+\s*)?(?:[=+\-−×÷*/]\s*[A-Za-z0-9]+(?:\s*[=+\-−×÷*/]\s*[A-Za-z0-9]+)*)/g;
   const parts: Array<{ type: "text" | "math"; value: string }> = [];
   let lastIndex = 0;
 
-  for (const match of prompt.matchAll(expressionPattern)) {
+  for (const match of normalizedPrompt.matchAll(expressionPattern)) {
     const index = match.index ?? 0;
-    if (index > lastIndex) parts.push({ type: "text", value: prompt.slice(lastIndex, index) });
+    if (index > lastIndex) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex, index) });
     parts.push({ type: "math", value: match[0].trim() });
     lastIndex = index + match[0].length;
   }
 
-  if (lastIndex < prompt.length) parts.push({ type: "text", value: prompt.slice(lastIndex) });
-  if (!parts.some((part) => part.type === "math")) return <div className="promptText">{prompt}</div>;
+  if (lastIndex < normalizedPrompt.length) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex) });
+  if (!parts.some((part) => part.type === "math")) return <div className="promptText">{normalizedPrompt.split("\n").map((line, index) => <span className="promptParagraph" key={index}>{line}</span>)}</div>;
 
   return (
     <div className="promptStack">
@@ -133,6 +134,48 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
   </div>;
 }
 
+
+function InteractiveLab({ exercise }: { exercise: Exercise }) {
+  const [a, setA] = useState(12);
+  const [b, setB] = useState(6);
+  const [length, setLength] = useState(5);
+  const [width, setWidth] = useState(3);
+  const [x, setX] = useState(4);
+  const isElectrical = /ohm|power|חשמל/i.test(exercise.id + " " + exercise.topic);
+  const isFraction = exercise.id.includes("fraction");
+  const isArea = /area-rectangle|area-square/i.test(exercise.id);
+  const isBeginner = exercise.id.startsWith("zero-");
+  if (!isElectrical && !isArea && !isBeginner && !isFraction) return null;
+  return <section className="interactiveLab" aria-label="מעבדת למידה אינטראקטיבית">
+    <div className="labTitle"><span>{isElectrical ? "⚡" : isArea ? "📐" : isFraction ? "🧩" : "⚖️"}</span><div><strong>{isElectrical ? "מעבדת חוק אוהם" : isArea ? "מעבדת שטח" : isFraction ? "מעבדת שברים" : "מאזני הנעלם"}</strong><small>שנו את הערכים וראו מיד מה משתנה</small></div></div>
+    {isFraction ? <>
+      <div className="fractionLabBar" dir="ltr">{Array.from({length:b},(_,i)=><span key={i} className={i<a?"isFilled":""}/>)}</div>
+      <div className="labControls"><label>מונה — החלקים הצבועים <b>{Math.min(a,b)}</b><input aria-label="מונה השבר" type="range" min="1" max={b} value={Math.min(a,b)} onChange={e=>setA(Number(e.target.value))}/></label><label>מכנה — כל החלקים <b>{b}</b><input aria-label="מכנה השבר" type="range" min="2" max="12" value={b} onChange={e=>{const next=Number(e.target.value);setB(next);setA(Math.min(next,a))}}/></label></div>
+      <div className="labAnswer"><small>השבר שמוצג</small><strong>{Math.min(a,b)} / {b}</strong></div><p>כדי לצמצם שבר, מחלקים את המונה והמכנה באותו מספר. החלק של השלם נשאר שווה.</p>
+    </> : isElectrical ? <>
+      <div className="labFormula" dir="ltr"><b>V = I × R</b></div>
+      <div className="labControls">
+        <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
+        <label>התנגדות (אוהם) <b>{b} Ω</b><input aria-label="התנגדות" type="range" min="1" max="12" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+      </div>
+      <div className="labAnswer"><small>הזרם = מתח ÷ התנגדות</small><strong>{a} ÷ {b} = {(a/b).toFixed(2)} אמפר</strong></div>
+      <p>נסו להגדיל את המתח, ואז את ההתנגדות. מתי הזרם גדל ומתי הוא קטן?</p>
+    </> : isArea ? <>
+      <div className="labShape"><div style={{width:`${length*8}%`,height:`${width*13}px`}}><span>{length} × {width}</span></div></div>
+      <div className="labControls">
+        <label>אורך <b>{length}</b><input aria-label="אורך" type="range" min="2" max="8" value={length} onChange={e=>setLength(Number(e.target.value))}/></label>
+        <label>רוחב <b>{width}</b><input aria-label="רוחב" type="range" min="1" max="5" value={width} onChange={e=>setWidth(Number(e.target.value))}/></label>
+      </div>
+      <div className="labAnswer"><small>שטח = אורך × רוחב</small><strong>{length} × {width} = {length*width} יחידות²</strong></div>
+    </> : <>
+      <div className="labEquation" dir="ltr"><b>{x}</b><span>+</span><b>3</b><span>=</span><b>7</b></div>
+      <label className="labSingle">שנו את הנעלם x <b>{x}</b><input aria-label="ערך הנעלם" type="range" min="0" max="7" value={x} onChange={e=>setX(Number(e.target.value))}/></label>
+      <div className={"labAnswer " + (x === 4 ? "labCorrect" : "")}><small>{x === 4 ? "מצוין — מצאתם את הפתרון" : "נסו למצוא מספר שמשלים ל־7"}</small><strong>{x} + 3 {x + 3 === 7 ? "=" : "≠"} 7</strong></div>
+      <p>כדי למצוא את x, חשבו 7 פחות 3. הפתרון הוא 4, כי 4 + 3 = 7.</p>
+    </>}
+  </section>;
+}
+
 export default function Home() {
   const [learning, setLearning] = useState<LearningState>(emptyLearningState);
   const [answer, setAnswer] = useState("");
@@ -201,12 +244,12 @@ export default function Home() {
 
   useEffect(() => {
     if (!ready || diagnosticOpen || checkpointOpen) return;
-    if (shouldRunCheckpoint(learning.completed.length, learning.checkpointsCompleted)) {
+    if (shouldRunCheckpoint(learning.completed.length, learning.checkpointsCompleted, learning.errors.reduce((sum, error) => sum + error.count, 0))) {
       const number = Math.floor(learning.completed.length / 5);
       setCheckpointQuestions(buildCheckpoint(curriculum, number, learning.completed));
       setCheckpointIndex(0); setCheckpointAnswer(""); setCheckpointFeedback("idle"); setCheckpointAttempts(0); setCheckpointCorrectCount(0); setCheckpointMessage(""); setCheckpointOpen(true);
     }
-  }, [ready, diagnosticOpen, checkpointOpen, learning.completed.length, learning.checkpointsCompleted]);
+  }, [ready, diagnosticOpen, checkpointOpen, learning.completed.length, learning.checkpointsCompleted, learning.errors]);
 
   function check() {
     if (!answer.trim() || feedback === "correct") return;
@@ -419,7 +462,7 @@ export default function Home() {
             {checkpointFeedback === "correct" ? (
               <button className="primary diagnosticSubmit" onClick={nextCheckpoint}>המשך <ChevronLeft size={18} /></button>
             ) : (
-              <button className="primary diagnosticSubmit" onClick={submitCheckpoint} disabled={!checkpointAnswer.trim()}>בדוק תשובה <ChevronLeft size={18} /></button>
+              <button className="primary diagnosticSubmit" onClick={submitCheckpoint} disabled={!checkpointAnswer.trim()}>בדוק תשובה</button>
             )}
             {checkpointFeedback === "wrong" && <p className="checkpointHint">{checkpointQuestions[checkpointIndex].hint1}</p>}
           </div>
@@ -542,7 +585,9 @@ export default function Home() {
               <div key={exercise.id} className="panel exerciseCard exerciseEnter">
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
-                <LessonVisual exercise={exercise} />\n                <ElectricalMiniSimulator topic={exercise.topic} />
+                <LessonVisual exercise={exercise} />
+                <InteractiveLab exercise={exercise} />
+                <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
@@ -551,11 +596,11 @@ export default function Home() {
                     onChange={(event) => { setAnswer(event.target.value); setFeedback("idle"); }}
                     onKeyDown={(event) => event.key === "Enter" && check()}
                     placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
-                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה <ChevronLeft size={18} /></button>
+                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
                 </div>
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
-                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{learning.reviews[exercise.id] && <small>החזרה הבאה בנושא מתוזמנת אוטומטית — המערכת תביא אותו שוב כדי לוודא שהידע נשאר.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
+                {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{(learning.reviews[exercise.id]?.lapses ?? 0) >= 2 && <small>היו כמה טעויות בנושא הזה, אז נחזור אליו בקצרה בהמשך.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
                 {stageGateMessage && <div className="teacherTip"><Target size={18} /><span>{stageGateMessage}</span></div>}
                 {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
               </div>

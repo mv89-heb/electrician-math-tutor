@@ -35,10 +35,8 @@ export function stageGateSatisfied(stageNumber: number, state: LearningState, cu
       const allCompleted = exercises.every((exercise) => state.completed.includes(exercise.id));
       const topicsReady = stage.topics.every((topic) => {
         const stats = state.stats[topic];
-        if (!stats || stats.attempts < 3) return false;
-        return stats.correct / stats.attempts >= 0.8 &&
-          stats.unassistedCorrect / stats.attempts >= 0.65 &&
-          stats.streak >= 2;
+        // Do not force three repeated attempts when the learner already answered independently.
+        return !!stats && stats.unassistedCorrect >= 1 && stats.streak >= 1;
       });
       return allCompleted && topicsReady;
     });

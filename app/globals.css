@@ -646,3 +646,35 @@ body{color:var(--ink)}
 .stepVisual b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#dbeafe;color:#1d4ed8}
 .stepVisual>i{font-style:normal;color:#94a3b8;font-size:18px}
 @media(max-width:600px){.startFromBasics{font-size:0;padding:9px}.startFromBasics svg{margin:0}.learningVisual{padding:13px}.visualHeading strong{font-size:14px}.fractionVisual{align-items:flex-start;flex-direction:column}.fractionBar{width:100%;max-width:none}.formulaChip{width:48px;height:46px}.formulaVisual{gap:8px}.formulaLegend{justify-content:flex-start}}
+
+
+/* Interactive learning labs */
+.interactiveLab{margin:0 0 18px;padding:17px;border:1px solid #bfdbfe;border-radius:17px;background:linear-gradient(145deg,#f0f7ff,#fff);direction:rtl}
+.labTitle{display:flex;align-items:center;gap:10px;margin-bottom:14px}.labTitle>span{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#dbeafe;font-size:22px}.labTitle div{display:flex;flex-direction:column;gap:3px}.labTitle strong{font-size:15px;color:#172033}.labTitle small{font-size:12px;color:#64748b}
+.labFormula{text-align:center;padding:8px;font-size:25px;font-weight:900;color:#1d4ed8;letter-spacing:2px}
+.labControls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0}
+.labControls label,.labSingle{display:flex;flex-direction:column;gap:8px;padding:11px;border-radius:12px;background:#fff;border:1px solid #dbeafe;font-size:13px;color:#475569}
+.labControls label b,.labSingle b{color:#1d4ed8;font-size:16px}
+.labControls input[type=range],.labSingle input[type=range]{width:100%;accent-color:#2563eb;cursor:pointer}
+.labAnswer{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:13px 15px;border-radius:13px;background:#e0f2fe;border:1px solid #bae6fd}
+.labAnswer small{color:#075985;font-size:12px}.labAnswer strong{color:#0c4a6e;font-size:18px}
+.interactiveLab>p{margin:10px 0 0;color:#64748b;font-size:12px;line-height:1.6}
+.labShape{min-height:105px;display:flex;align-items:center;justify-content:center;padding:12px;overflow:hidden}
+.labShape>div{min-width:60px;max-width:90%;display:grid;place-items:center;background:#dbeafe;border:2px solid #2563eb;border-radius:5px;color:#1e40af;font-weight:800;transition:width .15s,height .15s}
+.labShape span{font-size:12px}
+.labEquation{display:flex;justify-content:center;align-items:center;gap:12px;padding:14px;font-size:22px}
+.labEquation b{display:grid;place-items:center;min-width:44px;height:44px;padding:0 8px;border-radius:12px;background:#fff;border:2px solid #bfdbfe;color:#1d4ed8}
+.labEquation b:first-child{background:#dbeafe}.labEquation b:last-child{background:#dcfce7;border-color:#86efac;color:#166534}
+.labSingle{margin-bottom:12px}
+@media(max-width:560px){.interactiveLab{padding:13px}.labControls{grid-template-columns:1fr}.labAnswer{align-items:flex-start;flex-direction:column}.labAnswer strong{font-size:16px}}
+
+
+.fractionLabBar{display:flex;gap:4px;max-width:420px;margin:12px auto;direction:ltr}
+.fractionLabBar span{height:38px;flex:1;min-width:8px;border:1px solid #b8c8df;border-radius:5px;background:#fff}
+.fractionLabBar span.isFilled{background:#3b82f6;border-color:#2563eb}
+.labCorrect{background:#dcfce7;border-color:#86efac}.labCorrect small,.labCorrect strong{color:#166534}
+
+
+/* Keep prompt line breaks readable in Hebrew RTL lessons */
+.promptParagraph{display:block;min-height:1.45em}
+.promptStack .mathLine{direction:ltr;unicode-bidi:isolate;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:.02em}
