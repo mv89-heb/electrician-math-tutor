@@ -162,7 +162,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
       </div>
       <div className="labAnswer"><small>שטח = אורך × רוחב</small><strong>{length} × {width} = {length*width} יחידות²</strong></div>
     </> : <>
-      <div className="labEquation" dir="ltr"><b>x</b><span>+</span><b>{7-x}</b><span>=</span><b>7</b></div>
+      <div className="labEquation" dir="ltr"><b>{x}</b><span>+</span><b>3</b><span>=</span><b>7</b></div>
       <label className="labSingle">שנו את הנעלם x <b>{x}</b><input aria-label="ערך הנעלם" type="range" min="0" max="7" value={x} onChange={e=>setX(Number(e.target.value))}/></label>
       <div className="labAnswer"><small>המשוואה נשארת מאוזנת</small><strong>{x} + {7-x} = 7</strong></div>
       <p>שני הצדדים שווים, כמו שני צדדים של מאזניים.</p>
