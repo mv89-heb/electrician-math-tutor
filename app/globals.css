@@ -678,3 +678,12 @@ body{color:var(--ink)}
 /* Keep prompt line breaks readable in Hebrew RTL lessons */
 .promptParagraph{display:block;min-height:1.45em}
 .promptStack .mathLine{direction:ltr;unicode-bidi:isolate;text-align:center;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+
+
+/* Learner-entered solution work */
+.solutionMethodField{display:grid;gap:7px;margin:13px 0 17px;padding:13px;border:1px solid #dbe5f3;border-radius:13px;background:#f8faff;direction:rtl}
+.solutionMethodField label{font-size:13px;font-weight:800;color:#26344d}
+.solutionMethodField textarea{display:block;width:100%;min-height:86px;resize:vertical;padding:11px 12px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:#172033;font:inherit;font-size:14px;line-height:1.6;outline:none}
+.solutionMethodField textarea:focus{border-color:#4f7fdb;box-shadow:0 0 0 3px rgba(79,127,219,.14)}
+.solutionMethodField textarea::placeholder{color:#98a2b3;white-space:pre-line}
+.solutionMethodField small{font-size:11px;line-height:1.6;color:#667085}
