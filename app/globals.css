@@ -743,3 +743,70 @@ body{color:var(--ink)}
   box-shadow:0 0 0 3px rgba(55,111,209,.16);
 }
 
+
+
+/* Guided solution: ordered, selectable steps */
+.guidedSolution {
+  margin: 1.25rem 0;
+  padding: 1rem;
+  border: 1px solid var(--border, #dbe3ee);
+  border-radius: 1rem;
+  background: var(--panel, #fff);
+}
+.guidedSolutionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.guidedSolutionHeader > div { display: grid; gap: .35rem; }
+.guidedSolutionHeader strong { font-size: 1.05rem; }
+.guidedSolutionHeader span { color: var(--muted, #64748b); font-size: .9rem; }
+.guidedProgress {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: .25rem .65rem;
+  background: #e8f1ff;
+  color: #1d4ed8 !important;
+  font-weight: 800;
+}
+.guidedProgressTrack {
+  height: 6px;
+  margin: .85rem 0 1rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e8edf4;
+}
+.guidedProgressTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #2563eb;
+  transition: width .2s ease;
+}
+.guidedStepTitle { font-size: .86rem; font-weight: 800; color: #2563eb; }
+.guidedStep > p { margin: .45rem 0 .85rem; font-weight: 700; }
+.guidedChoiceList { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+.guidedChoice {
+  min-height: 48px;
+  padding: .75rem .9rem;
+  border: 1px solid #cbd5e1;
+  border-radius: .75rem;
+  background: #fff;
+  color: #172033;
+  text-align: right;
+  line-height: 1.55;
+  cursor: pointer;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+}
+.guidedChoice:hover { border-color: #2563eb; background: #eff6ff; }
+.guidedChoice:focus-visible { outline: 3px solid #93c5fd; outline-offset: 2px; }
+.guidedChoiceFeedback { margin-top: .8rem; padding: .7rem .8rem; border-radius: .65rem; font-size: .92rem; }
+.guidedChoiceFeedback.wrong { background: #fff1f2; color: #9f1239; }
+.guidedChoiceFeedback.success { background: #ecfdf5; color: #065f46; }
+.guidedComplete { display: flex; gap: .7rem; align-items: flex-start; color: #065f46; }
+.guidedComplete p { margin: .35rem 0 .75rem; color: var(--text, #172033); line-height: 1.65; }
+@media (max-width: 600px) {
+  .guidedChoiceList { grid-template-columns: 1fr; }
+  .guidedSolution { padding: .85rem; }
+}
