@@ -23,7 +23,8 @@ function isCorrect(answer: string, exercise: Exercise) {
 }
 
 function MathPrompt({ prompt }: { prompt: string }) {
-  const normalizedPrompt = prompt.replace(/\\n/g, "\n"); const expressionPattern = /(?:[A-Za-z0-9]+\s*)?(?:[=+\-−×÷*/]\s*[A-Za-z0-9]+(?:\s*[=+\-−×÷*/]\s*[A-Za-z0-9]+)*)/g;
+  const normalizedPrompt = prompt.replace(/\\n/g, "\n");
+  const expressionPattern = /(?:[A-Za-z0-9]+\s*)?(?:[=+\-−×÷*/]\s*[A-Za-z0-9]+(?:\s*[=+\-−×÷*/]\s*[A-Za-z0-9]+)*)/g;
   const parts: Array<{ type: "text" | "math"; value: string }> = [];
   let lastIndex = 0;
 
@@ -34,7 +35,7 @@ function MathPrompt({ prompt }: { prompt: string }) {
     lastIndex = index + match[0].length;
   }
 
-  if (lastIndex < prompt.length) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex) });
+  if (lastIndex < normalizedPrompt.length) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex) });
   if (!parts.some((part) => part.type === "math")) return <div className="promptText">{normalizedPrompt.split("\n").map((line, index) => <span className="promptParagraph" key={index}>{line}</span>)}</div>;
 
   return (
@@ -595,7 +596,7 @@ export default function Home() {
                     onChange={(event) => { setAnswer(event.target.value); setFeedback("idle"); }}
                     onKeyDown={(event) => event.key === "Enter" && check()}
                     placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
-                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה <ChevronLeft size={18} /></button>
+                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
                 </div>
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
