@@ -607,9 +607,9 @@ export default function Home() {
                   <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
                     {[
                       { label: "1. הנוסחה", value: "נוסחה: " },
-                      { label: "2. הצבת מספרים", value: "\nהצבה: " },
-                      { label: "3. החישוב", value: "\nחישוב: " },
-                      { label: "4. בדיקה", value: "\nבדיקה: " },
+                      { label: "2. הצבת מספרים", value: "הצבה: " },
+                      { label: "3. החישוב", value: "חישוב: " },
+                      { label: "4. בדיקה", value: "בדיקה: " },
                     ].map((step) => (
                       <button key={step.label} type="button" className="solutionStepButton"
                         onClick={() => setSolutionMethod((current) => current + (current && !current.endsWith("\n") ? "\n" : "") + step.value)}>
