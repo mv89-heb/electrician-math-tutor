@@ -687,3 +687,26 @@ body{color:var(--ink)}
 .solutionMethodField textarea:focus{border-color:#4f7fdb;box-shadow:0 0 0 3px rgba(79,127,219,.14)}
 .solutionMethodField textarea::placeholder{color:#98a2b3;white-space:pre-line}
 .solutionMethodField small{font-size:11px;line-height:1.6;color:#667085}
+
+/* Guided, keyboard-light solution builder */
+.solutionBuilderHeading{display:flex;flex-direction:column;gap:3px}
+.solutionBuilderHeading>span{font-size:11px;font-weight:500;color:#667085}
+.solutionStepButtons,.solutionSymbols{display:flex;flex-wrap:wrap;gap:7px}
+.solutionStepButton,.solutionSymbolButton{
+  border:1px solid #d4deef;border-radius:9px;background:#fff;color:#24334d;
+  padding:8px 11px;font:inherit;font-size:12px;font-weight:750;cursor:pointer;
+  transition:background .15s,border-color .15s,transform .15s;
+}
+.solutionStepButton{background:#eaf1ff;border-color:#c9d9fa;color:#1d4ed8}
+.solutionStepButton:hover,.solutionSymbolButton:hover{background:#eef4ff;border-color:#7da0ea}
+.solutionStepButton:active,.solutionSymbolButton:active{transform:translateY(1px)}
+.solutionStepButton:focus-visible,.solutionSymbolButton:focus-visible{outline:3px solid rgba(37,99,235,.25);outline-offset:2px}
+.solutionSymbols{padding:9px;border:1px solid #e3eaf5;border-radius:10px;background:#f2f6fc}
+.solutionSymbolButton{padding:7px 9px;font-size:12px;min-height:34px}
+@media(max-width:600px){
+  .solutionStepButtons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .solutionStepButton{width:100%}
+  .solutionSymbols{gap:6px}
+  .solutionSymbolButton{flex:1 0 auto}
+}
+
