@@ -77,6 +77,79 @@ function ElectricalBridge({ topic }: { topic: string }) {
   return <div className="electricalBridge"><Zap size={18} /><span><strong>חיבור לחשמל</strong>{text}</span></div>;
 }
 
+type GuidedSolutionStep = { title: string; question: string; options: string[]; correct: string; explanation: string };
+
+function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
+  const prompt = exercise.prompt;
+  const id = exercise.id;
+  const topic = exercise.topic;
+  let firstQuestion = "מה כדאי לזהות קודם?";
+  let correctMethod = "לזהות מה נתון ומה מבקשים למצוא";
+  let methodOptions = [correctMethod, "להתחיל לחשב בלי לבחור פעולה", "לנחש את התוצאה הסופית"];
+  let methodExplanation = "קודם מזהים מה ידוע ומה צריך למצוא, ורק אז בוחרים דרך.";
+
+  if (/ohm|power|חשמל/i.test(id + " " + topic) && (/\bI\s*=|זרם|\bR\s*=|התנגדות|\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote))) {
+    firstQuestion = "איזו נוסחה מתאימה למה שמבקשים למצוא?";
+    if (/\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote)) correctMethod = "P = V × I";
+    else if (/\bR\s*=|התנגדות/i.test(prompt + " " + exercise.teachingNote)) correctMethod = "R = V ÷ I";
+    else correctMethod = "I = V ÷ R";
+    methodOptions = [correctMethod, correctMethod === "I = V ÷ R" ? "I = V × R" : "I = V ÷ R", "P = V × I", "V = I × R"].filter((value, index, all) => all.indexOf(value) === index);
+    if (!methodOptions.includes(correctMethod)) methodOptions.unshift(correctMethod);
+    methodExplanation = "בחרנו נוסחה לפי הגודל שאותו צריך לחשב. לפני החישוב מוודאים שהנוסחה מתאימה לנתונים.";
+  } else if (/X\s*\+\s*\d+\s*=/.test(prompt)) {
+    correctMethod = "לחסר מהתוצאה את המספר שמחובר ל־X";
+    methodOptions = [correctMethod, "להוסיף לתוצאה את המספר שמחובר ל־X", "לכפול את שני המספרים"];
+    firstQuestion = "איך מבטלים את החיבור ליד X?";
+    methodExplanation = "הפעולה ההפוכה לחיבור היא חיסור.";
+  } else if (/X\s*[−-]\s*\d+\s*=/.test(prompt)) {
+    correctMethod = "להוסיף לתוצאה את המספר שהוחסר";
+    methodOptions = [correctMethod, "לחסר שוב את אותו מספר", "לחלק את התוצאה באותו מספר"];
+    firstQuestion = "איך מבטלים את החיסור ליד X?";
+    methodExplanation = "הפעולה ההפוכה לחיסור היא חיבור.";
+  } else if (/\d+\s*[×x]\s*X|\d+X/.test(prompt)) {
+    correctMethod = "לחלק במספר שמכפיל את X";
+    methodOptions = [correctMethod, "לכפול שוב באותו מספר", "להוסיף את המספר לתוצאה"];
+    firstQuestion = "איך משאירים את X לבד כשהוא מוכפל?";
+    methodExplanation = "הפעולה ההפוכה לכפל היא חילוק.";
+  } else if (/X\s*[÷/]\s*\d+/.test(prompt)) {
+    correctMethod = "לכפול את התוצאה במספר שבו חילקו";
+    methodOptions = [correctMethod, "לחלק שוב באותו מספר", "להחסיר את המספר מהתוצאה"];
+    firstQuestion = "איך מבטלים את החילוק ליד X?";
+    methodExplanation = "הפעולה ההפוכה לחילוק היא כפל.";
+  } else if (/×/.test(prompt) && /\+|\-/.test(prompt) && !/\(/.test(prompt)) {
+    correctMethod = "לבצע כפל לפני חיבור או חיסור";
+    methodOptions = [correctMethod, "לבצע תמיד חיבור לפני כפל", "לחשב משמאל לימין בלי להתחשב בסדר פעולות"];
+    firstQuestion = "איזו פעולה מבצעים קודם?";
+    methodExplanation = "לפי סדר הפעולות, כפל וחילוק קודמים לחיבור וחיסור.";
+  } else if (/שבר|fraction/i.test(topic + " " + id)) {
+    correctMethod = /צמצם|צמצום/.test(prompt) ? "לחלק את המונה והמכנה באותו מספר" : /\+/.test(prompt) ? "לבדוק אם המכנים שווים לפני שמחברים" : "לזהות את המונה ואת המכנה";
+    methodOptions = [correctMethod, "לשנות רק את המונה", "לחבר את המונה והמכנה יחד"];
+    firstQuestion = "מהו הצעד הנכון בעבודה עם השבר?";
+    methodExplanation = "בשברים חשוב לשמור על הקשר בין המונה למכנה ולא לשנות רק אחד מהם.";
+  } else if (/חזקה/.test(topic) || /\^|²/.test(prompt)) {
+    correctMethod = "לכפול את המספר בעצמו לפי מספר הפעמים שבחזקה";
+    methodOptions = [correctMethod, "לחבר את המספר לעצמו", "להכפיל את המספר בחזקה"];
+    firstQuestion = "איך מחשבים חזקה שנייה?";
+    methodExplanation = "חזקה שנייה פירושה כפל של המספר בעצמו.";
+  }
+
+  const hintOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
+  const accepted = exercise.accepted[0] ?? "";
+  const answerOptions = [accepted];
+  const normalizedAccepted = accepted.trim().toLowerCase();
+  const distractors = /\//.test(accepted) ? ["1/3", "1/4", "2/5"] : /^[a-zA-Z]+$/.test(accepted) ? ["X", "V", "I", "R", "P"] : /^-?\d+(\.\d+)?/.test(accepted) ? [String(Number.parseFloat(accepted) + 1), String(Math.max(0, Number.parseFloat(accepted) - 1)), String(Number.parseFloat(accepted) * 2)] : ["לא ניתן לחשב", "אין מספיק נתונים", "0"];
+  for (const option of distractors) {
+    if (option.toLowerCase() !== normalizedAccepted && !answerOptions.includes(option)) answerOptions.push(option);
+    if (answerOptions.length >= 4) break;
+  }
+
+  return [
+    { title: "שלב 1 מתוך 3 — בחירת דרך", question: firstQuestion, options: methodOptions, correct: correctMethod, explanation: methodExplanation },
+    { title: "שלב 2 מתוך 3 — הצעד הבא", question: "איזה כיוון יעזור לך להתקדם בחישוב?", options: hintOptions, correct: exercise.hint1, explanation: exercise.hint1 },
+    { title: "שלב 3 מתוך 3 — בחירת תשובה", question: "מהי התשובה לתרגיל?", options: answerOptions, correct: accepted, explanation: exercise.explanation },
+  ];
+}
+
 function errorGuidance(exercise: Exercise, answer: string) {
   const normalized = normalize(answer);
 
@@ -180,6 +253,8 @@ export default function Home() {
   const [learning, setLearning] = useState<LearningState>(emptyLearningState);
   const [answer, setAnswer] = useState("");
   const [solutionMethod, setSolutionMethod] = useState("");
+  const [guidedStepIndex, setGuidedStepIndex] = useState(0);
+  const [guidedFeedback, setGuidedFeedback] = useState<"idle" | "wrong" | "correct" | "complete">("idle");
   const solutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertSolutionText(text: string) {
@@ -241,6 +316,26 @@ export default function Home() {
   }, [learning, ready]);
 
   const exercise = activeExercise;
+  const guidedSolutionSteps = useMemo(() => buildGuidedSolutionSteps(exercise), [exercise]);
+  const currentGuidedStep = guidedSolutionSteps[guidedStepIndex];
+  useEffect(() => {
+    setGuidedStepIndex(0);
+    setGuidedFeedback("idle");
+  }, [exercise.id]);
+
+  function chooseGuidedOption(option: string) {
+    if (!currentGuidedStep || guidedFeedback === "complete") return;
+    if (option.trim().toLowerCase() !== currentGuidedStep.correct.trim().toLowerCase()) {
+      setGuidedFeedback("wrong");
+      return;
+    }
+    if (guidedStepIndex === guidedSolutionSteps.length - 1) {
+      setGuidedFeedback("complete");
+      return;
+    }
+    setGuidedFeedback("correct");
+    setGuidedStepIndex((step) => step + 1);
+  }
   const generated = exercise.id.startsWith("generated-") ? exercise : null;
   const completedCount = learning.completed.length;
   const dueReviews = dueReviewIds(learning);
@@ -615,10 +710,30 @@ export default function Home() {
                     placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
                   <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
                 </div>
+                <section className="guidedSolution" aria-label="פתרון מודרך לפי שלבים">
+                  <div className="guidedSolutionHeader">
+                    <div><strong>נפתור יחד, לפי הסדר</strong><span>בחר אפשרות בכל שלב. אחרי בחירה נכונה ייפתח השלב הבא.</span></div>
+                    <span className="guidedProgress">{guidedFeedback === "complete" ? "3/3" : `${guidedStepIndex + 1}/${guidedSolutionSteps.length}`}</span>
+                  </div>
+                  <div className="guidedProgressTrack"><span style={{ width: `${guidedFeedback === "complete" ? 100 : (guidedStepIndex / guidedSolutionSteps.length) * 100}` + "%" }} /></div>
+                  {guidedFeedback === "complete" ? (
+                    <div className="guidedComplete"><CheckCircle2 size={22} /><div><strong>כל הכבוד — השלמת את דרך הפתרון!</strong><p>{currentGuidedStep?.explanation}</p><button type="button" className="solutionStepButton" onClick={() => { setGuidedStepIndex(0); setGuidedFeedback("idle"); }}>תרגל שוב את הדרך</button></div></div>
+                  ) : currentGuidedStep ? (
+                    <div className="guidedStep">
+                      <div className="guidedStepTitle">{currentGuidedStep.title}</div>
+                      <p>{currentGuidedStep.question}</p>
+                      <div className="guidedChoiceList">
+                        {currentGuidedStep.options.map((option) => <button key={option} type="button" className="guidedChoice" onClick={() => chooseGuidedOption(option)}>{option}</button>)}
+                      </div>
+                      {guidedFeedback === "wrong" && <div className="guidedChoiceFeedback wrong" role="status">לא בדיוק. נסה אפשרות אחרת; אפשר להיעזר ברמז שמופיע בהמשך המסך.</div>}
+                      {guidedFeedback === "correct" && <div className="guidedChoiceFeedback success" role="status">נכון! עוברים לשלב הבא.</div>}
+                    </div>
+                  ) : null}
+                </section>
                 <div className="solutionMethodField">
                   <div className="solutionBuilderHeading">
-                    <label htmlFor="solution-method">בוא נכתוב את הדרך לפתרון — שלב אחר שלב</label>
-                    <span>לא צריך לזכור סימנים מיוחדים</span>
+                    <label htmlFor="solution-method">רוצה גם לכתוב את הדרך במילים שלך?</label>
+                    <span>אפשר להיעזר בכפתורים או לכתוב בחופשיות.</span>
                   </div>
                   <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
                     {[
@@ -635,18 +750,12 @@ export default function Home() {
                   </div>
                   <div className="solutionSymbols" aria-label="הוספת סימן מתמטי">
                     {[
-                      { label: "+ חיבור", value: " + " },
-                      { label: "− חיסור", value: " − " },
-                      { label: "× כפל", value: " × " },
-                      { label: "÷ חילוק", value: " ÷ " },
-                      { label: "= שווה", value: " = " },
-                      { label: "² חזקה", value: "²" },
-                      { label: "√ שורש", value: "√" },
-                      { label: "V מתח", value: "V" },
-                      { label: "I זרם", value: "I" },
-                      { label: "R התנגדות", value: "R" },
-                      { label: "P הספק", value: "P" },
-                      { label: "Ω אוהם", value: "Ω" },
+                      { label: "+ חיבור", value: " + " }, { label: "− חיסור", value: " − " },
+                      { label: "× כפל", value: " × " }, { label: "÷ חילוק", value: " ÷ " },
+                      { label: "= שווה", value: " = " }, { label: "² חזקה", value: "²" },
+                      { label: "√ שורש", value: "√" }, { label: "V מתח", value: "V" },
+                      { label: "I זרם", value: "I" }, { label: "R התנגדות", value: "R" },
+                      { label: "P הספק", value: "P" }, { label: "Ω אוהם", value: "Ω" },
                     ].map((symbol) => (
                       <button key={symbol.label} type="button" className="solutionSymbolButton"
                         onMouseDown={(event) => event.preventDefault()} onClick={() => insertSolutionText(symbol.value)}>
@@ -660,9 +769,8 @@ export default function Home() {
                     aria-describedby="solution-method-help" />
                   <div className="solutionWritingTips" id="solution-method-help">
                     <strong>אפשר לכתוב ממש במילים שלך</strong>
-                    <span>למשל: „חילקתי את המתח בהתנגדות, ולכן הזרם הוא 2 אמפר”. לא חייבים להשתמש בנוסחה או בסימנים.</span>
-                    <span>טיפ: אפשר ללחוץ בתוך הטקסט ולהוסיף סימן במקום שבו הסמן נמצא. אפשר גם לסמן חלק מהטקסט ולהחליף אותו.</span>
-                    <small>בדיקת התרגיל בודקת כרגע את התשובה הסופית בלבד, ולא מדרגת אוטומטית את דרך הפתרון.</small>
+                    <span>למשל: „חילקתי את המתח בהתנגדות, ולכן הזרם הוא 2 אמפר”.</span>
+                    <small>הבחירות המודרכות בודקות את השלבים שבחרת; בדיקת התרגיל הראשית עדיין בודקת את התשובה הסופית.</small>
                   </div>
                 </div>
 
