@@ -600,12 +600,49 @@ export default function Home() {
                   <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
                 </div>
                 <div className="solutionMethodField">
-                  <label htmlFor="solution-method">הדרך לפתרון — אפשר לכתוב כל שלב בנפרד</label>
-                  <textarea id="solution-method" dir="auto" rows={3} value={solutionMethod}
+                  <div className="solutionBuilderHeading">
+                    <label htmlFor="solution-method">בוא נכתוב את הדרך לפתרון — שלב אחר שלב</label>
+                    <span>לא צריך לזכור סימנים מיוחדים</span>
+                  </div>
+                  <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
+                    {[
+                      { label: "1. הנוסחה", value: "נוסחה: " },
+                      { label: "2. הצבת מספרים", value: "\nהצבה: " },
+                      { label: "3. החישוב", value: "\nחישוב: " },
+                      { label: "4. בדיקה", value: "\nבדיקה: " },
+                    ].map((step) => (
+                      <button key={step.label} type="button" className="solutionStepButton"
+                        onClick={() => setSolutionMethod((current) => current + (current && !current.endsWith("\n") ? "\n" : "") + step.value)}>
+                        {step.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="solutionSymbols" aria-label="הוספת סימן מתמטי">
+                    {[
+                      { label: "+ חיבור", value: " + " },
+                      { label: "− חיסור", value: " − " },
+                      { label: "× כפל", value: " × " },
+                      { label: "÷ חילוק", value: " ÷ " },
+                      { label: "= שווה", value: " = " },
+                      { label: "² חזקה", value: "²" },
+                      { label: "√ שורש", value: "√" },
+                      { label: "V מתח", value: "V" },
+                      { label: "I זרם", value: "I" },
+                      { label: "R התנגדות", value: "R" },
+                      { label: "P הספק", value: "P" },
+                      { label: "Ω אוהם", value: "Ω" },
+                    ].map((symbol) => (
+                      <button key={symbol.label} type="button" className="solutionSymbolButton"
+                        onClick={() => setSolutionMethod((current) => current + symbol.value)}>
+                        {symbol.label}
+                      </button>
+                    ))}
+                  </div>
+                  <textarea id="solution-method" dir="auto" rows={4} value={solutionMethod}
                     onChange={(event) => setSolutionMethod(event.target.value)}
-                    placeholder={"לדוגמה:\n1. בוחר את הפעולה ההפוכה\n2. מציב את המספרים\n3. מחשב ובודק"}
+                    placeholder={"לדוגמה:\nנוסחה: U = R × I\nהצבה: U = 6 × 2\nחישוב: U = 12 V"}
                     aria-describedby="solution-method-help" />
-                  <small id="solution-method-help">השדה אופציונלי. אפשר לכתוב חישובים, נוסחה או הסבר במילים. בדיקת התשובה בודקת כרגע את התוצאה הסופית, ולא נותנת ציון אוטומטי לדרך שכתבת.</small>
+                  <small id="solution-method-help">הכפתורים מוסיפים שלבים וסימנים לטקסט. אפשר גם להקליד בחופשיות. כרגע המערכת בודקת את התשובה הסופית בלבד, ולא מדרגת אוטומטית את דרך הפתרון.</small>
                 </div>
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
