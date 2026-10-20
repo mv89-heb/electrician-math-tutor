@@ -255,6 +255,7 @@ export default function Home() {
   const [solutionMethod, setSolutionMethod] = useState("");
   const [guidedStepIndex, setGuidedStepIndex] = useState(0);
   const [guidedFeedback, setGuidedFeedback] = useState<"idle" | "wrong" | "correct" | "complete">("idle");
+  const [showFreeformSolution, setShowFreeformSolution] = useState(false);
   const solutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertSolutionText(text: string) {
@@ -321,6 +322,7 @@ export default function Home() {
   useEffect(() => {
     setGuidedStepIndex(0);
     setGuidedFeedback("idle");
+    setShowFreeformSolution(false);
   }, [exercise.id]);
 
   function chooseGuidedOption(option: string) {
