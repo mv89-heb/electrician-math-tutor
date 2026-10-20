@@ -94,6 +94,45 @@ function errorGuidance(exercise: Exercise, answer: string) {
   return "זה לא התשובה הפעם — וזה בסדר. השתמש ברמז הראשון, ונסה שוב.";
 }
 
+function LessonVisual({ exercise }: { exercise: Exercise }) {
+  const id = exercise.id;
+  if (id.includes("fraction")) {
+    const isReduction = id.includes("reduce");
+    const count = isReduction ? 8 : 7;
+    const filled = id.includes("reduce") ? 4 : id.includes("add") ? 5 : 3;
+    return <div className="learningVisual" aria-label="המחשה חזותית של שברים">
+      <div className="visualHeading"><span>👀</span><strong>{isReduction ? "אותו חלק — פחות חתיכות" : "שבר הוא חלק מתוך שלם"}</strong></div>
+      <div className="fractionVisual">
+        <div className="fractionBar" dir="ltr">{Array.from({length: count}, (_, i) => <span key={i} className={i < filled ? "piece filled" : "piece"} />)}</div>
+        <div className="fractionLabels" dir="ltr"><strong>{isReduction ? "4 / 8" : id.includes("add") ? "2/7 + 3/7" : "חלקים מתוך שלם"}</strong><span>{isReduction ? "4 חלקים צבועים מתוך 8" : "המכנה מספר את כל החלקים"}</span></div>
+      </div>
+    </div>;
+  }
+  if (id.includes("geometry") || id.includes("units")) {
+    const circle = id.includes("diameter") || id.includes("radius") || id.includes("circle");
+    const area = id.includes("area");
+    return <div className="learningVisual" aria-label="המחשה חזותית של גאומטריה ומידות">
+      <div className="visualHeading"><span>📐</span><strong>{circle ? "מכירים את המעגל" : area ? "שטח הוא המקום שבתוך הצורה" : "ממירים יחידות באותו אורך"}</strong></div>
+      <svg className="lessonDiagram" viewBox="0 0 320 150" role="img" aria-label={circle ? "מעגל עם רדיוס וקוטר" : "מלבן עם אורך ורוחב"}>
+        {circle ? <><circle cx="160" cy="75" r="52" fill="#dbeafe" fillOpacity=".8" stroke="#2563eb" strokeWidth="3"/><line x1="108" y1="75" x2="212" y2="75" stroke="#dc2626" strokeWidth="3"/><line x1="160" y1="75" x2="212" y2="75" stroke="#0f766e" strokeWidth="4"/><circle cx="160" cy="75" r="4" fill="#172033"/><text x="160" y="62" textAnchor="middle" fontSize="12" fill="#172033">מרכז</text><text x="160" y="99" textAnchor="middle" fontSize="12" fill="#991b1b">קוטר</text><text x="190" y="66" textAnchor="middle" fontSize="11" fill="#0f766e">רדיוס</text></> : <><rect x="65" y="30" width="190" height="90" rx="4" fill="#dbeafe" stroke="#2563eb" strokeWidth="3"/><text x="160" y="22" textAnchor="middle" fontSize="13" fill="#1d4ed8">אורך</text><text x="160" y="79" textAnchor="middle" fontSize="17" fontWeight="700" fill="#1e3a8a">שטח = אורך × רוחב</text><text x="42" y="78" textAnchor="middle" fontSize="12" fill="#1d4ed8">רוחב</text></>}
+      </svg>
+      <p className="visualCaption">{circle ? "הקוטר עובר דרך המרכז; הרדיוס הוא חצי ממנו." : area ? "סופרים כמה מקום הצורה תופסת — ביחידות בריבוע." : "מ־מ״מ לס״מ מחלקים ב־10; מס״מ למטר מחלקים ב־100."}</p>
+    </div>;
+  }
+  if (id.includes("ohm") || id.includes("power") || id.includes("formula")) {
+    return <div className="learningVisual" aria-label="המחשה חזותית של נוסחה">
+      <div className="visualHeading"><span>⚡</span><strong>נוסחה היא מתכון עם מקומות למספרים</strong></div>
+      <div className="formulaVisual" dir="ltr"><span className="formulaChip">V</span><span className="formulaOperator">=</span><span className="formulaChip">I</span><span className="formulaOperator">×</span><span className="formulaChip">R</span></div>
+      <div className="formulaLegend"><span><i className="legendVoltage"/>V = מתח (וולט)</span><span><i className="legendCurrent"/>I = זרם (אמפר)</span><span><i className="legendResistance"/>R = התנגדות (אוהם)</span></div>
+      <p className="visualCaption">קודם מזהים מה נתון ומה מחפשים, ורק אז מציבים מספרים.</p>
+    </div>;
+  }
+  return <div className="learningVisual" aria-label="המחשה חזותית של שלבי פתרון">
+    <div className="visualHeading"><span>🧩</span><strong>פותרים צעד אחד בכל פעם</strong></div>
+    <div className="stepVisual"><span><b>1</b> קוראים</span><i>←</i><span><b>2</b> בוחרים פעולה</span><i>←</i><span><b>3</b> מחשבים</span></div>
+  </div>;
+}
+
 export default function Home() {
   const [learning, setLearning] = useState<LearningState>(emptyLearningState);
   const [answer, setAnswer] = useState("");
@@ -422,7 +461,7 @@ export default function Home() {
       <header className="focusHeader">
         <div className="focusBrand"><div className="logo"><Zap size={20}/></div><strong>מתמטיקה לחשמלאי מוסמך</strong></div>
         <div className="focusProgress"><span>שלב {currentStage}/8</span><div className="focusTrack"><div style={{width: Math.min(100, Math.max(4, progress)) + "%"}} /></div></div>
-        <button className="ghost focusMenu" onClick={() => setDiagnosticOpen(true)}><Target size={16}/> בדיקת רמה</button>
+        <div className="startFromBasics" aria-label="מסלול לימוד מהבסיס"><Sparkles size={16}/> לומדים מהבסיס</div>
       </header>
       <section className={"sparkyFocus sparkyMood-" + sparkyMood}>
         <div className="sparkyFocusAvatar" aria-hidden="true"><span className="sparkyBody">👨‍🔧</span><span className="sparkyBolt">{sparkyIcon}</span></div>
@@ -503,7 +542,7 @@ export default function Home() {
               <div key={exercise.id} className="panel exerciseCard exerciseEnter">
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
-                <ElectricalMiniSimulator topic={exercise.topic} />
+                <LessonVisual exercise={exercise} />\n                <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
