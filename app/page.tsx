@@ -133,6 +133,43 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
   </div>;
 }
 
+
+function InteractiveLab({ exercise }: { exercise: Exercise }) {
+  const [a, setA] = useState(12);
+  const [b, setB] = useState(6);
+  const [length, setLength] = useState(5);
+  const [width, setWidth] = useState(3);
+  const [x, setX] = useState(4);
+  const isElectrical = /ohm|power|חשמל/i.test(exercise.id + " " + exercise.topic);
+  const isArea = /area-rectangle|area-square/i.test(exercise.id);
+  const isBeginner = exercise.id.startsWith("zero-");
+  if (!isElectrical && !isArea && !isBeginner) return null;
+  return <section className="interactiveLab" aria-label="מעבדת למידה אינטראקטיבית">
+    <div className="labTitle"><span>{isElectrical ? "⚡" : isArea ? "📐" : "⚖️"}</span><div><strong>{isElectrical ? "מעבדת חוק אוהם" : isArea ? "מעבדת שטח" : "מאזני הנעלם"}</strong><small>שנו את הערכים וראו מיד מה משתנה</small></div></div>
+    {isElectrical ? <>
+      <div className="labFormula" dir="ltr"><b>V = I × R</b></div>
+      <div className="labControls">
+        <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
+        <label>התנגדות (אוהם) <b>{b} Ω</b><input aria-label="התנגדות" type="range" min="1" max="12" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+      </div>
+      <div className="labAnswer"><small>הזרם = מתח ÷ התנגדות</small><strong>{a} ÷ {b} = {(a/b).toFixed(2)} אמפר</strong></div>
+      <p>נסו להגדיל את המתח, ואז את ההתנגדות. מתי הזרם גדל ומתי הוא קטן?</p>
+    </> : isArea ? <>
+      <div className="labShape"><div style={{width:`${length*8}%`,height:`${width*13}px`}}><span>{length} × {width}</span></div></div>
+      <div className="labControls">
+        <label>אורך <b>{length}</b><input aria-label="אורך" type="range" min="2" max="8" value={length} onChange={e=>setLength(Number(e.target.value))}/></label>
+        <label>רוחב <b>{width}</b><input aria-label="רוחב" type="range" min="1" max="5" value={width} onChange={e=>setWidth(Number(e.target.value))}/></label>
+      </div>
+      <div className="labAnswer"><small>שטח = אורך × רוחב</small><strong>{length} × {width} = {length*width} יחידות²</strong></div>
+    </> : <>
+      <div className="labEquation" dir="ltr"><b>x</b><span>+</span><b>{7-x}</b><span>=</span><b>7</b></div>
+      <label className="labSingle">שנו את הנעלם x <b>{x}</b><input aria-label="ערך הנעלם" type="range" min="0" max="7" value={x} onChange={e=>setX(Number(e.target.value))}/></label>
+      <div className="labAnswer"><small>המשוואה נשארת מאוזנת</small><strong>{x} + {7-x} = 7</strong></div>
+      <p>שני הצדדים שווים, כמו שני צדדים של מאזניים.</p>
+    </>}
+  </section>;
+}
+
 export default function Home() {
   const [learning, setLearning] = useState<LearningState>(emptyLearningState);
   const [answer, setAnswer] = useState("");
@@ -542,7 +579,8 @@ export default function Home() {
               <div key={exercise.id} className="panel exerciseCard exerciseEnter">
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
-                <LessonVisual exercise={exercise} />\n                <ElectricalMiniSimulator topic={exercise.topic} />
+                <LessonVisual exercise={exercise} />
+                <InteractiveLab exercise={exercise} />\n                <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <label htmlFor="answer">התשובה שלך</label>
