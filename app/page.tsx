@@ -133,7 +133,21 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     methodExplanation = "חזקה שנייה פירושה כפל של המספר בעצמו.";
   }
 
-  const hintOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
+  let nextStepQuestion = "מהו הצעד הבא בדרך לפתרון?";
+  let nextStepCorrect = exercise.hint1;
+  let nextStepOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
+  let nextStepExplanation = exercise.hint1;
+  const sameDenominatorAddition = prompt.match(/(\d+)\s*\/\s*(\d+)\s*\+\s*(\d+)\s*\/\s*(\d+)/);
+  if (sameDenominatorAddition && sameDenominatorAddition[2] === sameDenominatorAddition[4]) {
+    const numeratorA = Number(sameDenominatorAddition[1]);
+    const denominator = Number(sameDenominatorAddition[2]);
+    const numeratorB = Number(sameDenominatorAddition[3]);
+    const step = `(${numeratorA} + ${numeratorB}) / ${denominator} = ${numeratorA + numeratorB} / ${denominator}`;
+    nextStepQuestion = "איך כותבים את החיבור כשיש לשני השברים אותו מכנה?";
+    nextStepCorrect = step;
+    nextStepOptions = [step, `${numeratorA + numeratorB} / ${denominator + 1}`, `${numeratorA} / ${denominator + numeratorB}`];
+    nextStepExplanation = "מחברים את המונים ומשאירים את המכנה כפי שהוא.";
+  }
   const accepted = exercise.accepted[0] ?? "";
   const answerOptions = [accepted];
   const normalizedAccepted = accepted.trim().toLowerCase();
@@ -145,7 +159,7 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
 
   return [
     { title: "שלב 1 מתוך 3 — בחירת דרך", question: firstQuestion, options: methodOptions, correct: correctMethod, explanation: methodExplanation },
-    { title: "שלב 2 מתוך 3 — הצעד הבא", question: "איזה כיוון יעזור לך להתקדם בחישוב?", options: hintOptions, correct: exercise.hint1, explanation: exercise.hint1 },
+    { title: "שלב 2 מתוך 3 — כותבים את הצעד", question: nextStepQuestion, options: nextStepOptions, correct: nextStepCorrect, explanation: nextStepExplanation },
     { title: "שלב 3 מתוך 3 — בחירת תשובה", question: "מהי התשובה לתרגיל?", options: answerOptions, correct: accepted, explanation: exercise.explanation },
   ];
 }
@@ -215,7 +229,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const [width, setWidth] = useState(3);
   const [x, setX] = useState(4);
   const isElectrical = /ohm|power|חשמל/i.test(exercise.id + " " + exercise.topic);
-  const isFraction = exercise.id.includes("fraction");
+  const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
   const isBeginner = exercise.id.startsWith("zero-");
   if (!isElectrical && !isArea && !isBeginner && !isFraction) return null;
@@ -255,6 +269,7 @@ export default function Home() {
   const [solutionMethod, setSolutionMethod] = useState("");
   const [guidedStepIndex, setGuidedStepIndex] = useState(0);
   const [guidedFeedback, setGuidedFeedback] = useState<"idle" | "wrong" | "correct" | "complete">("idle");
+  const [showFreeformSolution, setShowFreeformSolution] = useState(false);
   const solutionTextareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertSolutionText(text: string) {
@@ -321,6 +336,7 @@ export default function Home() {
   useEffect(() => {
     setGuidedStepIndex(0);
     setGuidedFeedback("idle");
+    setShowFreeformSolution(false);
   }, [exercise.id]);
 
   function chooseGuidedOption(option: string) {
@@ -330,6 +346,8 @@ export default function Home() {
       return;
     }
     if (guidedStepIndex === guidedSolutionSteps.length - 1) {
+      setAnswer(option);
+      setFeedback("idle");
       setGuidedFeedback("complete");
       return;
     }
@@ -702,14 +720,6 @@ export default function Home() {
                 <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
-                <label htmlFor="answer">התשובה הסופית שלך</label>
-                <div className="answerRow">
-                  <input id="answer" dir="ltr" autoComplete="off" value={answer}
-                    onChange={(event) => { setAnswer(event.target.value); setFeedback("idle"); }}
-                    onKeyDown={(event) => event.key === "Enter" && check()}
-                    placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
-                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
-                </div>
                 <section className="guidedSolution" aria-label="פתרון מודרך לפי שלבים">
                   <div className="guidedSolutionHeader">
                     <div><strong>נפתור יחד, לפי הסדר</strong><span>בחר אפשרות בכל שלב. אחרי בחירה נכונה ייפתח השלב הבא.</span></div>
@@ -730,6 +740,21 @@ export default function Home() {
                     </div>
                   ) : null}
                 </section>
+                <div className="finalAnswerPanel">
+                <label htmlFor="answer">התשובה הסופית שלך</label>
+                <div className="answerRow">
+                  <input id="answer" dir="ltr" autoComplete="off" value={answer}
+                    onChange={(event) => { setAnswer(event.target.value); setFeedback("idle"); }}
+                    onKeyDown={(event) => event.key === "Enter" && check()}
+                    placeholder="כתוב כאן את התשובה..." disabled={feedback === "correct"} />
+                  <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
+                </div>
+                </div>
+                <button type="button" className="freeformToggle" aria-expanded={showFreeformSolution} onClick={() => setShowFreeformSolution((visible) => !visible)}>
+                  <span>{showFreeformSolution ? "הסתרת כתיבה חופשית" : "רוצה לכתוב גם את הדרך בעצמך?"}</span>
+                  <span aria-hidden="true">{showFreeformSolution ? "−" : "+"}</span>
+                </button>
+                {showFreeformSolution && (
                 <div className="solutionMethodField">
                   <div className="solutionBuilderHeading">
                     <label htmlFor="solution-method">רוצה גם לכתוב את הדרך במילים שלך?</label>
@@ -773,6 +798,7 @@ export default function Home() {
                     <small>הבחירות המודרכות בודקות את השלבים שבחרת; בדיקת התרגיל הראשית עדיין בודקת את התשובה הסופית.</small>
                   </div>
                 </div>
+                )}
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
                 {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{(learning.reviews[exercise.id]?.lapses ?? 0) >= 2 && <small>היו כמה טעויות בנושא הזה, אז נחזור אליו בקצרה בהמשך.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
