@@ -734,6 +734,11 @@ export default function Home() {
                   <button className="primary" onClick={check} disabled={!answer.trim() || feedback === "correct"}>בדוק תשובה</button>
                 </div>
                 </div>
+                <button type="button" className="freeformToggle" aria-expanded={showFreeformSolution} onClick={() => setShowFreeformSolution((visible) => !visible)}>
+                  <span>{showFreeformSolution ? "הסתרת כתיבה חופשית" : "רוצה לכתוב גם את הדרך בעצמך?"}</span>
+                  <span aria-hidden="true">{showFreeformSolution ? "−" : "+"}</span>
+                </button>
+                {showFreeformSolution && (
                 <div className="solutionMethodField">
                   <div className="solutionBuilderHeading">
                     <label htmlFor="solution-method">רוצה גם לכתוב את הדרך במילים שלך?</label>
@@ -777,6 +782,7 @@ export default function Home() {
                     <small>הבחירות המודרכות בודקות את השלבים שבחרת; בדיקת התרגיל הראשית עדיין בודקת את התשובה הסופית.</small>
                   </div>
                 </div>
+                )}
 
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
                 {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{(learning.reviews[exercise.id]?.lapses ?? 0) >= 2 && <small>היו כמה טעויות בנושא הזה, אז נחזור אליו בקצרה בהמשך.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
