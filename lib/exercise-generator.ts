@@ -111,6 +111,38 @@ export function generateExercise(topic: string, seed: number): GeneratedExercise
     const result = 3 + (seed % 4);
     [prompt, answer] = [`X ÷ ${divisor} = ${result}. איזה מספר הוא X?`, String(divisor * result)];
   }
+
+  let hint1 = template.hint1;
+  let hint2 = template.hint2;
+  let explanation = template.explanation;
+  const percentMatch = prompt.match(/כמה זה (\d+(?:[.,]\d+)?)% מתוך (\d+(?:[.,]\d+)?)[?？]?/);
+  if (percentMatch) {
+    const percent = Number(percentMatch[1].replace(",", "."));
+    const total = Number(percentMatch[2].replace(",", "."));
+    const result = (percent * total) / 100;
+    hint1 = `${percent}% פירושם ${percent} מתוך 100. כדי למצוא את החלק, מחשבים ${total} × ${percent} ÷ 100.`;
+    hint2 = `${total} × ${percent} = ${total * percent}, ואז מחלקים ב־100: ${total * percent} ÷ 100 = ${result}.`;
+    explanation = `נכון. ${percent}% מתוך ${total} הם ${result}, כי ${total} × ${percent} ÷ 100 = ${result}.`;
+  } else {
+    const decimalMatch = prompt.match(/מה הערך של (\d+(?:[.,]\d+)?)\s*([+−-])\s*(\d+(?:[.,]\d+)?)[?？]?/);
+    const divisionMatch = prompt.match(/X\s*÷\s*(\d+(?:[.,]\d+)?)\s*=\s*(\d+(?:[.,]\d+)?)/);
+    if (decimalMatch) {
+      const left = Number(decimalMatch[1].replace(",", "."));
+      const right = Number(decimalMatch[3].replace(",", "."));
+      const operator = decimalMatch[2] === "+" ? "+" : "−";
+      const result = decimalMatch[2] === "+" ? left + right : left - right;
+      hint1 = `חשב ${left} ${operator} ${right} תוך שמירה על הנקודה העשרונית.`;
+      hint2 = `${left} ${operator} ${right} = ${Number(result.toFixed(10))}.`;
+      explanation = `נכון. ${left} ${operator} ${right} = ${Number(result.toFixed(10))}.`;
+    } else if (divisionMatch) {
+      const divisor = Number(divisionMatch[1].replace(",", "."));
+      const quotient = Number(divisionMatch[2].replace(",", "."));
+      const result = divisor * quotient;
+      hint1 = `כדי למצוא את X, מבצעים את הפעולה ההפוכה לחילוק: כופלים ${quotient} ב־${divisor}.`;
+      hint2 = `${quotient} × ${divisor} = ${result}, לכן X = ${result}.`;
+      explanation = `נכון. X ÷ ${divisor} = ${quotient}, לכן X = ${quotient} × ${divisor} = ${result}.`;
+    }
+  }
   return {
     id: `generated-${topic}-${seed}`,
     topic: template.topic,
@@ -119,9 +151,9 @@ export function generateExercise(topic: string, seed: number): GeneratedExercise
     teachingNote: template.teachingNote,
     prompt,
     accepted: [answer],
-    hint1: template.hint1,
-    hint2: template.hint2,
-    explanation: template.explanation,
+    hint1,
+    hint2,
+    explanation,
     generated: true,
   };
 }
