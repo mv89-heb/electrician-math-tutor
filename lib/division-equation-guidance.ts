@@ -6,7 +6,7 @@ export type DivisionEquationGuidance = {
 };
 
 export function divisionEquationGuidance(prompt: string): DivisionEquationGuidance | null {
-  const match = prompt.match(/X\\s*[÷/]\\s*\\(?(-?\\d+)\\)?\\s*=/);
+  const match = prompt.match(/X\s*[÷/]\s*\(?(-?\d+)\)?\s*=/);
   if (!match) return null;
 
   const divisor = Number(match[1]);
