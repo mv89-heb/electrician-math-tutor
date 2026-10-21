@@ -244,6 +244,20 @@ describe("reinforcement topic alignment", () => {
     expect(exercise?.explanation).toContain("20 ÷ 5 = 4");
   });
 
+  it("keeps sign reinforcement aligned with multiplication equations", () => {
+    const exercise = generateReinforcement("כפל במשוואות", 9, "sign");
+    expect(exercise?.prompt).toBe("-5 × X = -20. איזה מספר הוא X?");
+    expect(exercise?.accepted).toEqual(["4"]);
+    expect(exercise?.explanation).toContain("(-20) ÷ (-5) = 4");
+  });
+
+  it("keeps sign reinforcement aligned with division equations", () => {
+    const exercise = generateReinforcement("חילוק במשוואות", 9, "sign");
+    expect(exercise?.prompt).toBe("X ÷ (-5) = -4. איזה מספר הוא X?");
+    expect(exercise?.accepted).toEqual(["20"]);
+    expect(exercise?.explanation).toContain("(-4) × (-5) = 20");
+  });
+
   it("keeps arithmetic reinforcement aligned with multiplication equations", () => {
     const exercise = generateReinforcement("כפל במשוואות", 9, "arithmetic");
     expect(exercise?.prompt).toContain("× X");
