@@ -599,7 +599,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const isBeginner = exercise.id.startsWith("zero-");
   if (!isElectrical && !isArea && !isBeginner && !isFraction) return null;
   return <section className="interactiveLab" aria-label="מעבדת למידה אינטראקטיבית">
-    <div className="labTitle"><span>{isElectrical ? "⚡" : isArea ? "📐" : isFraction ? "🧩" : "⚖️"}</span><div><strong>{isElectrical ? "מעבדת חוק אוהם" : isArea ? "מעבדת שטח" : isFraction ? "מעבדת שברים" : "מאזני הנעלם"}</strong><small>שנו את הערכים וראו מיד מה משתנה</small></div></div>
+    <div className="labTitle"><span>{isElectrical ? "⚡" : isArea ? "📐" : isFraction ? "🧩" : "⚖️"}</span><div><strong>{isPowerLesson ? "מעבדת הספק חשמלי" : isElectrical ? "מעבדת חוק אוהם" : isArea ? "מעבדת שטח" : isFraction ? "מעבדת שברים" : "מאזני הנעלם"}</strong><small>שנו את הערכים וראו מיד מה משתנה</small></div></div>
     {isFraction ? <>
       <div className="fractionLabBar" dir="ltr">{Array.from({length:b},(_,i)=><span key={i} className={i<a?"isFilled":""}/>)}</div>
       <div className="labControls"><label>מונה — החלקים הצבועים <b>{Math.min(a,b)}</b><input aria-label="מונה השבר" type="range" min="1" max={b} value={Math.min(a,b)} onChange={e=>setA(Number(e.target.value))}/></label><label>מכנה — כל החלקים <b>{b}</b><input aria-label="מכנה השבר" type="range" min="2" max="12" value={b} onChange={e=>{const next=Number(e.target.value);setB(next);setA(Math.min(next,a))}}/></label></div>
