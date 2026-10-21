@@ -183,6 +183,21 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       generated: true,
     };
   }
+  if (errorType === "concept" && topic === "מהו נעלם?") {
+    return {
+      id: `generated-${topic}-concept-${seed}`,
+      topic,
+      level: 0,
+      title: "מבינים מהו נעלם",
+      teachingNote: "X היא אות שמייצגת מספר שאיננו יודעים עדיין.",
+      prompt: "במשוואה X + 3 = 5, מה מייצגת האות X?",
+      accepted: ["המספר הלא ידוע", "מספר לא ידוע", "הנעלם", "מספר שאנחנו עדיין לא יודעים"],
+      hint1: "X היא סימן למספר שעדיין איננו יודעים.",
+      hint2: "לא מחפשים את האות עצמה, אלא את המספר שהיא מייצגת.",
+      explanation: "נכון. X מייצגת את המספר הלא ידוע שאותו אפשר למצוא בהמשך.",
+      generated: true,
+    };
+  }
   if (errorType === "concept" && topic !== "מהו נעלם?") return generateExercise(topic, seed);
   if (errorType === "unknown" && !equationTopics.has(topic)) return generateExercise(topic, seed);
   if (errorType === "sign" && topic === "כפל במשוואות") {
