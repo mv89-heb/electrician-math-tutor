@@ -552,3 +552,19 @@ describe("generated question feedback consistency", () => {
     }
   });
 });
+
+describe("error guidance matches the current exercise", () => {
+  it("uses the actual divisor instead of always referring to 2", async () => {
+    const { errorGuidance } = await import("./error-guidance");
+    const exercise = generateReinforcement("חילוק במשוואות", 9, "sign")!;
+    expect(exercise.prompt).toContain("X ÷ (-5)");
+    expect(errorGuidance(exercise, "19")).toContain("X מחולק ב־-5");
+  });
+
+  it("uses the actual positive divisor in a regular division equation", async () => {
+    const { errorGuidance } = await import("./error-guidance");
+    const exercise = generateReinforcement("חילוק במשוואות", 9, "unknown")!;
+    expect(exercise.prompt).toContain("X ÷ 3");
+    expect(errorGuidance(exercise, "20")).toContain("X מחולק ב־3");
+  });
+});
