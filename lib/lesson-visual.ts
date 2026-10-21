@@ -202,3 +202,69 @@ export function decimalVisualForExercise(
     caption: `שומרים על הערך של הספרות אחרי הנקודה: ${leftLabel} ${operator} ${rightLabel} = ${result}.`,
   };
 }
+
+export type EquationLabModel = {
+  expression: string;
+  rhs: number;
+  answer: number;
+  coefficient: number;
+  offset: number;
+  explanation: string;
+};
+
+export function equationLabModelForExercise(
+  exercise: Pick<Exercise, "prompt">,
+): EquationLabModel | null {
+  const prompt = exercise.prompt;
+  let expression: string;
+  let coefficient: number;
+  let offset: number;
+  let rhs: number;
+  let match: RegExpMatchArray | null;
+
+  match = prompt.match(/X\\s*\\+\\s*(\\d+)\\s*=\\s*(\\d+)/);
+  if (match) {
+    expression = `X + ${match[1]}`;
+    coefficient = 1;
+    offset = Number(match[1]);
+    rhs = Number(match[2]);
+  } else if ((match = prompt.match(/X\\s*[−-]\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+    expression = `X − ${match[1]}`;
+    coefficient = 1;
+    offset = -Number(match[1]);
+    rhs = Number(match[2]);
+  } else if ((match = prompt.match(/(\\d+)\\s*[×x]\\s*X\\s*\\+\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+    expression = `${match[1]} × X + ${match[2]}`;
+    coefficient = Number(match[1]);
+    offset = Number(match[2]);
+    rhs = Number(match[3]);
+  } else if ((match = prompt.match(/(\\d+)\\s*[×x]\\s*X\\s*[−-]\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+    expression = `${match[1]} × X − ${match[2]}`;
+    coefficient = Number(match[1]);
+    offset = -Number(match[2]);
+    rhs = Number(match[3]);
+  } else if ((match = prompt.match(/(\\d+)\\s*[×x]\\s*X\\s*=\\s*(\\d+)/))) {
+    expression = `${match[1]} × X`;
+    coefficient = Number(match[1]);
+    offset = 0;
+    rhs = Number(match[2]);
+  } else if ((match = prompt.match(/X\\s*[÷/]\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+    expression = `X ÷ ${match[1]}`;
+    coefficient = 1 / Number(match[1]);
+    offset = 0;
+    rhs = Number(match[2]);
+  } else {
+    return null;
+  }
+
+  if (!Number.isFinite(coefficient) || coefficient === 0) return null;
+  const answer = Number(((rhs - offset) / coefficient).toFixed(8));
+  return {
+    expression,
+    rhs,
+    answer,
+    coefficient,
+    offset,
+    explanation: `מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = ${answer}.`,
+  };
+}
