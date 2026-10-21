@@ -747,7 +747,8 @@ export default function Home() {
                       </div>
                     ) : null}
             
-                )}      </section>
+                  </section>
+                )}
                 <div className="finalAnswerPanel">
                 <label htmlFor="answer">התשובה הסופית שלך</label>
                 <div className="answerRow">
