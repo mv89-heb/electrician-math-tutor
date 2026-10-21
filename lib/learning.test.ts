@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
+import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -923,5 +923,16 @@ describe("fraction lab starts with the active exercise values", () => {
 
   it("keeps the standard defaults for non-reduction labs", () => {
     expect(fractionLabDefaultsForExercise({ id: "ohm-1" })).toEqual({ numerator: 12, denominator: 6 });
+  });
+});
+
+
+describe("area lab defaults match the geometry exercise", () => {
+  it("starts the rectangle lab at the dimensions in the lesson", () => {
+    expect(areaLabDefaultsForExercise({ id: "geometry-area-rectangle-1" })).toEqual({ length: 6, width: 3 });
+  });
+
+  it("starts the square lab with equal sides from the lesson", () => {
+    expect(areaLabDefaultsForExercise({ id: "geometry-area-square-1" })).toEqual({ length: 5, width: 5 });
   });
 });
