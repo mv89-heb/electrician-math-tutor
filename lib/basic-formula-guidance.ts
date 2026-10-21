@@ -6,6 +6,14 @@ export type BasicFormulaGuidance = {
 };
 
 export function basicFormulaGuidance(exerciseId: string): BasicFormulaGuidance | null {
+  if (exerciseId === "formula-1b") {
+    return {
+      question: "איזו אות מייצגת את המתח בנוסחה V = I × R?",
+      correct: "V — מתח",
+      options: ["V — מתח", "I — זרם", "R — התנגדות"],
+      explanation: "V היא האות שמייצגת מתח חשמלי, והוא נמדד בוולט.",
+    };
+  }
   if (exerciseId === "formula-1") {
     return {
       question: "איזו אות מייצגת את ההתנגדות שאותה רוצים למצוא?",
