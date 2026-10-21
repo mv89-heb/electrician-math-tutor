@@ -852,18 +852,13 @@ describe("generated fraction visuals match the current denominator", () => {
     const exercise = generateExercise("שברים", 3)!;
     const visual = fractionVisualForExercise(exercise);
     expect(exercise.prompt).toContain("חלק אחד מתוך 5 חלקים");
-    expect(visual.kind).toBe("bar");
-    expect(visual.count).toBe(5);
-    expect(visual.filled).toBe(1);
-    expect(visual.label).toBe("1/5");
+    expect(visual).toMatchObject({ kind: "bar", count: 5, filled: 1, label: "1/5" });
   });
 
   it("updates the bar when the generated denominator changes", () => {
     const exercise = generateExercise("שברים", 5)!;
     const visual = fractionVisualForExercise(exercise);
     expect(exercise.prompt).toContain("חלק אחד מתוך 7 חלקים");
-    expect(visual.kind).toBe("bar");
-    expect(visual.count).toBe(7);
-    expect(visual.label).toBe("1/7");
+    expect(visual).toMatchObject({ kind: "bar", count: 7, filled: 1, label: "1/7" });
   });
 });
