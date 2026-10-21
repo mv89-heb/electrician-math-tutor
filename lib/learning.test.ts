@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, unitConversionVisualForExercise } from "./lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -823,5 +823,25 @@ describe("basic formula guided steps match the requested task", () => {
     const { basicFormulaGuidance } = await import("./basic-formula-guidance");
     expect(basicFormulaGuidance("formula-subject-1")).toBeNull();
     expect(basicFormulaGuidance("ohm-1")).toBeNull();
+  });
+});
+
+
+describe("percentage visuals match the actual question", () => {
+  it("shows the exact calculation for 25% of 200", () => {
+    const exercise = generateExercise("אחוזים", 3)!;
+    const visual = percentageVisualForExercise(exercise);
+    expect(exercise.prompt).toBe("כמה זה 25% מתוך 200?");
+    expect(exercise.accepted).toEqual(["50"]);
+    expect(visual.expression).toBe("25% × 200 ÷ 100 = 50");
+    expect(visual.caption).toContain("התוצאה היא 50");
+  });
+
+  it("updates the visual for different generated percentage questions", () => {
+    const exercise = generateExercise("אחוזים", 2)!;
+    const visual = percentageVisualForExercise(exercise);
+    expect(exercise.prompt).toBe("כמה זה 10% מתוך 200?");
+    expect(visual.expression).toBe("10% × 200 ÷ 100 = 20");
+    expect(visual.caption).toContain("התוצאה היא 20");
   });
 });
