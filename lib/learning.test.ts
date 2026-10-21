@@ -725,7 +725,7 @@ describe("electrical unit reinforcement matches its topic", () => {
   });
 
   it("keeps the requested quantity, accepted unit, hint, and explanation aligned", () => {
-    for (const topic of ["נוסחאות בסיסיות", "שינוי נושא נוסחה"]) {
+    for (const topic of ["נוסחאות בסיסיות"]) {
       for (let seed = 0; seed < 4; seed += 1) {
         const exercise = generateReinforcement(topic, seed, "unit")!;
         const symbol = exercise.accepted[0];
@@ -1092,5 +1092,16 @@ describe("geometry and unit conversion guidance matches the exercise", () => {
   it("uses the correct operation for radius and diameter conversions", () => {
     expect(geometryGuidanceForExercise("geometry-diameter-1")?.correct).toContain("לחלק");
     expect(geometryGuidanceForExercise("geometry-radius-1")?.correct).toContain("לכפול");
+  });
+});
+
+
+describe("formula isolation reinforcement stays on topic", () => {
+  it("does not replace variable-isolation practice with a generic units quiz", () => {
+    const exercise = generateReinforcement("שינוי נושא נוסחה", 4, "unit");
+    expect(exercise?.prompt).toBe("A = B × C. כיצד נבודד את C כאשר B אינו אפס?");
+    expect(exercise?.accepted).toContain("C=A/B");
+    expect(exercise?.hint2).toContain("C = A ÷ B");
+    expect(exercise?.explanation).toContain("מחלקים את שני האגפים");
   });
 });

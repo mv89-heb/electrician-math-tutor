@@ -168,6 +168,21 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
   if (errorType === "operation" && !["כפל במשוואות", "חילוק במשוואות"].includes(topic)) return generateExercise(topic, seed);
   if (errorType === "arithmetic" && !["סדר פעולות", "כפל במשוואות", "חיבור וחיסור במשוואות", "חילוק במשוואות", "משוואות פשוטות"].includes(topic)) return generateExercise(topic, seed);
   if (errorType === "unit" && !electricalTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "unit" && topic === "שינוי נושא נוסחה") {
+    return {
+      id: `generated-${topic}-unit-${seed}`,
+      topic,
+      level: 2,
+      title: "חיזוק בידוד משתנה בנוסחה",
+      teachingNote: "נשמור על שוויון ונבצע פעולה הפוכה בשני האגפים כדי להשאיר את המשתנה המבוקש לבד.",
+      prompt: "A = B × C. כיצד נבודד את C כאשר B אינו אפס?",
+      accepted: ["C=A/B", "C = A/B", "A/B", "A ÷ B"],
+      hint1: "C מוכפל ב־B, לכן הפעולה ההפוכה היא חילוק ב־B.",
+      hint2: "חלק את שני האגפים ב־B כדי לקבל C = A ÷ B.",
+      explanation: "נכון. מחלקים את שני האגפים ב־B ומקבלים C = A ÷ B.",
+      generated: true,
+    };
+  }
   if (errorType === "concept" && topic !== "מהו נעלם?") return generateExercise(topic, seed);
   if (errorType === "unknown" && !equationTopics.has(topic)) return generateExercise(topic, seed);
   if (errorType === "sign" && topic === "כפל במשוואות") {
