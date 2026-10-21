@@ -958,9 +958,11 @@ describe("electrical lab defaults match the requested quantity", () => {
     expect(electricalLabDefaultsForExercise({ id: "electrical-power-sub-1" })).toEqual({ first: 60, second: 12 });
   });
 
-  it("keeps the standard defaults for Ohm's law and power calculation labs", () => {
-    expect(electricalLabDefaultsForExercise({ id: "ohm-1" })).toEqual({ first: 12, second: 6 });
+  it("starts each electrical lab with the data given in its exercise", () => {
+    expect(electricalLabDefaultsForExercise({ id: "ohm-1" })).toEqual({ first: 20, second: 10 });
     expect(electricalLabDefaultsForExercise({ id: "ohm-2" })).toEqual({ first: 12, second: 3 });
-    expect(electricalLabDefaultsForExercise({ id: "power-1" })).toEqual({ first: 12, second: 6 });
+    expect(electricalLabDefaultsForExercise({ id: "electrical-ohm-sub-1" })).toEqual({ first: 12, second: 4 });
+    expect(electricalLabDefaultsForExercise({ id: "power-1" })).toEqual({ first: 10, second: 2 });
+    expect(electricalLabDefaultsForExercise({ id: "power-2" })).toEqual({ first: 12, second: 3 });
   });
 });
