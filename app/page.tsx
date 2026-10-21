@@ -10,6 +10,7 @@ import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../l
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
+import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
 import { stageForExercise, stageGateSatisfied, stageProgress, stageExercises } from "../lib/stages";
 
 const topics = [...new Set(curriculum.map((exercise) => exercise.topic))];
@@ -716,6 +717,7 @@ export default function Home() {
                 <h2>{exercise.title}</h2>
                 <div className="teachingNote"><Lightbulb size={18} /><div><strong>ספארקי מסביר</strong><MathPrompt prompt={exercise.teachingNote} /></div></div>
                 <LessonVisual exercise={exercise} />
+                <FieldWorkIllustration exercise={exercise} />
                 <InteractiveLab exercise={exercise} />
                 <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
