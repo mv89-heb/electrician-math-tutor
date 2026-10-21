@@ -127,3 +127,33 @@ export function isElectricalPowerLesson(exercise: Pick<Exercise, "id" | "topic">
   return isElectricalLesson(exercise) &&
     (exercise.topic === "חשמל — הספק" || exercise.id.includes("electrical-power"));
 }
+
+export type PercentageVisual = {
+  heading: string;
+  expression: string;
+  caption: string;
+};
+
+export function percentageVisualForExercise(
+  exercise: Pick<Exercise, "prompt">,
+): PercentageVisual {
+  const match = exercise.prompt.match(/כמה זה\\s+(\\d+(?:[.,]\\d+)?)%\\s*מתוך\\s*(\\d+(?:[.,]\\d+)?)/);
+  if (!match) {
+    return {
+      heading: "מחשבים אחוז מתוך כמות",
+      expression: "אחוז × כמות ÷ 100",
+      caption: "מכפילים את הכמות באחוזים ומחלקים ב־100.",
+    };
+  }
+
+  const percent = Number(match[1].replace(",", "."));
+  const total = Number(match[2].replace(",", "."));
+  const result = Number(((percent * total) / 100).toFixed(8)).toString();
+  const totalLabel = Number(total.toFixed(8)).toString();
+  const percentLabel = Number(percent.toFixed(8)).toString();
+  return {
+    heading: "מחשבים אחוז מתוך כמות",
+    expression: `${percentLabel}% × ${totalLabel} ÷ 100 = ${result}`,
+    caption: `מכפילים ${totalLabel} ב־${percentLabel} ומחלקים ב־100. התוצאה היא ${result}.`,
+  };
+}
