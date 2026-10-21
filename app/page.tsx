@@ -12,7 +12,7 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
-import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson } from "../lib/lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -535,16 +535,24 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
       </div> : <><div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.label}</span></div><p className="visualCaption">{visual.caption}</p></>}
     </div>;
   }
-  if (id.includes("geometry") || id.includes("units")) {
+  if (id.includes("units")) {
+    const visual = unitConversionVisualForExercise(exercise);
+    return <div className="learningVisual" aria-label="המחשה חזותית להמרת יחידות אורך">
+      <div className="visualHeading"><span>📏</span><strong>{visual.heading}</strong></div>
+      <div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.expression}</span></div>
+      <p className="visualCaption">{visual.caption}</p>
+    </div>;
+  }
+  if (id.includes("geometry")) {
     const circle = id.includes("diameter") || id.includes("radius") || id.includes("circle");
     const area = id.includes("area");
     const circleArea = id.includes("area-circle");
     return <div className="learningVisual" aria-label="המחשה חזותית של גאומטריה ומידות">
-      <div className="visualHeading"><span>📐</span><strong>{circleArea ? "שטח עיגול" : circle ? "מכירים את המעגל" : area ? "שטח הוא המקום שבתוך הצורה" : "ממירים יחידות באותו אורך"}</strong></div>
+      <div className="visualHeading"><span>📐</span><strong>{circleArea ? "שטח עיגול" : circle ? "מכירים את המעגל" : id.includes("area-square") ? "שטח ריבוע" : area ? "שטח מלבן" : "גאומטריה ומידות"}</strong></div>
       <svg className="lessonDiagram" viewBox="0 0 320 150" role="img" aria-label={circle ? "מעגל עם רדיוס וקוטר" : "מלבן עם אורך ורוחב"}>
-        {circle ? <><circle cx="160" cy="75" r="52" fill="#dbeafe" fillOpacity=".8" stroke="#2563eb" strokeWidth="3"/><line x1="108" y1="75" x2="212" y2="75" stroke="#dc2626" strokeWidth="3"/><line x1="160" y1="75" x2="212" y2="75" stroke="#0f766e" strokeWidth="4"/><circle cx="160" cy="75" r="4" fill="#172033"/><text x="160" y="62" textAnchor="middle" fontSize="12" fill="#172033">מרכז</text><text x="160" y="99" textAnchor="middle" fontSize="12" fill="#991b1b">קוטר</text><text x="190" y="66" textAnchor="middle" fontSize="11" fill="#0f766e">רדיוס</text></> : <><rect x="65" y="30" width="190" height="90" rx="4" fill="#dbeafe" stroke="#2563eb" strokeWidth="3"/><text x="160" y="22" textAnchor="middle" fontSize="13" fill="#1d4ed8">אורך</text><text x="160" y="79" textAnchor="middle" fontSize="17" fontWeight="700" fill="#1e3a8a">שטח = אורך × רוחב</text><text x="42" y="78" textAnchor="middle" fontSize="12" fill="#1d4ed8">רוחב</text></>}
+        {circle ? <><circle cx="160" cy="75" r="52" fill="#dbeafe" fillOpacity=".8" stroke="#2563eb" strokeWidth="3"/><line x1="108" y1="75" x2="212" y2="75" stroke="#dc2626" strokeWidth="3"/><line x1="160" y1="75" x2="212" y2="75" stroke="#0f766e" strokeWidth="4"/><circle cx="160" cy="75" r="4" fill="#172033"/><text x="160" y="62" textAnchor="middle" fontSize="12" fill="#172033">מרכז</text><text x="160" y="99" textAnchor="middle" fontSize="12" fill="#991b1b">קוטר</text><text x="190" y="66" textAnchor="middle" fontSize="11" fill="#0f766e">רדיוס</text></> : <><rect x="65" y="30" width="190" height="90" rx="4" fill="#dbeafe" stroke="#2563eb" strokeWidth="3"/><text x="160" y="22" textAnchor="middle" fontSize="13" fill="#1d4ed8">אורך</text><text x="160" y="79" textAnchor="middle" fontSize="17" fontWeight="700" fill="#1e3a8a">{id.includes("area-square") ? "שטח = צלע × צלע" : "שטח = אורך × רוחב"}</text><text x="42" y="78" textAnchor="middle" fontSize="12" fill="#1d4ed8">רוחב</text></>}
       </svg>
-      <p className="visualCaption">{circleArea ? "שטח עיגול = π × r². ברדיוס 2 ס״מ: 3.14 × 2² = 12.56 סמ״ר." : circle ? "הקוטר עובר דרך המרכז; הרדיוס הוא חצי ממנו." : area ? "סופרים כמה מקום הצורה תופסת — ביחידות בריבוע." : "מ־מ״מ לס״מ מחלקים ב־10; מס״מ למטר מחלקים ב־100."}</p>
+      <p className="visualCaption">{circleArea ? "שטח עיגול = π × r². ברדיוס 2 ס״מ: 3.14 × 2² = 12.56 סמ״ר." : circle ? "הקוטר עובר דרך המרכז; הרדיוס הוא חצי ממנו." : id.includes("area-square") ? "שטח ריבוע = צלע × צלע. צלע באורך 5 מטרים נותנת שטח של 25 מ״ר." : area ? "שטח מלבן = אורך × רוחב. אורך 6 ס״מ ורוחב 3 ס״מ נותנים 18 סמ״ר." : "בגאומטריה נזהה את הצורה ואת המידות שלה לפני שבוחרים נוסחה."}</p>
     </div>;
   }
   if (isExponentLesson(exercise)) {
