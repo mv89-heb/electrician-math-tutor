@@ -1094,3 +1094,14 @@ describe("geometry and unit conversion guidance matches the exercise", () => {
     expect(geometryGuidanceForExercise("geometry-radius-1")?.correct).toContain("לכפול");
   });
 });
+
+
+describe("formula isolation reinforcement stays on topic", () => {
+  it("does not replace variable-isolation practice with a generic units quiz", () => {
+    const exercise = generateReinforcement("שינוי נושא נוסחה", 4, "unit");
+    expect(exercise?.prompt).toBe("A = B × C. כיצד נבודד את C כאשר B אינו אפס?");
+    expect(exercise?.accepted).toContain("C=A/B");
+    expect(exercise?.hint2).toContain("C = A ÷ B");
+    expect(exercise?.explanation).toContain("מחלקים את שני האגפים");
+  });
+});
