@@ -969,3 +969,34 @@ body{color:var(--ink)}
   .handwritingTools{grid-template-columns:repeat(2,minmax(0,1fr))}
   .handwritingCanvas{height:190px}
 }
+
+
+/* Focused exercise screen: prompt and answer first, optional learning tools below. */
+.exerciseCard.exerciseEnter{max-width:920px;margin-inline:auto;padding:clamp(16px,3vw,30px);border:1px solid #e1e7f0;border-radius:22px;box-shadow:0 12px 34px rgba(28,45,74,.06)}
+.exerciseCard.exerciseEnter h2{margin-bottom:14px;line-height:1.35}
+.exerciseCard.exerciseEnter .teachingNote{margin-bottom:16px}
+.exerciseCard.exerciseEnter .question{margin:0 0 14px;padding:clamp(18px,3vw,26px);font-size:clamp(20px,2.5vw,25px);line-height:1.65;background:#f4f8ff;border-color:#d8e5fb}
+.exerciseCard.exerciseEnter .finalAnswerPanel{margin:0;padding:16px;border:1px solid #cbdcf5;border-radius:16px;background:#fff;box-shadow:0 4px 14px rgba(36,74,130,.04)}
+.exerciseCard.exerciseEnter .finalAnswerPanel>label{font-size:15px;margin-bottom:9px}
+.exerciseCard.exerciseEnter .answerRow input{min-width:0;min-height:48px;font-size:17px}
+.exerciseCard.exerciseEnter .answerRow .primary{justify-content:center;min-height:48px;white-space:nowrap}
+.exerciseCard.exerciseEnter .feedback{margin-top:12px}
+.exerciseCard.exerciseEnter .teacherTip{margin:12px 0;padding:12px 14px}
+.exerciseCard.exerciseEnter .guidedSolutionToggle{margin-top:14px;margin-bottom:10px}
+.exerciseCard.exerciseEnter .freeformToggle{margin:12px 0 8px}
+.exerciseResources{margin-top:18px;border:1px solid #e0e7f0;border-radius:14px;background:#fbfcfe;overflow:hidden}
+.exerciseResources>summary{padding:14px 16px;cursor:pointer;font-weight:800;color:#334155;list-style-position:inside}
+.exerciseResources>summary::marker{color:#1769ff}
+.exerciseResources[open]>summary{border-bottom:1px solid #e0e7f0;background:#f3f7fd}
+.exerciseResourcesContent{padding:14px;display:grid;gap:10px}
+.exerciseResourcesContent>*{margin-top:0!important}
+.exerciseResourcesContent .formulaChoicePanel{margin:0}
+@media(max-width:640px){
+  .shell{padding:12px 10px 32px}
+  .exerciseCard.exerciseEnter{padding:15px;border-radius:16px}
+  .exerciseCard.exerciseEnter h2{font-size:21px}
+  .exerciseCard.exerciseEnter .answerRow{flex-direction:column}
+  .exerciseCard.exerciseEnter .answerRow .primary{width:100%}
+  .exerciseCard.exerciseEnter .finalAnswerPanel{padding:12px}
+  .exerciseResourcesContent{padding:10px}
+}
