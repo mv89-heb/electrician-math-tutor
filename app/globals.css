@@ -846,3 +846,18 @@ body{color:var(--ink)}
 .guidedSolutionToggle small{color:#64748b;font-size:12px;font-weight:500;line-height:1.5}
 .guidedSolutionToggleIcon{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:9px;background:#e6eefb;color:#2457d6;font-size:21px;font-weight:700}
 .guidedSolutionToggle:focus-visible{outline:3px solid #1769ff55;outline-offset:2px}
+
+
+/* Notebook-style math preview for student-written solutions */
+.notebookEditorWrap{display:grid;gap:8px}
+.notebookEditorHeading{display:flex;flex-direction:column;gap:3px}
+.notebookEditorHeading strong{font-size:14px;color:#24334d}
+.notebookEditorHeading span{font-size:12px;line-height:1.6;color:#667085}
+.solutionMethodField .notebookEditorWrap textarea{min-height:115px;background:#fffef8;border-color:#d9d4c3;font-size:17px;line-height:1.9}
+.notebookPreviewLabel{margin-top:3px;font-size:12px;font-weight:800;color:#475569}
+.notebookPreview{min-height:94px;padding:12px 16px;border:1px solid #dbe4f0;border-radius:10px;background-color:#fff;background-image:linear-gradient(#e8eff9 1px,transparent 1px);background-size:100% 35px;color:#1f2937;overflow-x:auto}
+.notebookLine{display:flex;align-items:center;gap:4px;min-height:35px;white-space:pre-wrap;font-family:"Cambria Math","STIX Two Math",serif;font-size:19px;line-height:1.7}
+.notebookFraction{display:inline-flex;align-items:center;vertical-align:middle;padding:2px 1px}
+.notebookFraction .katex{font-size:1.08em}
+.notebookEmpty{min-height:72px;display:flex;align-items:center;padding:12px 15px;border:1px dashed #cbd5e1;border-radius:10px;background:#fff;color:#94a3b8;font-size:13px;line-height:1.6}
+@media(max-width:600px){.notebookPreview{padding:10px}.notebookLine{font-size:17px}.solutionMethodField .notebookEditorWrap textarea{font-size:16px}}
