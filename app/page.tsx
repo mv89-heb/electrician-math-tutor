@@ -150,6 +150,15 @@ function NotebookEquationEditor({ value, onChange }: { value: string; onChange: 
         <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" ÷ ")} aria-label="הוסף סימן חילוק">÷</button>
         <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" = ")} aria-label="הוסף סימן שווה">=</button>
         <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol("( )")} aria-label="הוסף סוגריים">( )</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol("√( )")} aria-label="הוסף שורש">√</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol("²")} aria-label="הוסף חזקה שתיים">x²</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol("³")} aria-label="הוסף חזקה שלוש">x³</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" Ω")} aria-label="הוסף יחידת אוהם">Ω</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" V")} aria-label="הוסף יחידת וולט">V</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" A")} aria-label="הוסף יחידת אמפר">A</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" W")} aria-label="הוסף יחידת ואט">W</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" Hz")} aria-label="הוסף יחידת הרץ">Hz</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol("V = I × R")} aria-label="הוסף נוסחת חוק אוהם">חוק אוהם</button>
       </div>
     </div>
     <div
