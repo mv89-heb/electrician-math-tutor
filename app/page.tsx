@@ -571,6 +571,8 @@ export default function Home() {
   const [showGuidedSolution, setShowGuidedSolution] = useState(false);
   const [guidedFeedback, setGuidedFeedback] = useState<"idle" | "wrong" | "correct" | "complete">("idle");
   const [showFreeformSolution, setShowFreeformSolution] = useState(false);
+  const [solutionInputMode, setSolutionInputMode] = useState<"type" | "handwrite">("type");
+  const [showWritingHelpers, setShowWritingHelpers] = useState(false);
   function insertSolutionText(text: string) {
     const current = solutionMethod;
     const next = current + text;
@@ -1055,55 +1057,52 @@ export default function Home() {
                 {showFreeformSolution && (
                 <div className="solutionMethodField">
                   <div className="solutionBuilderHeading">
-                    <label htmlFor="solution-method">רוצה גם לכתוב את הדרך במילים שלך?</label>
-                    <span>אפשר להיעזר בכפתורים או לכתוב בחופשיות.</span>
+                    <label>מחברת הפתרון</label>
+                    <span>בחר איך נוח לך לפתור. אפשר להחליף בכל רגע.</span>
                   </div>
-                  <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
-                    {[
-                      { label: "1. הנוסחה", value: "נוסחה: " },
-                      { label: "2. הצבת מספרים", value: "הצבה: " },
-                      { label: "3. החישוב", value: "חישוב: " },
-                      { label: "4. בדיקה", value: "בדיקה: " },
-                    ].map((step) => (
-                      <button key={step.label} type="button" className="solutionStepButton"
-                        onMouseDown={(event) => event.preventDefault()} onClick={() => insertSolutionText((solutionMethod && !solutionMethod.endsWith("\n") ? "\n" : "") + step.value)}>
-                        {step.label}
-                      </button>
-                    ))}
+                  <div className="solutionModeTabs" role="tablist" aria-label="צורת כתיבת הפתרון">
+                    <button type="button" role="tab" aria-selected={solutionInputMode === "type"} className={solutionInputMode === "type" ? "solutionModeTab active" : "solutionModeTab"} onClick={() => setSolutionInputMode("type")}>⌨️ הקלדה במחברת</button>
+                    <button type="button" role="tab" aria-selected={solutionInputMode === "handwrite"} className={solutionInputMode === "handwrite" ? "solutionModeTab active" : "solutionModeTab"} onClick={() => setSolutionInputMode("handwrite")}>✍️ כתיבה ביד</button>
                   </div>
-                  <div className="solutionSymbols" aria-label="הוספת סימן מתמטי">
-                    {[
-                      { label: "½ שבר", value: "3/4" },
-                      { label: "+ חיבור", value: " + " }, { label: "− חיסור", value: " − " },
-                      { label: "× כפל", value: " × " }, { label: "÷ חילוק", value: " ÷ " },
-                      { label: "= שווה", value: " = " }, { label: "² חזקה", value: "²" },
-                      { label: "√ שורש", value: "√" }, { label: "V מתח", value: "V" },
-                      { label: "I זרם", value: "I" }, { label: "R התנגדות", value: "R" },
-                      { label: "P הספק", value: "P" }, { label: "Ω אוהם", value: "Ω" },
-                    ].map((symbol) => (
-                      <button key={symbol.label} type="button" className="solutionSymbolButton"
-                        onMouseDown={(event) => event.preventDefault()} onClick={() => insertSolutionText(symbol.value)}>
-                        {symbol.label}
-                      </button>
-                    ))}
-                  </div>
-                  <HandwritingNotebook />
-                  <div className="notebookEditorWrap">
-                    <div className="notebookEditorHeading">
-                      <strong>או הקלד את הדרך והנוסחאות</strong>
-                      <span>אפשר להקליד רגיל; לדוגמה, 3/4 יוצג בתצוגה כשבר עומד כמו במחברת.</span>
+                  {solutionInputMode === "type" ? (
+                    <div className="notebookEditorWrap">
+                      <NotebookEquationEditor value={solutionMethod} onChange={setSolutionMethod} />
+                      <p className="notebookModeHint">טיפ קטן: לחץ על „הוסף שבר” כדי למלא מונה ומכנה בנפרד. אפשר גם לכתוב הסבר במילים.</p>
                     </div>
-                    <NotebookEquationEditor value={solutionMethod} onChange={setSolutionMethod} />
-                    <span className="notebookPreviewLabel">תצוגה מתמטית של הפתרון</span>
-                    <NotebookMathPreview value={solutionMethod} />
-                    <div className="notebookPreviewLabel">תצוגת הנוסחאות שהקלדת</div>
-                    <NotebookMathPreview value={solutionMethod} />
-                  </div>
-                  <div className="solutionWritingTips" id="solution-method-help">
-                    <strong>אפשר לכתוב ממש במילים שלך</strong>
-                    <span>למשל: „חילקתי את המתח בהתנגדות, ולכן הזרם הוא 2 אמפר”.</span>
-                    <small>הבחירות המודרכות בודקות את השלבים שבחרת; בדיקת התרגיל הראשית עדיין בודקת את התשובה הסופית.</small>
-                  </div>
+                  ) : (
+                    <div className="notebookEditorWrap">
+                      <HandwritingNotebook />
+                      <p className="notebookModeHint">הכתיבה ביד היא טיוטה חזותית. את התשובה הסופית מזינים בשדה שמעל.</p>
+                    </div>
+                  )}
+                  <button type="button" className="writingHelpersToggle" aria-expanded={showWritingHelpers} onClick={() => setShowWritingHelpers((visible) => !visible)}>
+                    <span>{showWritingHelpers ? "הסתר עזרים" : "צריך עזרה בסידור הפתרון?"}</span>
+                    <span aria-hidden="true">{showWritingHelpers ? "−" : "+"}</span>
+                  </button>
+                  {showWritingHelpers && (
+                    <div className="writingHelpers">
+                      <p>אפשר לבנות את הפתרון בארבעה צעדים קצרים:</p>
+                      <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
+                        {[
+                          { label: "1. הנוסחה", value: "נוסחה: " },
+                          { label: "2. הצבה", value: "הצבה: " },
+                          { label: "3. חישוב", value: "חישוב: " },
+                          { label: "4. בדיקה", value: "בדיקה: " },
+                        ].map((step) => (
+                          <button key={step.label} type="button" className="solutionStepButton" onClick={() => insertSolutionText((solutionMethod && !solutionMethod.endsWith("\n") ? "\n" : "") + step.value)}>{step.label}</button>
+                        ))}
+                      </div>
+                      <div className="solutionSymbols" aria-label="סימנים מתמטיים שימושיים">
+                        {[
+                          { label: "+", value: " + " }, { label: "−", value: " − " },
+                          { label: "×", value: " × " }, { label: "÷", value: " ÷ " },
+                          { label: "=", value: " = " }, { label: "²", value: "²" },
+                        ].map((symbol) => (
+                          <button key={symbol.label} type="button" className="solutionSymbolButton" onClick={() => insertSolutionText(symbol.value)}>{symbol.label}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 )}
 
