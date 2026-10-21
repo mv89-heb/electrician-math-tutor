@@ -11,6 +11,7 @@ import { buildCheckpoint, checkpointPasses, shouldRunCheckpoint, type Checkpoint
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, recordFinalExam, type LearningState } from "../lib/learning";
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
+import { errorGuidance } from "../lib/error-guidance";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -519,23 +520,7 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
   ];
 }
 
-function errorGuidance(exercise: Exercise, answer: string) {
-  const normalized = normalize(answer);
 
-  if (exercise.id.includes("zero-") && normalized.includes("-")) {
-    return "נראה שאולי הלכת לכיוון של חיסור. בוא נבדוק יחד מה הפעולה שמופיעה ליד X.";
-  }
-
-  if (exercise.topic === "כפל במשוואות" && normalized !== "") {
-    return "בתרגיל הזה X מוכפל במספר. חפש את הפעולה ההפוכה לכפל.";
-  }
-
-  if (exercise.topic === "חילוק במשוואות") {
-    return "כש-X מחולק ב־2, חשב איזו פעולה תחזיר אותנו למספר המקורי.";
-  }
-
-  return "זה לא התשובה הפעם — וזה בסדר. השתמש ברמז הראשון, ונסה שוב.";
-}
 
 function LessonVisual({ exercise }: { exercise: Exercise }) {
   const id = exercise.id;
