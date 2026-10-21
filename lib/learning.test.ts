@@ -797,7 +797,7 @@ describe("basic formula guided steps match the requested task", () => {
   it("uses division by I to isolate resistance", async () => {
     const { basicFormulaGuidance } = await import("./basic-formula-guidance");
     const guidance = basicFormulaGuidance("formula-2");
-    expect(guidance?.question).toContain("לבודד את R");
+    expect(guidance?.question).toContain("תבודד את R");
     expect(guidance?.correct).toContain("לחלק");
     expect(guidance?.explanation).toContain("R = V ÷ I");
   });
@@ -805,7 +805,7 @@ describe("basic formula guided steps match the requested task", () => {
   it("uses division by R to isolate current", async () => {
     const { basicFormulaGuidance } = await import("./basic-formula-guidance");
     const guidance = basicFormulaGuidance("formula-3");
-    expect(guidance?.question).toContain("לבודד את I");
+    expect(guidance?.question).toContain("תבודד את I");
     expect(guidance?.correct).toContain("לחלק");
     expect(guidance?.explanation).toContain("I = V ÷ R");
   });
