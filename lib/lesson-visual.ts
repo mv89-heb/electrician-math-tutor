@@ -137,7 +137,7 @@ export type PercentageVisual = {
 export function percentageVisualForExercise(
   exercise: Pick<Exercise, "prompt">,
 ): PercentageVisual {
-  const match = exercise.prompt.match(/כמה זה\\s+(\\d+(?:[.,]\\d+)?)%\\s*מתוך\\s*(\\d+(?:[.,]\\d+)?)/);
+  const match = exercise.prompt.match(/כמה זה\s+(\d+(?:[.,]\d+)?)%\s*מתוך\s*(\d+(?:[.,]\d+)?)/);
   if (!match) {
     return {
       heading: "מחשבים אחוז מתוך כמות",
