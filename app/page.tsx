@@ -571,21 +571,10 @@ export default function Home() {
   const [showGuidedSolution, setShowGuidedSolution] = useState(false);
   const [guidedFeedback, setGuidedFeedback] = useState<"idle" | "wrong" | "correct" | "complete">("idle");
   const [showFreeformSolution, setShowFreeformSolution] = useState(false);
-  const solutionTextareaRef = useRef<HTMLTextAreaElement>(null);
-
   function insertSolutionText(text: string) {
-    const field = solutionTextareaRef.current;
-    const start = field?.selectionStart ?? solutionMethod.length;
-    const end = field?.selectionEnd ?? solutionMethod.length;
-    const next = solutionMethod.slice(0, start) + text + solutionMethod.slice(end);
+    const current = solutionMethod;
+    const next = current + text;
     setSolutionMethod(next);
-    requestAnimationFrame(() => {
-      const textarea = solutionTextareaRef.current;
-      if (!textarea) return;
-      textarea.focus();
-      const caret = start + text.length;
-      textarea.setSelectionRange(caret, caret);
-    });
   }
   const [hint, setHint] = useState<1 | 2 | 0>(0);
   const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">("idle");
