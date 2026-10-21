@@ -390,3 +390,60 @@ describe("adaptive short learning path", () => {
     expect(curriculum[chooseNextExercise(curriculum, state)].id).toBe("zero-3");
   });
 });
+
+
+describe("persisted learning state validation", () => {
+  it("normalizes malformed counters and does not treat the string false as an exam pass", async () => {
+    const { loadLearningState } = await import("./learning");
+    const storage = {
+      getItem: () => JSON.stringify({
+        ...emptyLearningState,
+        version: 7,
+        currentIndex: "not-a-number",
+        attempts: "Infinity",
+        finalExamPassed: "false",
+        stats: {
+          "מהו נעלם?": {
+            attempts: -4,
+            correct: "Infinity",
+            hints: "bad",
+            streak: 2.8,
+            unassistedCorrect: 1,
+          },
+        },
+      }),
+      setItem: () => undefined,
+    } as unknown as Storage;
+
+    const state = loadLearningState(storage);
+    expect(state.currentIndex).toBe(0);
+    expect(state.attempts).toBe(0);
+    expect(state.finalExamPassed).toBe(false);
+    expect(state.stats["מהו נעלם?"]).toEqual({
+      attempts: 0,
+      correct: 0,
+      hints: 0,
+      streak: 2,
+      unassistedCorrect: 1,
+    });
+  });
+
+  it("preserves a genuine boolean exam pass and valid progress", async () => {
+    const { loadLearningState } = await import("./learning");
+    const storage = {
+      getItem: () => JSON.stringify({
+        ...emptyLearningState,
+        version: 7,
+        currentIndex: 4,
+        attempts: 12,
+        finalExamPassed: true,
+      }),
+      setItem: () => undefined,
+    } as unknown as Storage;
+
+    const state = loadLearningState(storage);
+    expect(state.currentIndex).toBe(4);
+    expect(state.attempts).toBe(12);
+    expect(state.finalExamPassed).toBe(true);
+  });
+});
