@@ -623,6 +623,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const isElectrical = isElectricalLesson(exercise);
   const isPowerLesson = isElectricalPowerLesson(exercise);
   const isPowerSubLesson = exercise.id === "electrical-power-sub-1";
+  const isResistanceLesson = exercise.id === "ohm-2";
   const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
   const isSquareArea = exercise.id.includes("area-square");
@@ -658,6 +659,14 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
         </div>
         <div className="labAnswer"><small>הספק = מתח × זרם</small><strong>{a} × {b} = {a*b} וואט</strong></div>
         <p>נסו לשנות את המתח ואת הזרם. כשאחד מהם גדל והשני נשאר קבוע, ההספק משתנה בהתאם.</p>
+      </> : isResistanceLesson ? <>
+        <div className="labFormula" dir="ltr"><b>R = V ÷ I</b></div>
+        <div className="labControls">
+          <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
+          <label>זרם (אמפר) <b>{b} A</b><input aria-label="זרם" type="range" min="1" max="12" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+        </div>
+        <div className="labAnswer"><small>התנגדות = מתח ÷ זרם</small><strong>{a} ÷ {b} = {(a/b).toFixed(2)} אוהם</strong></div>
+        <p>שנו את המתח ואת הזרם. כדי למצוא התנגדות, מחלקים את המתח בזרם.</p>
       </> : <>
         <div className="labFormula" dir="ltr"><b>V = I × R</b></div>
         <div className="labControls">
