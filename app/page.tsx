@@ -15,6 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { fractionGuidanceForExercise } from "../lib/fraction-guidance";
+import { divisionEquationGuidance } from "../lib/division-equation-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
 import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
@@ -472,11 +473,12 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     methodOptions = [correctMethod, "לכפול שוב באותו מספר", "להוסיף את המספר לתוצאה"];
     firstQuestion = "איך משאירים את X לבד כשהוא מוכפל?";
     methodExplanation = "הפעולה ההפוכה לכפל היא חילוק.";
-  } else if (/X\s*[÷/]\s*\d+/.test(prompt)) {
-    correctMethod = "לכפול את התוצאה במספר שבו חילקו";
-    methodOptions = [correctMethod, "לחלק שוב באותו מספר", "להחסיר את המספר מהתוצאה"];
-    firstQuestion = "איך מבטלים את החילוק ליד X?";
-    methodExplanation = "הפעולה ההפוכה לחילוק היא כפל.";
+  } else if (divisionEquationGuidance(prompt)) {
+    const guidance = divisionEquationGuidance(prompt)!;
+    correctMethod = guidance.correct;
+    methodOptions = guidance.options;
+    firstQuestion = guidance.question;
+    methodExplanation = guidance.explanation;
   } else if (/×/.test(prompt) && /\+|\-/.test(prompt) && !/\(/.test(prompt)) {
     correctMethod = "לבצע כפל לפני חיבור או חיסור";
     methodOptions = [correctMethod, "לבצע תמיד חיבור לפני כפל", "לחשב משמאל לימין בלי להתחשב בסדר פעולות"];

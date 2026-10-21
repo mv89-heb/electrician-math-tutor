@@ -1033,3 +1033,26 @@ describe("generated equation models support signed equations", () => {
     });
   });
 });
+
+
+describe("division equation guidance includes the actual divisor", () => {
+  it("explains division by a positive number", async () => {
+    const { divisionEquationGuidance } = await import("./division-equation-guidance");
+    const guidance = divisionEquationGuidance("X ÷ 4 = 6. מה הערך של X?");
+    expect(guidance?.correct).toContain("ב־4");
+    expect(guidance?.explanation).toContain("כפל ב־4");
+  });
+
+  it("explains division by a negative number with its sign", async () => {
+    const { divisionEquationGuidance } = await import("./division-equation-guidance");
+    const guidance = divisionEquationGuidance("X ÷ (-5) = -4. מה הערך של X?");
+    expect(guidance?.correct).toContain("ב־(-5)");
+    expect(guidance?.explanation).toContain("כפל ב־(-5)");
+  });
+
+  it("does not generate division guidance for zero or unrelated expressions", async () => {
+    const { divisionEquationGuidance } = await import("./division-equation-guidance");
+    expect(divisionEquationGuidance("X ÷ 0 = 4")).toBeNull();
+    expect(divisionEquationGuidance("2 × X = 8")).toBeNull();
+  });
+});
