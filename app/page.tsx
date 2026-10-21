@@ -31,6 +31,7 @@ function toKatexExpression(value: string) {
     .replace(/([A-Za-z0-9]+)\s*(?:÷|\/)\s*([A-Za-z0-9]+)/g, "\\frac{$1}{$2}")
     .replace(/×/g, "\\times")
     .replace(/−/g, "-")
+    .replace(/π/g, "\\pi")
     .replace(/Ω/g, "\\Omega")
     .replace(/%/g, "\\%")
     .replace(/²/g, "^{2}")
