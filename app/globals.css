@@ -905,3 +905,10 @@ body{color:var(--ink)}
 .formulaReference span{font-size:11px;line-height:1.45;color:#59677b;text-align:center}
 .formulaReference small{grid-column:1/-1;font-size:11px;line-height:1.7;color:#667085}
 @media(max-width:520px){.formulaChoicePanel{padding:12px}.formulaChoiceOptions{grid-template-columns:repeat(2,minmax(0,1fr))}.formulaChoiceOption{font-size:13px;padding:8px 5px}}
+
+/* Render all displayed equations as real mathematical notation, with stacked fractions. */
+.mathLine{font-family:"Cambria Math","STIX Two Math",serif;letter-spacing:0;white-space:normal;overflow-x:auto}
+.mathLine .katex-display{margin:.1em 0}
+.renderedMath{display:inline-block;vertical-align:middle;direction:ltr;unicode-bidi:isolate}
+.formulaChoiceOption .renderedMath .katex{font-size:1.05em}
+.formulaReference b .renderedMath .katex{font-size:1.05em}
