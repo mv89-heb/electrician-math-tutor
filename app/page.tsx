@@ -14,6 +14,7 @@ import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
+import { fractionGuidanceForExercise } from "../lib/fraction-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
 import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
@@ -482,10 +483,18 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     firstQuestion = "איזו פעולה מבצעים קודם?";
     methodExplanation = "לפי סדר הפעולות, כפל וחילוק קודמים לחיבור וחיסור.";
   } else if (/שבר|fraction/i.test(topic + " " + id)) {
-    correctMethod = /צמצם|צמצום/.test(prompt) ? "לחלק את המונה והמכנה באותו מספר" : /\+/.test(prompt) ? "לבדוק אם המכנים שווים לפני שמחברים" : "לזהות את המונה ואת המכנה";
-    methodOptions = [correctMethod, "לשנות רק את המונה", "לחבר את המונה והמכנה יחד"];
-    firstQuestion = "מהו הצעד הנכון בעבודה עם השבר?";
-    methodExplanation = "בשברים חשוב לשמור על הקשר בין המונה למכנה ולא לשנות רק אחד מהם.";
+    const guidance = fractionGuidanceForExercise(exercise);
+    if (guidance) {
+      firstQuestion = guidance.question;
+      correctMethod = guidance.correct;
+      methodOptions = guidance.options;
+      methodExplanation = guidance.explanation;
+    } else {
+      correctMethod = /צמצם|צמצום/.test(prompt) ? "לחלק את המונה והמכנה באותו מספר" : /\+/.test(prompt) ? "לבדוק אם המכנים שווים לפני שמחברים" : "לזהות את המונה ואת המכנה";
+      methodOptions = [correctMethod, "לשנות רק את המונה", "לחבר את המונה והמכנה יחד"];
+      firstQuestion = "מהו הצעד הנכון בעבודה עם השבר?";
+      methodExplanation = "בשברים חשוב לשמור על הקשר בין המונה למכנה ולא לשנות רק אחד מהם.";
+    }
   } else if (/חזקה/.test(topic) || /\^|²/.test(prompt)) {
     correctMethod = "לכפול את המספר בעצמו לפי מספר הפעמים שבחזקה";
     methodOptions = [correctMethod, "לחבר את המספר לעצמו", "להכפיל את המספר בחזקה"];
