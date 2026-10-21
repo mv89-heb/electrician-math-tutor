@@ -1064,7 +1064,7 @@ export default function Home() {
                 {feedback === "wrong" && <div className="feedback hint"><Lightbulb size={20} /><div><strong>לא נורא. אנחנו לומדים צעד־צעד.</strong><MathPrompt prompt={errorGuidance(exercise, answer)} /><MathPrompt prompt={hint === 1 ? exercise.hint1 : exercise.hint2} />{hint === 1 && <button onClick={() => setHint(2)} className="linkBtn">אני צריך עוד רמז</button>}</div></div>}
                 {feedback === "correct" && <div className="feedback success"><CheckCircle2 size={22} /><div><strong>מצוין! 🎯</strong><MathPrompt prompt={exercise.explanation} />{(learning.reviews[exercise.id]?.lapses ?? 0) >= 2 && <small>היו כמה טעויות בנושא הזה, אז נחזור אליו בקצרה בהמשך.</small>}<button onClick={next} className="nextBtn">התרגיל הבא <ChevronLeft size={18} /></button></div></div>}
                 {stageGateMessage && <div className="teacherTip"><Target size={18} /><span>{stageGateMessage}</span></div>}
-                {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>
+                {feedback === "idle" && <div className="teacherTip"><Lightbulb size={18} /><span>קח את הזמן. נסה לבד. אם קשה — נתקדם יחד, בלי לקפוץ לפתרון.</span></div>}
 
                 <button type="button" className="guidedSolutionToggle" aria-expanded={showGuidedSolution} onClick={() => setShowGuidedSolution((visible) => !visible)}>
                   <span><strong>{showGuidedSolution ? "הסתר פתרון מודרך" : "נתקעת? פתח פתרון מודרך"}</strong><small>{showGuidedSolution ? "חזור לתרגיל ונסה לפתור בעצמך" : "רמזים ושלבי פתרון ייחשפו רק אם תבקש עזרה"}</small></span>
@@ -1161,9 +1161,6 @@ export default function Home() {
                     <FormulaChoicePanel key={exercise.id} exercise={exercise} />
                   </div>
                 </details>
-
-
-}
               </div>
 
               )}
