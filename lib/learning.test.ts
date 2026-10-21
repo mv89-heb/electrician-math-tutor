@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { curriculum } from "./curriculum";
 import { checkpointPasses } from "./checkpoints";
-import { generateReinforcement } from "./exercise-generator";
+import { generateExercise, generateReinforcement } from "./exercise-generator";
 import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
@@ -445,5 +445,49 @@ describe("persisted learning state validation", () => {
     expect(state.currentIndex).toBe(4);
     expect(state.attempts).toBe(12);
     expect(state.finalExamPassed).toBe(true);
+  });
+});
+
+
+describe("generated question feedback consistency", () => {
+  it("matches each generated percent prompt with its answer and explanation", () => {
+    const expected = [
+      ["10% מתוך 100", "10"],
+      ["20% מתוך 100", "20"],
+      ["10% מתוך 200", "20"],
+      ["25% מתוך 200", "50"],
+      ["50% מתוך 80", "40"],
+    ];
+    expected.forEach(([prompt, answer], seed) => {
+      const exercise = generateExercise("אחוזים", seed);
+      expect(exercise?.prompt).toContain(prompt);
+      expect(exercise?.accepted).toContain(answer);
+      expect(exercise?.explanation).toContain(answer);
+    });
+  });
+
+  it("matches decimal explanations to the actual expression", () => {
+    const expected = [
+      ["0.5 + 0.5", "1"],
+      ["0.2 + 0.3", "0.5"],
+      ["1.2 + 0.3", "1.5"],
+      ["2.5 - 0.5", "2"],
+      ["0.8 + 0.2", "1"],
+    ];
+    expected.forEach(([prompt, answer], seed) => {
+      const exercise = generateExercise("מספרים עשרוניים", seed);
+      expect(exercise?.prompt).toContain(prompt);
+      expect(exercise?.accepted).toContain(answer);
+      expect(exercise?.explanation).toContain(answer);
+    });
+  });
+
+  it("uses the actual divisor in generated division explanations", () => {
+    for (let seed = 0; seed < 5; seed += 1) {
+      const exercise = generateExercise("חילוק במשוואות", seed);
+      const divisor = exercise?.prompt.match(/÷\\s*(\\d+)/)?.[1];
+      expect(exercise?.explanation).toContain(exercise?.accepted[0] ?? "");
+      expect(exercise?.explanation).toContain(divisor ?? "no-divisor");
+    }
   });
 });
