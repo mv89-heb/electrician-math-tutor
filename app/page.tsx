@@ -12,7 +12,7 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
-import { isExponentLesson } from "../lib/lesson-visual";
+import { fractionVisualForExercise, isExponentLesson } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -526,15 +526,13 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
 function LessonVisual({ exercise }: { exercise: Exercise }) {
   const id = exercise.id;
   if (id.includes("fraction")) {
-    const isReduction = id.includes("reduce");
-    const count = isReduction ? 8 : 7;
-    const filled = id.includes("reduce") ? 4 : id.includes("add") ? 5 : 3;
+    const visual = fractionVisualForExercise(exercise);
     return <div className="learningVisual" aria-label="המחשה חזותית של שברים">
-      <div className="visualHeading"><span>👀</span><strong>{isReduction ? "אותו חלק — פחות חתיכות" : "שבר הוא חלק מתוך שלם"}</strong></div>
-      <div className="fractionVisual">
-        <div className="fractionBar" dir="ltr">{Array.from({length: count}, (_, i) => <span key={i} className={i < filled ? "piece filled" : "piece"} />)}</div>
-        <div className="fractionLabels" dir="ltr"><strong>{isReduction ? "4 / 8" : id.includes("add") ? "2/7 + 3/7" : "חלקים מתוך שלם"}</strong><span>{isReduction ? "4 חלקים צבועים מתוך 8" : "המכנה מספר את כל החלקים"}</span></div>
-      </div>
+      <div className="visualHeading"><span>👀</span><strong>{visual.heading}</strong></div>
+      {visual.kind === "bar" ? <div className="fractionVisual">
+        <div className="fractionBar" dir="ltr">{Array.from({length: visual.count}, (_, i) => <span key={i} className={i < visual.filled ? "piece filled" : "piece"} />)}</div>
+        <div className="fractionLabels" dir="ltr"><strong>{visual.label}</strong><span>{visual.caption}</span></div>
+      </div> : <><div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.label}</span></div><p className="visualCaption">{visual.caption}</p></>}
     </div>;
   }
   if (id.includes("geometry") || id.includes("units")) {
