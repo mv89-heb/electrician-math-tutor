@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { isExponentLesson } from "./lesson-visual";
+import { fractionVisualForExercise, isExponentLesson } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -578,5 +578,31 @@ describe("lesson visuals match the learning topic", () => {
     expect(exponentLessons.every(isExponentLesson)).toBe(true);
     expect(electricalPowerLessons.length).toBeGreaterThan(0);
     expect(electricalPowerLessons.some(isExponentLesson)).toBe(false);
+  });
+});
+
+
+describe("fraction visuals match their exercise", () => {
+  it("uses the exact fraction operation and result for every advanced fraction lesson", () => {
+    const expected: Record<string, string> = {
+      "fraction-2": "1/2 + 1/2 = 1",
+      "fraction-reduce-1": "4/8 = 1/2",
+      "fraction-reduce-2": "6/9 = 2/3",
+      "fraction-add-same-1": "2/7 + 3/7 = 5/7",
+      "fraction-sub-same-1": "5/8 − 2/8 = 3/8",
+      "fraction-common-1": "1/2 + 1/4 = 2/4 + 1/4 = 3/4",
+      "fraction-multiply-1": "1/2 × 2/3 = 2/6 = 1/3",
+      "fraction-divide-1": "1/2 ÷ 1/4 = 1/2 × 4/1 = 2",
+    };
+    for (const [id, label] of Object.entries(expected)) {
+      const exercise = curriculum.find((item) => item.id === id)!;
+      expect(fractionVisualForExercise(exercise).label).toBe(label);
+    }
+  });
+
+  it("uses bars only for part-of-whole and reduction visuals", () => {
+    expect(fractionVisualForExercise({ id: "fraction-1" }).kind).toBe("bar");
+    expect(fractionVisualForExercise({ id: "fraction-3" }).kind).toBe("bar");
+    expect(fractionVisualForExercise({ id: "fraction-sub-same-1" }).kind).toBe("equation");
   });
 });
