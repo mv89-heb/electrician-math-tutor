@@ -116,9 +116,9 @@ function NotebookEquationEditor({ value, onChange }: { value: string; onChange: 
 
   return <div className="notebookEquationEditor">
     <div className="notebookEditorToolbar" dir="rtl">
-      <span>כתיבה מתמטית</span>
+      <span>כתיבה קצרה וחופשית</span>
       <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={insertFraction} aria-label="הוסף שבר עם מונה ומכנה"><span className="toolbarFraction" aria-hidden="true"><span>□</span><i></i><span>□</span></span> הוסף שבר</button>
-      <small>לחץ על השבר ומלא בנפרד את המונה ואת המכנה</small>
+      
     </div>
     <div
       ref={editorRef}
@@ -137,7 +137,7 @@ function NotebookEquationEditor({ value, onChange }: { value: string; onChange: 
           emitValue();
         }
       }}
-      data-placeholder="כתוב כאן את שלבי הפתרון. כדי ליצור שבר, לחץ על ״הוסף שבר״."
+      data-placeholder="אפשר לכתוב רק את החישוב בקצרה, למשל: 12 / 3 = 4. אין חובה לפרט את כל השלבים."
     />
   </div>;
 }
@@ -1058,7 +1058,7 @@ export default function Home() {
                 <div className="solutionMethodField">
                   <div className="solutionBuilderHeading">
                     <label>מחברת הפתרון</label>
-                    <span>בחר איך נוח לך לפתור. אפשר להחליף בכל רגע.</span>
+                    <span>אפשר לפתור בלי לכתוב כאן בכלל. אם נוח לך, הוסף רק חישוב קצר או כתוב ביד.</span>
                   </div>
                   <div className="solutionModeTabs" role="tablist" aria-label="צורת כתיבת הפתרון">
                     <button type="button" role="tab" aria-selected={solutionInputMode === "type"} className={solutionInputMode === "type" ? "solutionModeTab active" : "solutionModeTab"} onClick={() => setSolutionInputMode("type")}>⌨️ הקלדה במחברת</button>
@@ -1067,7 +1067,7 @@ export default function Home() {
                   {solutionInputMode === "type" ? (
                     <div className="notebookEditorWrap">
                       <NotebookEquationEditor value={solutionMethod} onChange={setSolutionMethod} />
-                      <p className="notebookModeHint">טיפ קטן: לחץ על „הוסף שבר” כדי למלא מונה ומכנה בנפרד. אפשר גם לכתוב הסבר במילים.</p>
+                      <p className="notebookModeHint">מספיק לכתוב חישוב קצר או דרך חלקית. לא חייבים למלא את כל השלבים; „הוסף שבר” זמין אם צריך.</p>
                     </div>
                   ) : (
                     <div className="notebookEditorWrap">
@@ -1081,7 +1081,7 @@ export default function Home() {
                   </button>
                   {showWritingHelpers && (
                     <div className="writingHelpers">
-                      <p>אפשר לבנות את הפתרון בארבעה צעדים קצרים:</p>
+                      <p>העזרים האלה אופציונליים — השתמש רק במה שחוסך לך הקלדה:</p>
                       <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
                         {[
                           { label: "1. הנוסחה", value: "נוסחה: " },
