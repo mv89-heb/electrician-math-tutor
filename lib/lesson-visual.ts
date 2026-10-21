@@ -23,3 +23,45 @@ export function fractionVisualForExercise(exercise: Pick<Exercise, "id">): Fract
   };
   return visuals[exercise.id] ?? { kind: "equation", heading: "עובדים עם השברים שבתרגיל", label: "קראו את השבר ופעלו לפי ההוראות", caption: "שימו לב למונה, למכנה ולפעולה המבוקשת." };
 }
+
+export type FormulaVisual = {
+  heading: string;
+  lhs: string;
+  operator: string;
+  rhs: string;
+  legend: string[];
+  caption: string;
+};
+
+export function formulaVisualForExercise(exercise: Pick<Exercise, "id" | "topic">): FormulaVisual {
+  if (exercise.id === "formula-subject-1") {
+    return {
+      heading: "מבודדים משתנה בנוסחה",
+      lhs: "A", operator: "=", rhs: "B × C",
+      legend: ["A = התוצאה", "B ו־C = גורמים בנוסחה"],
+      caption: "כדי לבודד את C, מחלקים את שני אגפי A = B × C ב־B (כאשר B אינו אפס): C = A/B."
+    };
+  }
+  if (exercise.id === "formula-subject-2") {
+    return {
+      heading: "מבודדים רוחב בנוסחת שטח",
+      lhs: "A", operator: "=", rhs: "L × W",
+      legend: ["A = שטח", "L = אורך", "W = רוחב"],
+      caption: "כדי למצוא רוחב, מחלקים את השטח באורך: W = A/L."
+    };
+  }
+  if (exercise.topic === "חשמל — הספק") {
+    return {
+      heading: "נוסחת ההספק החשמלי",
+      lhs: "P", operator: "=", rhs: "V × I",
+      legend: ["P = הספק (וואט)", "V = מתח (וולט)", "I = זרם (אמפר)"],
+      caption: "מכפילים את המתח בזרם כדי לחשב את ההספק."
+    };
+  }
+  return {
+    heading: "חוק אוהם",
+    lhs: "V", operator: "=", rhs: "I × R",
+    legend: ["V = מתח (וולט)", "I = זרם (אמפר)", "R = התנגדות (אוהם)"],
+    caption: "מזהים מה נתון ומה מחפשים, ואז מסדרים את חוק אוהם בהתאם."
+  };
+}

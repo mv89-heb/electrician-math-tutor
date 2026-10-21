@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { fractionVisualForExercise, isExponentLesson } from "./lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -604,5 +604,30 @@ describe("fraction visuals match their exercise", () => {
     expect(fractionVisualForExercise({ id: "fraction-1" }).kind).toBe("bar");
     expect(fractionVisualForExercise({ id: "fraction-3" }).kind).toBe("bar");
     expect(fractionVisualForExercise({ id: "fraction-sub-same-1" }).kind).toBe("equation");
+  });
+});
+
+
+describe("formula visuals match the lesson topic", () => {
+  it("uses the electrical power formula for power lessons", () => {
+    for (const id of ["power-1", "power-2", "electrical-power-sub-1"]) {
+      const exercise = curriculum.find((item) => item.id === id);
+      expect(exercise).toBeDefined();
+      expect(formulaVisualForExercise(exercise!).lhs).toBe("P");
+      expect(formulaVisualForExercise(exercise!).rhs).toBe("V × I");
+    }
+  });
+
+  it("uses the actual algebraic formula in formula-subject lessons", () => {
+    const generic = curriculum.find((item) => item.id === "formula-subject-1")!;
+    const area = curriculum.find((item) => item.id === "formula-subject-2")!;
+    expect(formulaVisualForExercise(generic).rhs).toBe("B × C");
+    expect(formulaVisualForExercise(area).rhs).toBe("L × W");
+  });
+
+  it("keeps Ohm's law visuals for Ohm's law lessons", () => {
+    const exercise = curriculum.find((item) => item.id === "ohm-1")!;
+    expect(formulaVisualForExercise(exercise).lhs).toBe("V");
+    expect(formulaVisualForExercise(exercise).rhs).toBe("I × R");
   });
 });

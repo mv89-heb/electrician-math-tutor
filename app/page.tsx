@@ -12,7 +12,7 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
-import { fractionVisualForExercise, isExponentLesson } from "../lib/lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -538,12 +538,13 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
   if (id.includes("geometry") || id.includes("units")) {
     const circle = id.includes("diameter") || id.includes("radius") || id.includes("circle");
     const area = id.includes("area");
+    const circleArea = id.includes("area-circle");
     return <div className="learningVisual" aria-label="המחשה חזותית של גאומטריה ומידות">
-      <div className="visualHeading"><span>📐</span><strong>{circle ? "מכירים את המעגל" : area ? "שטח הוא המקום שבתוך הצורה" : "ממירים יחידות באותו אורך"}</strong></div>
+      <div className="visualHeading"><span>📐</span><strong>{circleArea ? "שטח עיגול" : circle ? "מכירים את המעגל" : area ? "שטח הוא המקום שבתוך הצורה" : "ממירים יחידות באותו אורך"}</strong></div>
       <svg className="lessonDiagram" viewBox="0 0 320 150" role="img" aria-label={circle ? "מעגל עם רדיוס וקוטר" : "מלבן עם אורך ורוחב"}>
         {circle ? <><circle cx="160" cy="75" r="52" fill="#dbeafe" fillOpacity=".8" stroke="#2563eb" strokeWidth="3"/><line x1="108" y1="75" x2="212" y2="75" stroke="#dc2626" strokeWidth="3"/><line x1="160" y1="75" x2="212" y2="75" stroke="#0f766e" strokeWidth="4"/><circle cx="160" cy="75" r="4" fill="#172033"/><text x="160" y="62" textAnchor="middle" fontSize="12" fill="#172033">מרכז</text><text x="160" y="99" textAnchor="middle" fontSize="12" fill="#991b1b">קוטר</text><text x="190" y="66" textAnchor="middle" fontSize="11" fill="#0f766e">רדיוס</text></> : <><rect x="65" y="30" width="190" height="90" rx="4" fill="#dbeafe" stroke="#2563eb" strokeWidth="3"/><text x="160" y="22" textAnchor="middle" fontSize="13" fill="#1d4ed8">אורך</text><text x="160" y="79" textAnchor="middle" fontSize="17" fontWeight="700" fill="#1e3a8a">שטח = אורך × רוחב</text><text x="42" y="78" textAnchor="middle" fontSize="12" fill="#1d4ed8">רוחב</text></>}
       </svg>
-      <p className="visualCaption">{circle ? "הקוטר עובר דרך המרכז; הרדיוס הוא חצי ממנו." : area ? "סופרים כמה מקום הצורה תופסת — ביחידות בריבוע." : "מ־מ״מ לס״מ מחלקים ב־10; מס״מ למטר מחלקים ב־100."}</p>
+      <p className="visualCaption">{circleArea ? "שטח עיגול = π × r². ברדיוס 2 ס״מ: 3.14 × 2² = 12.56 סמ״ר." : circle ? "הקוטר עובר דרך המרכז; הרדיוס הוא חצי ממנו." : area ? "סופרים כמה מקום הצורה תופסת — ביחידות בריבוע." : "מ־מ״מ לס״מ מחלקים ב־10; מס״מ למטר מחלקים ב־100."}</p>
     </div>;
   }
   if (isExponentLesson(exercise)) {
@@ -556,11 +557,12 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
     </div>;
   }
   if (id.includes("ohm") || (id.includes("power") && !isExponentLesson(exercise)) || id.includes("formula")) {
+    const visual = formulaVisualForExercise(exercise);
     return <div className="learningVisual" aria-label="המחשה חזותית של נוסחה">
-      <div className="visualHeading"><span>⚡</span><strong>נוסחה היא מתכון עם מקומות למספרים</strong></div>
-      <div className="formulaVisual" dir="ltr"><span className="formulaChip">V</span><span className="formulaOperator">=</span><span className="formulaChip">I</span><span className="formulaOperator">×</span><span className="formulaChip">R</span></div>
-      <div className="formulaLegend"><span><i className="legendVoltage"/>V = מתח (וולט)</span><span><i className="legendCurrent"/>I = זרם (אמפר)</span><span><i className="legendResistance"/>R = התנגדות (אוהם)</span></div>
-      <p className="visualCaption">קודם מזהים מה נתון ומה מחפשים, ורק אז מציבים מספרים.</p>
+      <div className="visualHeading"><span>⚡</span><strong>{visual.heading}</strong></div>
+      <div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.lhs}</span><span className="formulaOperator">{visual.operator}</span><span className="formulaChip">{visual.rhs}</span></div>
+      <div className="formulaLegend">{visual.legend.map((item) => <span key={item}>{item}</span>)}</div>
+      <p className="visualCaption">{visual.caption}</p>
     </div>;
   }
   return <div className="learningVisual" aria-label="המחשה חזותית של שלבי פתרון">
