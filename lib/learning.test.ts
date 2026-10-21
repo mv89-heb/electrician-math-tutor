@@ -9,7 +9,7 @@ import { geometryGuidanceForExercise } from "./geometry-guidance";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, electricalMiniSimulatorConfigForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
+import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, electricalMiniSimulatorConfigForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, generatedEquationVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -1115,5 +1115,18 @@ describe("unknown concept reinforcement teaches the concept of X", () => {
     expect(exercise?.accepted).toContain("המספר הלא ידוע");
     expect(exercise?.hint1).toContain("מספר");
     expect(exercise?.explanation).toContain("מייצגת את המספר הלא ידוע");
+  });
+});
+
+
+describe("generated equation visuals respect the question intent", () => {
+  it("shows a numeric equation solution when the generated exercise asks for X", () => {
+    const exercise = generateReinforcement("משוואות פשוטות", 2, "unknown")!;
+    expect(generatedEquationVisualForExercise(exercise)).toMatchObject({ answer: 4, rhs: 9 });
+  });
+
+  it("does not show a numeric solution for a concept question about what X represents", () => {
+    const exercise = generateReinforcement("מהו נעלם?", 2, "concept")!;
+    expect(generatedEquationVisualForExercise(exercise)).toBeNull();
   });
 });
