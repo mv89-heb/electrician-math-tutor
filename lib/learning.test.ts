@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
+import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -934,5 +934,20 @@ describe("area lab defaults match the geometry exercise", () => {
 
   it("starts the square lab with equal sides from the lesson", () => {
     expect(areaLabDefaultsForExercise({ id: "geometry-area-square-1" })).toEqual({ length: 5, width: 5 });
+  });
+});
+
+
+describe("fraction lab shows an equivalent reduced value", () => {
+  it("reduces 4/8 to 1/2", () => {
+    expect(reduceFractionForLab(4, 8)).toEqual({ numerator: 1, denominator: 2 });
+  });
+
+  it("reduces 6/9 to 2/3", () => {
+    expect(reduceFractionForLab(6, 9)).toEqual({ numerator: 2, denominator: 3 });
+  });
+
+  it("handles an already reduced fraction", () => {
+    expect(reduceFractionForLab(3, 7)).toEqual({ numerator: 3, denominator: 7 });
   });
 });

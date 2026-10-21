@@ -321,3 +321,26 @@ export function areaLabDefaultsForExercise(exercise: Pick<Exercise, "id">): Area
   if (exercise.id === "geometry-area-square-1") return { length: 5, width: 5 };
   return { length: 5, width: 3 };
 }
+
+export type ReducedFraction = {
+  numerator: number;
+  denominator: number;
+};
+
+export function reduceFractionForLab(numerator: number, denominator: number): ReducedFraction {
+  if (!Number.isInteger(numerator) || !Number.isInteger(denominator) || denominator === 0) {
+    return { numerator, denominator };
+  }
+  let a = Math.abs(numerator);
+  let b = Math.abs(denominator);
+  while (b !== 0) {
+    const remainder = a % b;
+    a = b;
+    b = remainder;
+  }
+  const divisor = a || 1;
+  return {
+    numerator: numerator / divisor,
+    denominator: denominator / divisor,
+  };
+}

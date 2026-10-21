@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -617,6 +617,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const [length, setLength] = useState(areaDefaults.length);
   const [width, setWidth] = useState(areaDefaults.width);
   const [x, setX] = useState(4);
+  const reducedFraction = reduceFractionForLab(Math.min(a, b), b);
   const isElectrical = isElectricalLesson(exercise);
   const isPowerLesson = isElectricalPowerLesson(exercise);
   const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
@@ -636,7 +637,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
     {isFraction ? <>
       <div className="fractionLabBar" dir="ltr">{Array.from({length:b},(_,i)=><span key={i} className={i<a?"isFilled":""}/>)}</div>
       <div className="labControls"><label>מונה — החלקים הצבועים <b>{Math.min(a,b)}</b><input aria-label="מונה השבר" type="range" min="1" max={b} value={Math.min(a,b)} onChange={e=>setA(Number(e.target.value))}/></label><label>מכנה — כל החלקים <b>{b}</b><input aria-label="מכנה השבר" type="range" min="2" max="12" value={b} onChange={e=>{const next=Number(e.target.value);setB(next);setA(Math.min(next,a))}}/></label></div>
-      <div className="labAnswer"><small>השבר שמוצג</small><strong>{Math.min(a,b)} / {b}</strong></div><p>כדי לצמצם שבר, מחלקים את המונה והמכנה באותו מספר. החלק של השלם נשאר שווה.</p>
+      <div className="labAnswer"><small>השבר המצומצם</small><strong>{Math.min(a,b)} / {b} = {reducedFraction.numerator} / {reducedFraction.denominator}</strong></div><p>כדי לצמצם שבר, מחלקים את המונה והמכנה באותו מספר. החלק של השלם נשאר שווה.</p>
     </> : isElectrical ? <>
       {isPowerLesson ? <>
         <div className="labFormula" dir="ltr"><b>P = V × I</b></div>
