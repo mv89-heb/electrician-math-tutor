@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { decimalVisualForExercise, equationLabModelForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
+import { decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -908,5 +908,20 @@ describe("interactive equation lab matches the active beginner exercise", () => 
   it("does not show the equation lab for non-equation beginner exercises", () => {
     expect(equationLabModelForExercise(curriculum.find((exercise) => exercise.id === "zero-1")!)).toBeNull();
     expect(equationLabModelForExercise(curriculum.find((exercise) => exercise.id === "zero-8")!)).toBeNull();
+  });
+});
+
+
+describe("fraction lab starts with the active exercise values", () => {
+  it("starts reduction of 4/8 with numerator 4 and denominator 8", () => {
+    expect(fractionLabDefaultsForExercise({ id: "fraction-reduce-1" })).toEqual({ numerator: 4, denominator: 8 });
+  });
+
+  it("starts reduction of 6/9 with numerator 6 and denominator 9", () => {
+    expect(fractionLabDefaultsForExercise({ id: "fraction-reduce-2" })).toEqual({ numerator: 6, denominator: 9 });
+  });
+
+  it("keeps the standard defaults for non-reduction labs", () => {
+    expect(fractionLabDefaultsForExercise({ id: "ohm-1" })).toEqual({ numerator: 12, denominator: 6 });
   });
 });
