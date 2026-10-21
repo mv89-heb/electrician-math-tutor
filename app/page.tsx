@@ -13,6 +13,7 @@ import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../l
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
+import { twoStepEquationGuidance } from "../lib/two-step-guidance";
 import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
@@ -442,6 +443,12 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     methodOptions = [correctMethod, correctMethod === "I = V ÷ R" ? "I = V × R" : "I = V ÷ R", "P = V × I", "V = I × R"].filter((value, index, all) => all.indexOf(value) === index);
     if (!methodOptions.includes(correctMethod)) methodOptions.unshift(correctMethod);
     methodExplanation = "בחרנו נוסחה לפי הגודל שאותו צריך לחשב. לפני החישוב מוודאים שהנוסחה מתאימה לנתונים.";
+  } else if (twoStepEquationGuidance(prompt)) {
+    const guidance = twoStepEquationGuidance(prompt)!;
+    firstQuestion = guidance.question;
+    correctMethod = guidance.correct;
+    methodOptions = guidance.options;
+    methodExplanation = guidance.explanation;
   } else if (/X\s*\+\s*\d+\s*=/.test(prompt)) {
     correctMethod = "לחסר מהתוצאה את המספר שמחובר ל־X";
     methodOptions = [correctMethod, "להוסיף לתוצאה את המספר שמחובר ל־X", "לכפול את שני המספרים"];
