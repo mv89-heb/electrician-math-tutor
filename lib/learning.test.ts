@@ -728,8 +728,8 @@ describe("guided method follows the correct order for two-step equations", () =>
     expect(guidance?.correct).toContain("לחסר 1");
     expect(guidance?.correct).toContain("לפני שמחלקים");
     expect(guidance?.options[1]).toContain("לחלק מיד");
-    expect(guidance?.explanation).toContain("7");
-    expect(twoStepEquationGuidance("2 × X + 1 = 7. מה הערך של X?")?.explanation).toContain("ואז מחלקים ב־2");
+    expect(guidance?.explanation).toContain("מחסרים 1");
+    expect(guidance?.explanation).toContain("ואז מחלקים ב־2");
   });
 
   it("adds back the subtracted amount before dividing", async () => {
