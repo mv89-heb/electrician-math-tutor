@@ -549,7 +549,7 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
     </div>;
   }
   if (isExponentLesson(exercise)) {
-    const match = exercise.prompt.match(/(\\d+)²/);
+    const match = exercise.prompt.match(/(\d+)²/);
     const base = match ? Number(match[1]) : 2;
     return <div className="learningVisual" aria-label="המחשה חזותית של חזקות">
       <div className="visualHeading"><span>🔢</span><strong>חזקה היא כפל של מספר בעצמו</strong></div>
