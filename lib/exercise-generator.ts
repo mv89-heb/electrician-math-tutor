@@ -377,7 +377,7 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       return {
         id: `generated-${topic}-unit-${seed}`, topic, level: 1, title: "חיזוק יחידות חשמל",
         teachingNote: "בחשמל חשוב לזהות גם את הגודל וגם את היחידה שלו.",
-        prompt: `איזו יחידה מתאימה ל${quantity.name} חשמלי: ${options}?`,
+        prompt: `איזו יחידה מתאימה ל${quantity.name}: ${options}?`,
         accepted: [quantity.symbol, quantity.unit, quantity.symbol.toLowerCase()],
         hint1: quantity.hint,
         hint2: `${quantity.name} נמדד ב${quantity.unit}.`,
