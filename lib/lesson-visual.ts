@@ -299,3 +299,14 @@ export function equationLabModelForExercise(
     explanation: `מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = ${answer}.`,
   };
 }
+
+export type FractionLabDefaults = {
+  numerator: number;
+  denominator: number;
+};
+
+export function fractionLabDefaultsForExercise(exercise: Pick<Exercise, "id">): FractionLabDefaults {
+  if (exercise.id === "fraction-reduce-1") return { numerator: 4, denominator: 8 };
+  if (exercise.id === "fraction-reduce-2") return { numerator: 6, denominator: 9 };
+  return { numerator: 12, denominator: 6 };
+}

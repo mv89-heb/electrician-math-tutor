@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { decimalVisualForExercise, equationLabModelForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -610,8 +610,9 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
 
 
 function InteractiveLab({ exercise }: { exercise: Exercise }) {
-  const [a, setA] = useState(12);
-  const [b, setB] = useState(6);
+  const fractionDefaults = fractionLabDefaultsForExercise(exercise);
+  const [a, setA] = useState(fractionDefaults.numerator);
+  const [b, setB] = useState(fractionDefaults.denominator);
   const [length, setLength] = useState(5);
   const [width, setWidth] = useState(3);
   const [x, setX] = useState(4);
@@ -1220,7 +1221,7 @@ export default function Home() {
                   <div className="exerciseResourcesContent">
                     <LessonVisual exercise={exercise} />
                     <FieldWorkIllustration exercise={exercise} />
-                    <InteractiveLab exercise={exercise} />
+                    <InteractiveLab key={exercise.id} exercise={exercise} />
                     <ElectricalMiniSimulator topic={exercise.topic} />
                     <FormulaChoicePanel key={exercise.id} exercise={exercise} />
                   </div>
