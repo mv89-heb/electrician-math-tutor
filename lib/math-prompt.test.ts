@@ -30,7 +30,7 @@ describe("math prompt direction and expression splitting", () => {
     expect(curriculum.length).toBeGreaterThanOrEqual(55);
     for (const exercise of curriculum) {
       expect(exercise.prompt.trim(), exercise.id).not.toBe("");
-      expect(exercise.prompt.trim(), exercise.id).not.toMatch(/(?:^|\\s)(?:=|\\+|−|×|÷)\\s*\\?$/);
+      expect(exercise.prompt.trim(), exercise.id).not.toMatch(/(?:^|\s)(?:=|\+|−|×|÷)\s*\?$/);
     }
   });
 });
