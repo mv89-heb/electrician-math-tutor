@@ -373,6 +373,7 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
               { name: "הספק", symbol: "W", unit: "וואט", hint: "האות P מייצגת הספק." },
             ];
       const quantity = quantities[((seed % quantities.length) + quantities.length) % quantities.length];
+      const measuredVerb = quantity.name === "התנגדות" ? "נמדדת" : "נמדד";
       const options = topic === "חשמל — הספק" ? "W, V או A" : "V, A, Ω או W";
       return {
         id: `generated-${topic}-unit-${seed}`, topic, level: 1, title: "חיזוק יחידות חשמל",
@@ -380,8 +381,8 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
         prompt: `איזו יחידה מתאימה ל${quantity.name}: ${options}?`,
         accepted: [quantity.symbol, quantity.unit, quantity.symbol.toLowerCase()],
         hint1: quantity.hint,
-        hint2: `${quantity.name} נמדד ב${quantity.unit}.`,
-        explanation: `נכון. ${quantity.name} נמדד ב${quantity.unit}, והסימון הוא ${quantity.symbol}.`,
+        hint2: `${quantity.name} ${measuredVerb} ב${quantity.unit}.`,
+        explanation: `נכון. ${quantity.name} ${measuredVerb} ב${quantity.unit}, והסימון הוא ${quantity.symbol}.`,
         generated: true,
       };
     })(),
