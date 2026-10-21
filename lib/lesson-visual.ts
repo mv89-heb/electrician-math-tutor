@@ -361,3 +361,17 @@ export function electricalLabDefaultsForExercise(exercise: Pick<Exercise, "id">)
   };
   return defaults[exercise.id] ?? { first: 12, second: 6 };
 }
+
+export type ElectricalMiniSimulatorConfig = {
+  voltage: number;
+  resistance: number;
+};
+
+export function electricalMiniSimulatorConfigForExercise(
+  exercise: Pick<Exercise, "id" | "topic">,
+): ElectricalMiniSimulatorConfig | null {
+  if (exercise.topic !== "חשמל — חוק אוהם") return null;
+  if (exercise.id === "ohm-1") return { voltage: 20, resistance: 10 };
+  if (exercise.id === "electrical-ohm-sub-1") return { voltage: 12, resistance: 4 };
+  return null;
+}
