@@ -538,7 +538,7 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
 
 function LessonVisual({ exercise }: { exercise: Exercise }) {
   const id = exercise.id;
-  if (id.includes("fraction")) {
+  if (id.includes("fraction") || exercise.topic === "שברים") {
     const visual = fractionVisualForExercise(exercise);
     return <div className="learningVisual" aria-label="המחשה חזותית של שברים">
       <div className="visualHeading"><span>👀</span><strong>{visual.heading}</strong></div>
