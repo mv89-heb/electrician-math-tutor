@@ -425,7 +425,15 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
   let methodOptions = [correctMethod, "להתחיל לחשב בלי לבחור פעולה", "לנחש את התוצאה הסופית"];
   let methodExplanation = "קודם מזהים מה ידוע ומה צריך למצוא, ורק אז בוחרים דרך.";
 
-  if (/ohm|power|חשמל/i.test(id + " " + topic) && (/\bI\s*=|זרם|\bR\s*=|התנגדות|\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote))) {
+  const percentPromptMatch = prompt.match(/כמה זה (\d+(?:[.,]\d+)?)% מתוך (\d+(?:[.,]\d+)?)/);
+  if (percentPromptMatch) {
+    const percent = Number(percentPromptMatch[1].replace(",", "."));
+    const total = Number(percentPromptMatch[2].replace(",", "."));
+    correctMethod = `להכפיל את ${total} ב־${percent} ולחלק ב־100`;
+    methodOptions = [correctMethod, `לחלק את ${total} ב־${percent}`, `להוסיף ${percent} ל־${total}`];
+    firstQuestion = "איך מחשבים אחוז מתוך כמות?";
+    methodExplanation = "מכפילים את הכמות באחוזים ומחלקים ב־100, כי אחוז הוא חלק מתוך מאה.";
+  } else if (/ohm|power|חשמל/i.test(id + " " + topic) && (/\bI\s*=|זרם|\bR\s*=|התנגדות|\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote))) {
     firstQuestion = "איזו נוסחה מתאימה למה שמבקשים למצוא?";
     if (/\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote)) correctMethod = "P = V × I";
     else if (/\bR\s*=|התנגדות/i.test(prompt + " " + exercise.teachingNote)) correctMethod = "R = V ÷ I";
@@ -475,6 +483,16 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
   let nextStepOptions = [exercise.hint1, exercise.hint2, "לכתוב את התוצאה בלי לבדוק את הנתונים"].filter((value, index, all) => value.trim() && all.indexOf(value) === index);
   let nextStepExplanation = exercise.hint1;
   const sameDenominatorAddition = prompt.match(/(\d+)\s*\/\s*(\d+)\s*\+\s*(\d+)\s*\/\s*(\d+)/);
+  if (percentPromptMatch) {
+    const percent = Number(percentPromptMatch[1].replace(",", "."));
+    const total = Number(percentPromptMatch[2].replace(",", "."));
+    const result = (percent * total) / 100;
+    const step = `${total} × ${percent} ÷ 100 = ${result}`;
+    nextStepQuestion = "איזה חישוב נותן את התוצאה הנכונה?";
+    nextStepCorrect = step;
+    nextStepOptions = [step, `${total} + ${percent} = ${total + percent}`, `${total} ÷ ${percent} = ${total / percent}`];
+    nextStepExplanation = `מכפילים ${total} ב־${percent} ומחלקים ב־100. התוצאה היא ${result}.`;
+  }
   if (sameDenominatorAddition && sameDenominatorAddition[2] === sameDenominatorAddition[4]) {
     const numeratorA = Number(sameDenominatorAddition[1]);
     const denominator = Number(sameDenominatorAddition[2]);
