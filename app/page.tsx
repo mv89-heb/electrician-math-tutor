@@ -228,7 +228,7 @@ function HandwritingNotebook() {
         context.moveTo(first.x * rect.width, first.y * rect.height);
         for (const point of stroke.points.slice(1)) context.lineTo(point.x * rect.width, point.y * rect.height);
         if (stroke.points.length === 1) {
-          context.arc(first.x * rect.width, first.y * 300, stroke.width / 2, 0, Math.PI * 2);
+          context.arc(first.x * rect.width, first.y * rect.height, stroke.width / 2, 0, Math.PI * 2);
           context.fill();
         } else {
           context.stroke();
