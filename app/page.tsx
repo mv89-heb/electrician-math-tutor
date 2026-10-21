@@ -19,7 +19,7 @@ import { divisionEquationGuidance } from "../lib/division-equation-guidance";
 import { formulaSubjectGuidance } from "../lib/formula-subject-guidance";
 import { geometryGuidanceForExercise } from "../lib/geometry-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, generatedEquationVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -628,7 +628,7 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
     </div>;
   }
   if (id.startsWith("generated-")) {
-    const equation = equationLabModelForExercise(exercise);
+    const equation = generatedEquationVisualForExercise(exercise);
     if (equation) {
       return <div className="learningVisual" aria-label="המחשה של המשוואה שנוצרה">
         <div className="visualHeading"><span>🧮</span><strong>המשוואה שבתרגיל</strong></div>

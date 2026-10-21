@@ -361,3 +361,12 @@ export function areaLabUnitsForExercise(exercise: Pick<Exercise, "id">): AreaLab
   if (exercise.id === "geometry-area-rectangle-1") return { lengthUnit: "ס״מ", areaUnit: "סמ״ר" };
   return { lengthUnit: "יחידות", areaUnit: "יחידות²" };
 }
+
+export function generatedEquationVisualForExercise(
+  exercise: Pick<Exercise, "id" | "prompt" | "accepted">,
+): EquationLabModel | null {
+  if (!exercise.id.startsWith("generated-")) return null;
+  const hasNumericAnswer = exercise.accepted.some((answer) => /^-?\d+(?:[.,]\d+)?$/.test(answer.trim()));
+  if (!hasNumericAnswer) return null;
+  return equationLabModelForExercise(exercise);
+}
