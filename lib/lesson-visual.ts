@@ -181,7 +181,7 @@ export type DecimalVisual = {
 export function decimalVisualForExercise(
   exercise: Pick<Exercise, "prompt">,
 ): DecimalVisual {
-  const match = exercise.prompt.match(/מה הערך של\\s+(\\d+(?:[.,]\\d+)?)\\s*([+−-])\\s*(\\d+(?:[.,]\\d+)?)/);
+  const match = exercise.prompt.match(/מה הערך של\s+(\d+(?:[.,]\d+)?)\s*([+−-])\s*(\d+(?:[.,]\d+)?)/);
   if (!match) {
     return {
       heading: "חישוב מספרים עשרוניים",
