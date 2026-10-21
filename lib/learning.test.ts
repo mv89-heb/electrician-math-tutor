@@ -3,6 +3,7 @@ import { curriculum } from "./curriculum";
 import { checkpointPasses } from "./checkpoints";
 import { generateExercise, generateReinforcement } from "./exercise-generator";
 import { buildTopicMasteryTest } from "./mastery";
+import { fractionGuidanceForExercise } from "./fraction-guidance";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
@@ -989,5 +990,25 @@ describe("area lab units match the exercise", () => {
 
   it("uses meters and square meters for the square lesson", () => {
     expect(areaLabUnitsForExercise({ id: "geometry-area-square-1" })).toEqual({ lengthUnit: "מ׳", areaUnit: "מ״ר" });
+  });
+});
+
+
+describe("fraction guided steps match the operation in the exercise", () => {
+  it("guides same-denominator addition and subtraction differently", () => {
+    const addition = fractionGuidanceForExercise(curriculum.find((exercise) => exercise.id === "fraction-add-same-1")!);
+    expect(addition?.correct).toContain("לחבר את המונים");
+    expect(addition?.explanation).toContain("המכנה המשותף");
+
+    const subtraction = fractionGuidanceForExercise(curriculum.find((exercise) => exercise.id === "fraction-sub-same-1")!);
+    expect(subtraction?.correct).toContain("לחסר את המונים");
+    expect(subtraction?.explanation).toContain("המכנה המשותף");
+  });
+
+  it("guides common denominators, multiplication, division, and reduction with the matching method", () => {
+    expect(fractionGuidanceForExercise(curriculum.find((exercise) => exercise.id === "fraction-common-1")!)?.correct).toContain("מכנה משותף");
+    expect(fractionGuidanceForExercise(curriculum.find((exercise) => exercise.id === "fraction-multiply-1")!)?.correct).toContain("מונה במונה");
+    expect(fractionGuidanceForExercise(curriculum.find((exercise) => exercise.id === "fraction-divide-1")!)?.correct).toContain("להפוך את השבר השני");
+    expect(fractionGuidanceForExercise(curriculum.find((exercise) => exercise.id === "fraction-reduce-1")!)?.correct).toContain("המכנה באותו מספר");
   });
 });
