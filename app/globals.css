@@ -917,6 +917,7 @@ body{color:var(--ink)}
 .notebookEquationEditor{display:grid;gap:0;border:1px solid #d9d4c3;border-radius:12px;overflow:hidden;background:#fffef8}
 .notebookEditorToolbar{display:flex;align-items:center;flex-wrap:wrap;gap:9px;padding:9px 12px;background:#f6f3e8;border-bottom:1px solid #e5dec8}
 .notebookEditorToolbar>span{font-size:12px;font-weight:800;color:#4b5563}
+.notebookMathButtons{display:flex;align-items:center;flex-wrap:wrap;gap:5px;max-width:100%}.notebookMathButtons button{min-width:34px;justify-content:center;padding:6px 9px}.notebookMathButtons button:first-child{min-width:auto}.notebookEditorToolbar{row-gap:7px}
 .notebookEditorToolbar button{display:inline-flex;align-items:center;gap:7px;border:1px solid #c9c2ae;border-radius:8px;padding:7px 10px;background:#fff;color:#24334d;font:inherit;font-size:12px;font-weight:800;cursor:pointer}
 .notebookEditorToolbar button:hover{background:#fef3c7}
 .notebookEditorToolbar small{font-size:11px;color:#667085}
