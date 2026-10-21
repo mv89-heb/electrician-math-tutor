@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isExponentLesson, unitConversionVisualForExercise } from "./lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -757,6 +757,18 @@ describe("interactive lab matches the lesson domain", () => {
   it("keeps actual electrical power and Ohm's law lessons in the electrical lab", () => {
     for (const id of ["power-1", "power-2", "electrical-power-sub-1", "ohm-1", "ohm-2"]) {
       expect(isElectricalLesson(curriculum.find((exercise) => exercise.id === id)!)).toBe(true);
+    }
+  });
+});
+
+
+describe("electrical lab matches the quantity being taught", () => {
+  it("uses the power lab for electrical power lessons only", () => {
+    for (const id of ["power-1", "power-2", "electrical-power-sub-1"]) {
+      expect(isElectricalPowerLesson(curriculum.find((exercise) => exercise.id === id)!)).toBe(true);
+    }
+    for (const id of ["ohm-1", "ohm-2", "power-0", "power-1b", "power-square-4"]) {
+      expect(isElectricalPowerLesson(curriculum.find((exercise) => exercise.id === id)!)).toBe(false);
     }
   });
 });
