@@ -13,7 +13,7 @@ export type FractionVisual =
   | { kind: "bar"; heading: string; count: number; filled: number; label: string; caption: string }
   | { kind: "equation"; heading: string; label: string; caption: string };
 
-export function fractionVisualForExercise(exercise: Pick<Exercise, "id">): FractionVisual {
+export function fractionVisualForExercise(exercise: Pick<Exercise, "id"> & Partial<Pick<Exercise, "topic" | "prompt">>): FractionVisual {
   const visuals: Record<string, FractionVisual> = {
     "fraction-1": { kind: "bar", heading: "חלק אחד מתוך שניים", count: 2, filled: 1, label: "1/2", caption: "המונה הוא 1 והמכנה הוא 2." },
     "fraction-2": { kind: "equation", heading: "שני חצאים יוצרים שלם", label: "1/2 + 1/2 = 1", caption: "כשמחברים שני חצאים מקבלים שלם אחד." },
@@ -26,6 +26,20 @@ export function fractionVisualForExercise(exercise: Pick<Exercise, "id">): Fract
     "fraction-multiply-1": { kind: "equation", heading: "כפל שברים", label: "1/2 × 2/3 = 2/6 = 1/3", caption: "מכפילים מונה במונה ומכנה במכנה, ואז מצמצמים." },
     "fraction-divide-1": { kind: "equation", heading: "חילוק שברים", label: "1/2 ÷ 1/4 = 1/2 × 4/1 = 2", caption: "הופכים את השבר השני ומחליפים חילוק בכפל." }
   };
+  if (exercise.topic === "שברים" && exercise.prompt) {
+    const onePart = exercise.prompt.match(/חלק אחד מתוך (\d+) חלקים/);
+    if (onePart) {
+      const count = Number(onePart[1]);
+      return {
+        kind: "bar",
+        heading: `חלק אחד מתוך ${count} חלקים שווים`,
+        count,
+        filled: 1,
+        label: `1/${count}`,
+        caption: `השלם מחולק ל־${count} חלקים שווים, ואנחנו מסמנים חלק אחד.`,
+      };
+    }
+  }
   return visuals[exercise.id] ?? { kind: "equation", heading: "עובדים עם השברים שבתרגיל", label: "קראו את השבר ופעלו לפי ההוראות", caption: "שימו לב למונה, למכנה ולפעולה המבוקשת." };
 }
 
