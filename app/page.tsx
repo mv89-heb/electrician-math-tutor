@@ -5,6 +5,7 @@ import katex from "katex";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import type React from "react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
+import { splitMathPrompt } from "../lib/math-prompt";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, checkpointPasses, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
 import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttempt, saveLearningState, topicMastery, recommendedStartingIndex, resolveExercise, dueReviewIds, classifyError, canStartMasteryTest, recordMasteryTest, recordFinalExam, type LearningState } from "../lib/learning";
@@ -29,7 +30,12 @@ function toKatexExpression(value: string) {
   return value
     .replace(/([A-Za-z0-9]+)\s*(?:÷|\/)\s*([A-Za-z0-9]+)/g, "\\frac{$1}{$2}")
     .replace(/×/g, "\\times")
-    .replace(/−/g, "-");
+    .replace(/−/g, "-")
+    .replace(/π/g, "\\pi")
+    .replace(/Ω/g, "\\Omega")
+    .replace(/%/g, "\\%")
+    .replace(/²/g, "^{2}")
+    .replace(/³/g, "^{3}");
 }
 
 function RenderedMath({ value, displayMode = true }: { value: string; displayMode?: boolean }) {
@@ -38,23 +44,9 @@ function RenderedMath({ value, displayMode = true }: { value: string; displayMod
 }
 
 function MathPrompt({ prompt }: { prompt: string }) {
-  const normalizedPrompt = prompt.replace(/\\n/g, "\n").trim();
-  // Keep complete decimal values and mathematical expressions together in LTR,
-  // while leaving the Hebrew instructions in their natural RTL direction.
-  const expressionPattern = /(?:[A-Za-z]\w*|\d+(?:[.,]\d+)?)(?:\s*(?:=|\+|[-−]|×|÷|\*|\/|≤|≥|≈)\s*(?:[A-Za-z]\w*|\d+(?:[.,]\d+)?))+|\d+[.,]\d+/g;
-  const parts: Array<{ type: "text" | "math"; value: string }> = [];
-  let lastIndex = 0;
-
-  for (const match of normalizedPrompt.matchAll(expressionPattern)) {
-    const index = match.index ?? 0;
-    if (index > lastIndex) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex, index) });
-    parts.push({ type: "math", value: match[0].trim() });
-    lastIndex = index + match[0].length;
-  }
-
-  if (lastIndex < normalizedPrompt.length) parts.push({ type: "text", value: normalizedPrompt.slice(lastIndex) });
+  const parts = splitMathPrompt(prompt);
   if (!parts.some((part) => part.type === "math")) {
-    return <div className="promptText" dir="rtl">{normalizedPrompt.split("\n").map((line, index) => <span className="promptParagraph" key={index}>{line}</span>)}</div>;
+    return <div className="promptText" dir="rtl">{prompt.replace(/\\n/g, "\n").trim().split("\n").map((line, index) => <span className="promptParagraph" key={index}>{line}</span>)}</div>;
   }
 
   return (
