@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
+import { areaLabDefaultsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -949,5 +949,17 @@ describe("fraction lab shows an equivalent reduced value", () => {
 
   it("handles an already reduced fraction", () => {
     expect(reduceFractionForLab(3, 7)).toEqual({ numerator: 3, denominator: 7 });
+  });
+});
+
+
+describe("electrical lab defaults match the requested quantity", () => {
+  it("starts the power-to-current lab with 60 watts and 12 volts", () => {
+    expect(electricalLabDefaultsForExercise({ id: "electrical-power-sub-1" })).toEqual({ first: 60, second: 12 });
+  });
+
+  it("keeps the standard defaults for Ohm's law and power calculation labs", () => {
+    expect(electricalLabDefaultsForExercise({ id: "ohm-1" })).toEqual({ first: 12, second: 6 });
+    expect(electricalLabDefaultsForExercise({ id: "power-1" })).toEqual({ first: 12, second: 6 });
   });
 });
