@@ -1012,3 +1012,24 @@ describe("fraction guided steps match the operation in the exercise", () => {
     expect(fractionGuidanceForExercise(curriculum.find((exercise) => exercise.id === "fraction-reduce-1")!)?.correct).toContain("המכנה באותו מספר");
   });
 });
+
+
+describe("generated equation models support signed equations", () => {
+  it("solves a negative coefficient equation correctly", () => {
+    expect(equationLabModelForExercise({ prompt: "-5 × X = -20. איזה מספר הוא X?" })).toMatchObject({
+      expression: "-5 × X",
+      rhs: -20,
+      answer: 4,
+      coefficient: -5,
+    });
+  });
+
+  it("solves division by a negative number correctly", () => {
+    expect(equationLabModelForExercise({ prompt: "X ÷ (-5) = -4. איזה מספר הוא X?" })).toMatchObject({
+      expression: "X ÷ (-5)",
+      rhs: -4,
+      answer: 20,
+      coefficient: -0.2,
+    });
+  });
+});

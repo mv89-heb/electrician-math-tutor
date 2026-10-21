@@ -216,71 +216,46 @@ export function equationLabModelForExercise(
   exercise: Pick<Exercise, "prompt">,
 ): EquationLabModel | null {
   const prompt = exercise.prompt;
-  const twoStepAddition = prompt.match(/(\d+)\s*[×x]\s*X\s*\+\s*(\d+)\s*=\s*(\d+)/);
-  if (twoStepAddition) {
-    const coefficient = Number(twoStepAddition[1]);
-    const offset = Number(twoStepAddition[2]);
-    const rhs = Number(twoStepAddition[3]);
-    const answer = Number(((rhs - offset) / coefficient).toFixed(8));
-    return {
-      expression: twoStepAddition[1] + " × X + " + twoStepAddition[2],
-      rhs,
-      answer,
-      coefficient,
-      offset,
-      explanation: "מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = " + answer + ".",
-    };
-  }
-
-  const twoStepSubtraction = prompt.match(/(\d+)\s*[×x]\s*X\s*[−-]\s*(\d+)\s*=\s*(\d+)/);
-  if (twoStepSubtraction) {
-    const coefficient = Number(twoStepSubtraction[1]);
-    const offset = -Number(twoStepSubtraction[2]);
-    const rhs = Number(twoStepSubtraction[3]);
-    const answer = Number(((rhs - offset) / coefficient).toFixed(8));
-    return {
-      expression: twoStepSubtraction[1] + " × X − " + twoStepSubtraction[2],
-      rhs,
-      answer,
-      coefficient,
-      offset,
-      explanation: "מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = " + answer + ".",
-    };
-  }
   let expression: string;
   let coefficient: number;
   let offset: number;
   let rhs: number;
   let match: RegExpMatchArray | null;
 
-  match = prompt.match(/X\s*\+\s*(\d+)\s*=\s*(\d+)/);
+  // Match two-step equations before their one-step suffixes.
+  match = prompt.match(/(-?\d+)\s*[×x]\s*X\s*\+\s*(\d+)\s*=\s*(-?\d+)/);
   if (match) {
-    expression = `X + ${match[1]}`;
-    coefficient = 1;
-    offset = Number(match[1]);
-    rhs = Number(match[2]);
-  } else if ((match = prompt.match(/X\s*[−-]\s*(\d+)\s*=\s*(\d+)/))) {
-    expression = `X − ${match[1]}`;
-    coefficient = 1;
-    offset = -Number(match[1]);
-    rhs = Number(match[2]);
-  } else if ((match = prompt.match(/(\d+)\s*[×x]\s*X\s*\+\s*(\d+)\s*=\s*(\d+)/))) {
-    expression = `${match[1]} × X + ${match[2]}`;
+    expression = match[1] + " × X + " + match[2];
     coefficient = Number(match[1]);
     offset = Number(match[2]);
     rhs = Number(match[3]);
-  } else if ((match = prompt.match(/(\d+)\s*[×x]\s*X\s*[−-]\s*(\d+)\s*=\s*(\d+)/))) {
-    expression = `${match[1]} × X − ${match[2]}`;
+  } else if ((match = prompt.match(/(-?\d+)\s*[×x]\s*X\s*[−-]\s*(\d+)\s*=\s*(-?\d+)/))) {
+    expression = match[1] + " × X − " + match[2];
     coefficient = Number(match[1]);
     offset = -Number(match[2]);
     rhs = Number(match[3]);
-  } else if ((match = prompt.match(/(\d+)\s*[×x]\s*X\s*=\s*(\d+)/))) {
-    expression = `${match[1]} × X`;
+  } else if ((match = prompt.match(/X\s*\+\s*(\d+)\s*=\s*(-?\d+)/))) {
+    expression = "X + " + match[1];
+    coefficient = 1;
+    offset = Number(match[1]);
+    rhs = Number(match[2]);
+  } else if ((match = prompt.match(/X\s*[−-]\s*(\d+)\s*=\s*(-?\d+)/))) {
+    expression = "X − " + match[1];
+    coefficient = 1;
+    offset = -Number(match[1]);
+    rhs = Number(match[2]);
+  } else if ((match = prompt.match(/(-?\d+)\s*[×x]\s*X\s*=\s*(-?\d+)/))) {
+    expression = match[1] + " × X";
     coefficient = Number(match[1]);
     offset = 0;
     rhs = Number(match[2]);
-  } else if ((match = prompt.match(/X\s*[÷/]\s*(\d+)\s*=\s*(\d+)/))) {
-    expression = `X ÷ ${match[1]}`;
+  } else if ((match = prompt.match(/X\s*[÷/]\s*\((-?\d+)\)\s*=\s*(-?\d+)/))) {
+    expression = "X ÷ (" + match[1] + ")";
+    coefficient = 1 / Number(match[1]);
+    offset = 0;
+    rhs = Number(match[2]);
+  } else if ((match = prompt.match(/X\s*[÷/]\s*(-?\d+)\s*=\s*(-?\d+)/))) {
+    expression = "X ÷ " + match[1];
     coefficient = 1 / Number(match[1]);
     offset = 0;
     rhs = Number(match[2]);
@@ -296,7 +271,7 @@ export function equationLabModelForExercise(
     answer,
     coefficient,
     offset,
-    explanation: `מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = ${answer}.`,
+    explanation: "מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = " + answer + ".",
   };
 }
 
