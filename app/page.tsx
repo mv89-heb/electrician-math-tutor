@@ -66,17 +66,120 @@ function MathPrompt({ prompt }: { prompt: string }) {
   );
 }
 
+function NotebookEquationEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const current = serializeNotebookEditor(editor);
+    if (current !== value) {
+      editor.innerHTML = notebookValueToHtml(value);
+    }
+  }, [value]);
+
+  function insertFraction() {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount && editor.contains(selection.anchorNode)) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+      const fraction = document.createElement("span");
+      fraction.className = "editableNotebookFraction";
+      fraction.setAttribute("contenteditable", "false");
+      fraction.innerHTML = '<span class="editableFractionPart" contenteditable="true" data-fraction-part="numerator"></span><span class="editableFractionBar"></span><span class="editableFractionPart" contenteditable="true" data-fraction-part="denominator"></span>';
+      range.insertNode(fraction);
+      const numerator = fraction.querySelector<HTMLElement>('[data-fraction-part="numerator"]');
+      if (numerator) {
+        const nextRange = document.createRange();
+        nextRange.selectNodeContents(numerator);
+        nextRange.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(nextRange);
+      }
+    } else {
+      const fraction = document.createElement("span");
+      fraction.className = "editableNotebookFraction";
+      fraction.setAttribute("contenteditable", "false");
+      fraction.innerHTML = '<span class="editableFractionPart" contenteditable="true" data-fraction-part="numerator"></span><span class="editableFractionBar"></span><span class="editableFractionPart" contenteditable="true" data-fraction-part="denominator"></span>';
+      editor.appendChild(fraction);
+      fraction.querySelector<HTMLElement>('[data-fraction-part="numerator"]')?.focus();
+    }
+    emitValue();
+  }
+
+  function emitValue() {
+    if (editorRef.current) onChange(serializeNotebookEditor(editorRef.current));
+  }
+
+  return <div className="notebookEquationEditor">
+    <div className="notebookEditorToolbar" dir="rtl">
+      <span>כתיבה מתמטית</span>
+      <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={insertFraction} aria-label="הוסף שבר עם מונה ומכנה"><span className="toolbarFraction" aria-hidden="true"><span>□</span><i></i><span>□</span></span> הוסף שבר</button>
+      <small>לחץ על השבר ומלא בנפרד את המונה ואת המכנה</small>
+    </div>
+    <div
+      ref={editorRef}
+      className="notebookEquationSurface"
+      contentEditable
+      suppressContentEditableWarning
+      role="textbox"
+      aria-label="אזור כתיבה מתמטית בסגנון מחברת"
+      aria-multiline="true"
+      dir="auto"
+      onInput={emitValue}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          document.execCommand("insertLineBreak");
+          emitValue();
+        }
+      }}
+      data-placeholder="כתוב כאן את שלבי הפתרון. כדי ליצור שבר, לחץ על ״הוסף שבר״."
+    />
+  </div>;
+}
+
+function serializeNotebookEditor(root: HTMLElement): string {
+  function read(node: Node): string {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? "";
+    if (!(node instanceof HTMLElement)) return "";
+    if (node.classList.contains("editableNotebookFraction")) {
+      const numerator = node.querySelector<HTMLElement>('[data-fraction-part="numerator"]')?.innerText ?? "";
+      const denominator = node.querySelector<HTMLElement>('[data-fraction-part="denominator"]')?.innerText ?? "";
+      return "\\frac{" + numerator.trim() + "}{" + denominator.trim() + "}";
+    }
+    if (node.tagName === "BR") return "\n";
+    if (node.tagName === "DIV" || node.tagName === "P") {
+      return Array.from(node.childNodes).map(read).join("") + "\n";
+    }
+    return Array.from(node.childNodes).map(read).join("");
+  }
+  return Array.from(root.childNodes).map(read).join("").replace(/\n+$/, "");
+}
+
+function notebookValueToHtml(value: string): string {
+  if (!value) return "";
+  return value.split("\n").map((line) => {
+    const escaped = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return escaped.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g,
+      '<span class="editableNotebookFraction" contenteditable="false"><span class="editableFractionPart" contenteditable="true" data-fraction-part="numerator">$1</span><span class="editableFractionBar"></span><span class="editableFractionPart" contenteditable="true" data-fraction-part="denominator">$2</span></span>');
+  }).join("<br>");
+}
+
 function NotebookMathPreview({ value }: { value: string }) {
   if (!value.trim()) return <div className="notebookEmpty">הדרך שתכתוב תופיע כאן כמו במחברת, כולל שברים עומדים.</div>;
   return <div className="notebookPreview" aria-label="תצוגת הדרך המתמטית">
     {value.split("\n").map((line, lineIndex) => {
-      const fractionPattern = /(-?\d+)\s*\/\s*(-?\d+)/g;
+      const fractionPattern = /\\frac\{([^{}]*)\}\{([^{}]*)\}|(-?\d+)\s*\/\s*(-?\d+)/g;
       const parts: Array<{ type: "text" | "fraction"; value: string; key: string }> = [];
       let lastIndex = 0;
       for (const match of line.matchAll(fractionPattern)) {
         const index = match.index ?? 0;
         if (index > lastIndex) parts.push({ type: "text", value: line.slice(lastIndex, index), key: "text-" + lastIndex });
-        parts.push({ type: "fraction", value: "\\frac{" + match[1] + "}{" + match[2] + "}", key: "fraction-" + index });
+        parts.push({ type: "fraction", value: "\\frac{" + (match[1] ?? match[3] ?? "") + "}{" + (match[2] ?? match[4] ?? "") + "}", key: "fraction-" + index });
         lastIndex = index + match[0].length;
       }
       if (lastIndex < line.length) parts.push({ type: "text", value: line.slice(lastIndex), key: "text-" + lastIndex });
@@ -102,14 +205,14 @@ function HandwritingNotebook() {
     if (!canvas) return;
     const redraw = () => {
       const rect = canvas.getBoundingClientRect();
-      if (!rect.width) return;
+      if (!rect.width || !rect.height) return;
       const ratio = window.devicePixelRatio || 1;
       canvas.width = Math.round(rect.width * ratio);
-      canvas.height = Math.round(300 * ratio);
+      canvas.height = Math.round(rect.height * ratio);
       const context = canvas.getContext("2d");
       if (!context) return;
       context.scale(ratio, ratio);
-      context.clearRect(0, 0, rect.width, 300);
+      context.clearRect(0, 0, rect.width, rect.height);
       const allStrokes = activeStroke ? [...strokes, activeStroke] : strokes;
       for (const stroke of allStrokes) {
         if (!stroke.points.length) continue;
@@ -122,8 +225,8 @@ function HandwritingNotebook() {
         context.lineJoin = "round";
         const first = stroke.points[0];
         context.beginPath();
-        context.moveTo(first.x * rect.width, first.y * 300);
-        for (const point of stroke.points.slice(1)) context.lineTo(point.x * rect.width, point.y * 300);
+        context.moveTo(first.x * rect.width, first.y * rect.height);
+        for (const point of stroke.points.slice(1)) context.lineTo(point.x * rect.width, point.y * rect.height);
         if (stroke.points.length === 1) {
           context.arc(first.x * rect.width, first.y * 300, stroke.width / 2, 0, Math.PI * 2);
           context.fill();
@@ -468,21 +571,12 @@ export default function Home() {
   const [showGuidedSolution, setShowGuidedSolution] = useState(false);
   const [guidedFeedback, setGuidedFeedback] = useState<"idle" | "wrong" | "correct" | "complete">("idle");
   const [showFreeformSolution, setShowFreeformSolution] = useState(false);
-  const solutionTextareaRef = useRef<HTMLTextAreaElement>(null);
-
+  const [solutionInputMode, setSolutionInputMode] = useState<"type" | "handwrite">("type");
+  const [showWritingHelpers, setShowWritingHelpers] = useState(false);
   function insertSolutionText(text: string) {
-    const field = solutionTextareaRef.current;
-    const start = field?.selectionStart ?? solutionMethod.length;
-    const end = field?.selectionEnd ?? solutionMethod.length;
-    const next = solutionMethod.slice(0, start) + text + solutionMethod.slice(end);
+    const current = solutionMethod;
+    const next = current + text;
     setSolutionMethod(next);
-    requestAnimationFrame(() => {
-      const textarea = solutionTextareaRef.current;
-      if (!textarea) return;
-      textarea.focus();
-      const caret = start + text.length;
-      textarea.setSelectionRange(caret, caret);
-    });
   }
   const [hint, setHint] = useState<1 | 2 | 0>(0);
   const [feedback, setFeedback] = useState<"idle" | "wrong" | "correct">("idle");
@@ -963,56 +1057,52 @@ export default function Home() {
                 {showFreeformSolution && (
                 <div className="solutionMethodField">
                   <div className="solutionBuilderHeading">
-                    <label htmlFor="solution-method">רוצה גם לכתוב את הדרך במילים שלך?</label>
-                    <span>אפשר להיעזר בכפתורים או לכתוב בחופשיות.</span>
+                    <label>מחברת הפתרון</label>
+                    <span>בחר איך נוח לך לפתור. אפשר להחליף בכל רגע.</span>
                   </div>
-                  <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
-                    {[
-                      { label: "1. הנוסחה", value: "נוסחה: " },
-                      { label: "2. הצבת מספרים", value: "הצבה: " },
-                      { label: "3. החישוב", value: "חישוב: " },
-                      { label: "4. בדיקה", value: "בדיקה: " },
-                    ].map((step) => (
-                      <button key={step.label} type="button" className="solutionStepButton"
-                        onMouseDown={(event) => event.preventDefault()} onClick={() => insertSolutionText((solutionMethod && !solutionMethod.endsWith("\n") ? "\n" : "") + step.value)}>
-                        {step.label}
-                      </button>
-                    ))}
+                  <div className="solutionModeTabs" role="tablist" aria-label="צורת כתיבת הפתרון">
+                    <button type="button" role="tab" aria-selected={solutionInputMode === "type"} className={solutionInputMode === "type" ? "solutionModeTab active" : "solutionModeTab"} onClick={() => setSolutionInputMode("type")}>⌨️ הקלדה במחברת</button>
+                    <button type="button" role="tab" aria-selected={solutionInputMode === "handwrite"} className={solutionInputMode === "handwrite" ? "solutionModeTab active" : "solutionModeTab"} onClick={() => setSolutionInputMode("handwrite")}>✍️ כתיבה ביד</button>
                   </div>
-                  <div className="solutionSymbols" aria-label="הוספת סימן מתמטי">
-                    {[
-                      { label: "½ שבר", value: "3/4" },
-                      { label: "+ חיבור", value: " + " }, { label: "− חיסור", value: " − " },
-                      { label: "× כפל", value: " × " }, { label: "÷ חילוק", value: " ÷ " },
-                      { label: "= שווה", value: " = " }, { label: "² חזקה", value: "²" },
-                      { label: "√ שורש", value: "√" }, { label: "V מתח", value: "V" },
-                      { label: "I זרם", value: "I" }, { label: "R התנגדות", value: "R" },
-                      { label: "P הספק", value: "P" }, { label: "Ω אוהם", value: "Ω" },
-                    ].map((symbol) => (
-                      <button key={symbol.label} type="button" className="solutionSymbolButton"
-                        onMouseDown={(event) => event.preventDefault()} onClick={() => insertSolutionText(symbol.value)}>
-                        {symbol.label}
-                      </button>
-                    ))}
-                  </div>
-                  <HandwritingNotebook />
-                  <div className="notebookEditorWrap">
-                    <div className="notebookEditorHeading">
-                      <strong>או הקלד את הדרך והנוסחאות</strong>
-                      <span>אפשר להקליד רגיל; לדוגמה, 3/4 יוצג בתצוגה כשבר עומד כמו במחברת.</span>
+                  {solutionInputMode === "type" ? (
+                    <div className="notebookEditorWrap">
+                      <NotebookEquationEditor value={solutionMethod} onChange={setSolutionMethod} />
+                      <p className="notebookModeHint">טיפ קטן: לחץ על „הוסף שבר” כדי למלא מונה ומכנה בנפרד. אפשר גם לכתוב הסבר במילים.</p>
                     </div>
-                    <textarea ref={solutionTextareaRef} id="solution-method" dir="auto" rows={5} value={solutionMethod}
-                      onChange={(event) => setSolutionMethod(event.target.value)}
-                      placeholder={"לדוגמה:\n3/4 + 1/4 = 1\nהשלב הבא: 2 × 5 = 10"}
-                      aria-describedby="solution-method-help" />
-                    <div className="notebookPreviewLabel">תצוגת הנוסחאות שהקלדת</div>
-                    <NotebookMathPreview value={solutionMethod} />
-                  </div>
-                  <div className="solutionWritingTips" id="solution-method-help">
-                    <strong>אפשר לכתוב ממש במילים שלך</strong>
-                    <span>למשל: „חילקתי את המתח בהתנגדות, ולכן הזרם הוא 2 אמפר”.</span>
-                    <small>הבחירות המודרכות בודקות את השלבים שבחרת; בדיקת התרגיל הראשית עדיין בודקת את התשובה הסופית.</small>
-                  </div>
+                  ) : (
+                    <div className="notebookEditorWrap">
+                      <HandwritingNotebook />
+                      <p className="notebookModeHint">הכתיבה ביד היא טיוטה חזותית. את התשובה הסופית מזינים בשדה שמעל.</p>
+                    </div>
+                  )}
+                  <button type="button" className="writingHelpersToggle" aria-expanded={showWritingHelpers} onClick={() => setShowWritingHelpers((visible) => !visible)}>
+                    <span>{showWritingHelpers ? "הסתר עזרים" : "צריך עזרה בסידור הפתרון?"}</span>
+                    <span aria-hidden="true">{showWritingHelpers ? "−" : "+"}</span>
+                  </button>
+                  {showWritingHelpers && (
+                    <div className="writingHelpers">
+                      <p>אפשר לבנות את הפתרון בארבעה צעדים קצרים:</p>
+                      <div className="solutionStepButtons" aria-label="הוספת שלב לפתרון">
+                        {[
+                          { label: "1. הנוסחה", value: "נוסחה: " },
+                          { label: "2. הצבה", value: "הצבה: " },
+                          { label: "3. חישוב", value: "חישוב: " },
+                          { label: "4. בדיקה", value: "בדיקה: " },
+                        ].map((step) => (
+                          <button key={step.label} type="button" className="solutionStepButton" onClick={() => insertSolutionText((solutionMethod && !solutionMethod.endsWith("\n") ? "\n" : "") + step.value)}>{step.label}</button>
+                        ))}
+                      </div>
+                      <div className="solutionSymbols" aria-label="סימנים מתמטיים שימושיים">
+                        {[
+                          { label: "+", value: " + " }, { label: "−", value: " − " },
+                          { label: "×", value: " × " }, { label: "÷", value: " ÷ " },
+                          { label: "=", value: " = " }, { label: "²", value: "²" },
+                        ].map((symbol) => (
+                          <button key={symbol.label} type="button" className="solutionSymbolButton" onClick={() => insertSolutionText(symbol.value)}>{symbol.label}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 )}
 
