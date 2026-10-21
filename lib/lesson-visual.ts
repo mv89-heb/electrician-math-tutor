@@ -4,6 +4,11 @@ export function isExponentLesson(exercise: Pick<Exercise, "id" | "topic">): bool
   return exercise.topic === "חזקות";
 }
 
+export function isElectricalLesson(exercise: Pick<Exercise, "id" | "topic">): boolean {
+  // The IDs for exponent lessons include "power", but they are not electrical lessons.
+  return !isExponentLesson(exercise) && /ohm|power|חשמל/i.test(`${exercise.id} ${exercise.topic}`);
+}
+
 export type FractionVisual =
   | { kind: "bar"; heading: string; count: number; filled: number; label: string; caption: string }
   | { kind: "equation"; heading: string; label: string; caption: string };

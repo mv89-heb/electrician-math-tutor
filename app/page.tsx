@@ -14,7 +14,7 @@ import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -592,7 +592,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const [length, setLength] = useState(5);
   const [width, setWidth] = useState(3);
   const [x, setX] = useState(4);
-  const isElectrical = /ohm|power|חשמל/i.test(exercise.id + " " + exercise.topic);
+  const isElectrical = isElectricalLesson(exercise);
   const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
   const isBeginner = exercise.id.startsWith("zero-");
