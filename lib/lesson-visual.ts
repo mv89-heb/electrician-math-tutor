@@ -375,3 +375,14 @@ export function electricalMiniSimulatorConfigForExercise(
   if (exercise.id === "electrical-ohm-sub-1") return { voltage: 12, resistance: 4 };
   return null;
 }
+
+export type AreaLabUnits = {
+  lengthUnit: string;
+  areaUnit: string;
+};
+
+export function areaLabUnitsForExercise(exercise: Pick<Exercise, "id">): AreaLabUnits {
+  if (exercise.id === "geometry-area-square-1") return { lengthUnit: "מ׳", areaUnit: "מ״ר" };
+  if (exercise.id === "geometry-area-rectangle-1") return { lengthUnit: "ס״מ", areaUnit: "סמ״ר" };
+  return { lengthUnit: "יחידות", areaUnit: "יחידות²" };
+}
