@@ -269,6 +269,7 @@ export default function Home() {
   const [answer, setAnswer] = useState("");
   const [solutionMethod, setSolutionMethod] = useState("");
   const [guidedStepIndex, setGuidedStepIndex] = useState(0);
+  const [showGuidedSolution, setShowGuidedSolution] = useState(false);
   const [guidedFeedback, setGuidedFeedback] = useState<"idle" | "wrong" | "correct" | "complete">("idle");
   const [showFreeformSolution, setShowFreeformSolution] = useState(false);
   const solutionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -337,6 +338,7 @@ export default function Home() {
   useEffect(() => {
     setGuidedStepIndex(0);
     setGuidedFeedback("idle");
+    setShowGuidedSolution(false);
     setShowFreeformSolution(false);
   }, [exercise.id]);
 
@@ -347,8 +349,6 @@ export default function Home() {
       return;
     }
     if (guidedStepIndex === guidedSolutionSteps.length - 1) {
-      setAnswer(option);
-      setFeedback("idle");
       setGuidedFeedback("complete");
       return;
     }
@@ -722,26 +722,32 @@ export default function Home() {
                 <ElectricalMiniSimulator topic={exercise.topic} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
-                <section className="guidedSolution" aria-label="פתרון מודרך לפי שלבים">
-                  <div className="guidedSolutionHeader">
-                    <div><strong>נפתור יחד, לפי הסדר</strong><span>בחר אפשרות בכל שלב. אחרי בחירה נכונה ייפתח השלב הבא.</span></div>
-                    <span className="guidedProgress">{guidedFeedback === "complete" ? "3/3" : `${guidedStepIndex + 1}/${guidedSolutionSteps.length}`}</span>
-                  </div>
-                  <div className="guidedProgressTrack"><span style={{ width: `${guidedFeedback === "complete" ? 100 : (guidedStepIndex / guidedSolutionSteps.length) * 100}` + "%" }} /></div>
-                  {guidedFeedback === "complete" ? (
-                    <div className="guidedComplete"><CheckCircle2 size={22} /><div><strong>כל הכבוד — השלמת את דרך הפתרון!</strong><p>{currentGuidedStep?.explanation}</p><button type="button" className="solutionStepButton" onClick={() => { setGuidedStepIndex(0); setGuidedFeedback("idle"); }}>תרגל שוב את הדרך</button></div></div>
-                  ) : currentGuidedStep ? (
-                    <div className="guidedStep">
-                      <div className="guidedStepTitle">{currentGuidedStep.title}</div>
-                      <p>{currentGuidedStep.question}</p>
-                      <div className="guidedChoiceList">
-                        {currentGuidedStep.options.map((option) => <button key={option} type="button" className="guidedChoice" onClick={() => chooseGuidedOption(option)}>{option}</button>)}
-                      </div>
-                      {guidedFeedback === "wrong" && <div className="guidedChoiceFeedback wrong" role="status">לא בדיוק. נסה אפשרות אחרת; אפשר להיעזר ברמז שמופיע בהמשך המסך.</div>}
-                      {guidedFeedback === "correct" && <div className="guidedChoiceFeedback success" role="status">נכון! עוברים לשלב הבא.</div>}
+                <button type="button" className="guidedSolutionToggle" aria-expanded={showGuidedSolution} onClick={() => setShowGuidedSolution((visible) => !visible)}>
+                  <span><strong>{showGuidedSolution ? "הסתר פתרון מודרך" : "נתקעת? פתח פתרון מודרך"}</strong><small>{showGuidedSolution ? "חזור לתרגיל ונסה לפתור בעצמך" : "רמזים ושלבי פתרון ייחשפו רק אם תבקש עזרה"}</small></span>
+                  <span className="guidedSolutionToggleIcon" aria-hidden="true">{showGuidedSolution ? "−" : "+"}</span>
+                </button>
+                {showGuidedSolution && (
+                  <section className="guidedSolution" aria-label="פתרון מודרך לפי שלבים">
+                    <div className="guidedSolutionHeader">
+                      <div><strong>נפתור יחד, לפי הסדר</strong><span>בחר אפשרות בכל שלב. אחרי בחירה נכונה ייפתח השלב הבא.</span></div>
+                      <span className="guidedProgress">{guidedFeedback === "complete" ? "3/3" : `${guidedStepIndex + 1}/${guidedSolutionSteps.length}`}</span>
                     </div>
-                  ) : null}
-                </section>
+                    <div className="guidedProgressTrack"><span style={{ width: `${guidedFeedback === "complete" ? 100 : (guidedStepIndex / guidedSolutionSteps.length) * 100}` + "%" }} /></div>
+                    {guidedFeedback === "complete" ? (
+                      <div className="guidedComplete"><CheckCircle2 size={22} /><div><strong>כל הכבוד — השלמת את דרך הפתרון!</strong><p>{currentGuidedStep?.explanation}</p><button type="button" className="solutionStepButton" onClick={() => { setGuidedStepIndex(0); setGuidedFeedback("idle"); }}>תרגל שוב את הדרך</button></div></div>
+                    ) : currentGuidedStep ? (
+                      <div className="guidedStep">
+                        <div className="guidedStepTitle">{currentGuidedStep.title}</div>
+                        <p>{currentGuidedStep.question}</p>
+                        <div className="guidedChoiceList">
+                          {currentGuidedStep.options.map((option) => <button key={option} type="button" className="guidedChoice" onClick={() => chooseGuidedOption(option)}>{option}</button>)}
+                        </div>
+                        {guidedFeedback === "wrong" && <div className="guidedChoiceFeedback wrong" role="status">לא בדיוק. נסה אפשרות אחרת; אפשר להיעזר ברמז שמופיע בהמשך המסך.</div>}
+                        {guidedFeedback === "correct" && <div className="guidedChoiceFeedback success" role="status">נכון! עוברים לשלב הבא.</div>}
+                      </div>
+                    ) : null}
+            
+                )}      </section>
                 <div className="finalAnswerPanel">
                 <label htmlFor="answer">התשובה הסופית שלך</label>
                 <div className="answerRow">
