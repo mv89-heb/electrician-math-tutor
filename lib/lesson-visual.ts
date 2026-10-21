@@ -216,6 +216,37 @@ export function equationLabModelForExercise(
   exercise: Pick<Exercise, "prompt">,
 ): EquationLabModel | null {
   const prompt = exercise.prompt;
+  const twoStepAddition = prompt.match(/(\d+)\s*[×x]\s*X\s*\+\s*(\d+)\s*=\s*(\d+)/);
+  if (twoStepAddition) {
+    const coefficient = Number(twoStepAddition[1]);
+    const offset = Number(twoStepAddition[2]);
+    const rhs = Number(twoStepAddition[3]);
+    const answer = Number(((rhs - offset) / coefficient).toFixed(8));
+    return {
+      expression: twoStepAddition[1] + " × X + " + twoStepAddition[2],
+      rhs,
+      answer,
+      coefficient,
+      offset,
+      explanation: "מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = " + answer + ".",
+    };
+  }
+
+  const twoStepSubtraction = prompt.match(/(\d+)\s*[×x]\s*X\s*[−-]\s*(\d+)\s*=\s*(\d+)/);
+  if (twoStepSubtraction) {
+    const coefficient = Number(twoStepSubtraction[1]);
+    const offset = -Number(twoStepSubtraction[2]);
+    const rhs = Number(twoStepSubtraction[3]);
+    const answer = Number(((rhs - offset) / coefficient).toFixed(8));
+    return {
+      expression: twoStepSubtraction[1] + " × X − " + twoStepSubtraction[2],
+      rhs,
+      answer,
+      coefficient,
+      offset,
+      explanation: "מציבים את הערך במקום X ובודקים את שני אגפי המשוואה. הפתרון הוא X = " + answer + ".",
+    };
+  }
   let expression: string;
   let coefficient: number;
   let offset: number;
