@@ -55,6 +55,30 @@ export function formulaVisualForExercise(exercise: Pick<Exercise, "id" | "topic"
       caption: "כדי למצוא רוחב, מחלקים את השטח באורך: W = A/L."
     };
   }
+  if (["formula-1", "formula-2", "ohm-2"].includes(exercise.id)) {
+    return {
+      heading: "מוצאים התנגדות לפי חוק אוהם",
+      lhs: "R", operator: "=", rhs: "V ÷ I",
+      legend: ["R = התנגדות (אוהם)", "V = מתח (וולט)", "I = זרם (אמפר)"],
+      caption: "כדי למצוא התנגדות, מחלקים את המתח בזרם: R = V ÷ I."
+    };
+  }
+  if (["formula-3", "ohm-1", "electrical-ohm-sub-1"].includes(exercise.id)) {
+    return {
+      heading: "מוצאים זרם לפי חוק אוהם",
+      lhs: "I", operator: "=", rhs: "V ÷ R",
+      legend: ["I = זרם (אמפר)", "V = מתח (וולט)", "R = התנגדות (אוהם)"],
+      caption: "כדי למצוא זרם, מחלקים את המתח בהתנגדות: I = V ÷ R."
+    };
+  }
+  if (exercise.id === "electrical-power-sub-1") {
+    return {
+      heading: "מוצאים זרם מתוך הספק ומתח",
+      lhs: "I", operator: "=", rhs: "P ÷ V",
+      legend: ["I = זרם (אמפר)", "P = הספק (וואט)", "V = מתח (וולט)"],
+      caption: "כדי למצוא זרם, מחלקים את ההספק במתח: I = P ÷ V."
+    };
+  }
   if (exercise.topic === "חשמל — הספק") {
     return {
       heading: "נוסחת ההספק החשמלי",
