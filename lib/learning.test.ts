@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson } from "./lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -629,5 +629,25 @@ describe("formula visuals match the lesson topic", () => {
     const exercise = curriculum.find((item) => item.id === "ohm-1")!;
     expect(formulaVisualForExercise(exercise).lhs).toBe("V");
     expect(formulaVisualForExercise(exercise).rhs).toBe("I × R");
+  });
+});
+
+
+describe("geometry and unit visuals match the exercise", () => {
+  it("shows the correct conversion expression for each length conversion lesson", () => {
+    const mmToCm = curriculum.find((item) => item.id === "units-mm-cm-1")!;
+    const cmToM = curriculum.find((item) => item.id === "units-cm-m-1")!;
+    expect(unitConversionVisualForExercise(mmToCm).expression).toBe("35 מ״מ ÷ 10 = 3.5 ס״מ");
+    expect(unitConversionVisualForExercise(cmToM).expression).toBe("250 ס״מ ÷ 100 = 2.5 מטר");
+    expect(unitConversionVisualForExercise(mmToCm).caption).toContain("מחלקים ב־10");
+    expect(unitConversionVisualForExercise(cmToM).caption).toContain("מחלקים ב־100");
+  });
+
+  it("uses the actual dimensions and formula for rectangle and square lessons", () => {
+    const rectangle = curriculum.find((item) => item.id === "geometry-area-rectangle-1")!;
+    const square = curriculum.find((item) => item.id === "geometry-area-square-1")!;
+    expect(rectangle.prompt).toContain("6 ס״מ");
+    expect(rectangle.prompt).toContain("3 ס״מ");
+    expect(square.prompt).toContain("5 מטרים");
   });
 });

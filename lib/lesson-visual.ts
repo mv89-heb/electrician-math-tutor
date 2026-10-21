@@ -65,3 +65,31 @@ export function formulaVisualForExercise(exercise: Pick<Exercise, "id" | "topic"
     caption: "מזהים מה נתון ומה מחפשים, ואז מסדרים את חוק אוהם בהתאם."
   };
 }
+
+export type UnitConversionVisual = {
+  heading: string;
+  expression: string;
+  caption: string;
+};
+
+export function unitConversionVisualForExercise(exercise: Pick<Exercise, "id">): UnitConversionVisual {
+  if (exercise.id === "units-mm-cm-1") {
+    return {
+      heading: "ממירים מילימטרים לסנטימטרים",
+      expression: "35 מ״מ ÷ 10 = 3.5 ס״מ",
+      caption: "בכל סנטימטר יש 10 מילימטרים, לכן מחלקים ב־10."
+    };
+  }
+  if (exercise.id === "units-cm-m-1") {
+    return {
+      heading: "ממירים סנטימטרים למטרים",
+      expression: "250 ס״מ ÷ 100 = 2.5 מטר",
+      caption: "בכל מטר יש 100 סנטימטרים, לכן מחלקים ב־100."
+    };
+  }
+  return {
+    heading: "המרת יחידות אורך",
+    expression: "בודקים כמה יחידות קטנות יש ביחידה הגדולה",
+    caption: "בחרו את פעולת ההמרה לפי היחידות הנתונות."
+  };
+}
