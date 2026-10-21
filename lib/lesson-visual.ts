@@ -222,33 +222,33 @@ export function equationLabModelForExercise(
   let rhs: number;
   let match: RegExpMatchArray | null;
 
-  match = prompt.match(/X\\s*\\+\\s*(\\d+)\\s*=\\s*(\\d+)/);
+  match = prompt.match(/X\s*\+\s*(\d+)\s*=\s*(\d+)/);
   if (match) {
     expression = `X + ${match[1]}`;
     coefficient = 1;
     offset = Number(match[1]);
     rhs = Number(match[2]);
-  } else if ((match = prompt.match(/X\\s*[−-]\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+  } else if ((match = prompt.match(/X\s*[−-]\s*(\d+)\s*=\s*(\d+)/))) {
     expression = `X − ${match[1]}`;
     coefficient = 1;
     offset = -Number(match[1]);
     rhs = Number(match[2]);
-  } else if ((match = prompt.match(/(\\d+)\\s*[×x]\\s*X\\s*\\+\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+  } else if ((match = prompt.match(/(\d+)\s*[×x]\s*X\s*\+\s*(\d+)\s*=\s*(\d+)/))) {
     expression = `${match[1]} × X + ${match[2]}`;
     coefficient = Number(match[1]);
     offset = Number(match[2]);
     rhs = Number(match[3]);
-  } else if ((match = prompt.match(/(\\d+)\\s*[×x]\\s*X\\s*[−-]\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+  } else if ((match = prompt.match(/(\d+)\s*[×x]\s*X\s*[−-]\s*(\d+)\s*=\s*(\d+)/))) {
     expression = `${match[1]} × X − ${match[2]}`;
     coefficient = Number(match[1]);
     offset = -Number(match[2]);
     rhs = Number(match[3]);
-  } else if ((match = prompt.match(/(\\d+)\\s*[×x]\\s*X\\s*=\\s*(\\d+)/))) {
+  } else if ((match = prompt.match(/(\d+)\s*[×x]\s*X\s*=\s*(\d+)/))) {
     expression = `${match[1]} × X`;
     coefficient = Number(match[1]);
     offset = 0;
     rhs = Number(match[2]);
-  } else if ((match = prompt.match(/X\\s*[÷/]\\s*(\\d+)\\s*=\\s*(\\d+)/))) {
+  } else if ((match = prompt.match(/X\s*[÷/]\s*(\d+)\s*=\s*(\d+)/))) {
     expression = `X ÷ ${match[1]}`;
     coefficient = 1 / Number(match[1]);
     offset = 0;
