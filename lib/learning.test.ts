@@ -786,6 +786,15 @@ describe("electrical lab matches the quantity being taught", () => {
 
 
 describe("basic formula guided steps match the requested task", () => {
+  it("identifies voltage with the correct symbol and unit", async () => {
+    const { basicFormulaGuidance } = await import("./basic-formula-guidance");
+    const guidance = basicFormulaGuidance("formula-1b");
+    expect(guidance?.question).toContain("מתח");
+    expect(guidance?.correct).toBe("V — מתח");
+    expect(guidance?.options).toContain("I — זרם");
+    expect(guidance?.explanation).toContain("וולט");
+  });
+
   it("asks for resistance when voltage and current are known", async () => {
     const { basicFormulaGuidance } = await import("./basic-formula-guidance");
     const guidance = basicFormulaGuidance("formula-1");
