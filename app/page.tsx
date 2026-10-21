@@ -117,7 +117,7 @@ function NotebookEquationEditor({ value, onChange }: { value: string; onChange: 
   return <div className="notebookEquationEditor">
     <div className="notebookEditorToolbar" dir="rtl">
       <span>כתיבה מתמטית</span>
-      <button type="button" onClick={insertFraction} aria-label="הוסף שבר עם מונה ומכנה"><span className="toolbarFraction" aria-hidden="true"><span>□</span><i></i><span>□</span></span> הוסף שבר</button>
+      <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={insertFraction} aria-label="הוסף שבר עם מונה ומכנה"><span className="toolbarFraction" aria-hidden="true"><span>□</span><i></i><span>□</span></span> הוסף שבר</button>
       <small>לחץ על השבר ומלא בנפרד את המונה ואת המכנה</small>
     </div>
     <div
