@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
+import { decimalVisualForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -860,5 +860,24 @@ describe("generated fraction visuals match the current denominator", () => {
     const visual = fractionVisualForExercise(exercise);
     expect(exercise.prompt).toContain("חלק אחד מתוך 7 חלקים");
     expect(visual).toMatchObject({ kind: "bar", count: 7, filled: 1, label: "1/7" });
+  });
+});
+
+
+describe("decimal visuals match the current operation", () => {
+  it("shows the exact addition for a generated decimal exercise", () => {
+    const exercise = generateExercise("מספרים עשרוניים", 1)!;
+    const visual = decimalVisualForExercise(exercise);
+    expect(exercise.prompt).toBe("מה הערך של 0.2 + 0.3?");
+    expect(exercise.accepted).toEqual(["0.5"]);
+    expect(visual.expression).toBe("0.2 + 0.3 = 0.5");
+  });
+
+  it("shows the exact subtraction and result for a generated decimal exercise", () => {
+    const exercise = generateExercise("מספרים עשרוניים", 3)!;
+    const visual = decimalVisualForExercise(exercise);
+    expect(exercise.prompt).toBe("מה הערך של 2.5 - 0.5?");
+    expect(exercise.accepted).toEqual(["2"]);
+    expect(visual.expression).toBe("2.5 − 0.5 = 2");
   });
 });
