@@ -310,3 +310,14 @@ export function fractionLabDefaultsForExercise(exercise: Pick<Exercise, "id">): 
   if (exercise.id === "fraction-reduce-2") return { numerator: 6, denominator: 9 };
   return { numerator: 12, denominator: 6 };
 }
+
+export type AreaLabDefaults = {
+  length: number;
+  width: number;
+};
+
+export function areaLabDefaultsForExercise(exercise: Pick<Exercise, "id">): AreaLabDefaults {
+  if (exercise.id === "geometry-area-rectangle-1") return { length: 6, width: 3 };
+  if (exercise.id === "geometry-area-square-1") return { length: 5, width: 5 };
+  return { length: 5, width: 3 };
+}
