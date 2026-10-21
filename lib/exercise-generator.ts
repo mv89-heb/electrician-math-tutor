@@ -170,6 +170,41 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
   if (errorType === "unit" && !electricalTopics.has(topic)) return generateExercise(topic, seed);
   if (errorType === "concept" && topic !== "מהו נעלם?") return generateExercise(topic, seed);
   if (errorType === "unknown" && !equationTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "sign" && topic === "כפל במשוואות") {
+    const factor = n;
+    const product = factor * 4;
+    return {
+      id: `generated-${topic}-sign-${seed}`,
+      topic,
+      level: 0,
+      title: "חיזוק סימנים בכפל",
+      teachingNote: "כשמחלקים מספר שלילי במספר שלילי, התוצאה חיובית.",
+      prompt: `-${factor} × X = -${product}. איזה מספר הוא X?`,
+      accepted: ["4"],
+      hint1: "שני אגפי המשוואה שליליים, ולכן אפשר לחלק את שניהם בגורם השלילי.",
+      hint2: `-${product} ÷ (-${factor}) = 4.`,
+      explanation: `נכון. X = (-${product}) ÷ (-${factor}) = 4.`,
+      generated: true,
+    };
+  }
+  if (errorType === "sign" && topic === "חילוק במשוואות") {
+    const divisor = n;
+    const answer = divisor * 4;
+    return {
+      id: `generated-${topic}-sign-${seed}`,
+      topic,
+      level: 0,
+      title: "חיזוק סימנים בחילוק",
+      teachingNote: "מנה של שני מספרים שליליים היא חיובית.",
+      prompt: `X ÷ (-${divisor}) = -4. איזה מספר הוא X?`,
+      accepted: [String(answer)],
+      hint1: "כדי למצוא את X, כפל את שני אגפי המשוואה במספר השלילי שבמכנה.",
+      hint2: `X = (-4) × (-${divisor}) = ${answer}.`,
+      explanation: `נכון. X ÷ (-${divisor}) = -4, ולכן X = (-4) × (-${divisor}) = ${answer}.`,
+      generated: true,
+    };
+  }
+
   if (errorType === "unknown" && topic === "כפל במשוואות") {
     const factor = 2 + (seed % 6);
     const quotient = 4;
