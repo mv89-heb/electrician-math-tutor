@@ -10,7 +10,7 @@ describe("math prompt direction and expression splitting", () => {
 
   it("keeps decimal values, percentages, and electrical units intact", () => {
     expect(splitMathPrompt("עם π ≈ 3.14.").filter((part) => part.type === "math").map((part) => part.value))
-      .toEqual(["3.14"]);
+      .toEqual(["π ≈ 3.14"]);
     expect(splitMathPrompt("מתח 12V וזרם 3A").filter((part) => part.type === "math").map((part) => part.value))
       .toEqual(["12V", "3A"]);
     expect(splitMathPrompt("כמה זה 50%?").filter((part) => part.type === "math").map((part) => part.value))
