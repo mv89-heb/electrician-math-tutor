@@ -698,7 +698,7 @@ describe("electrical unit reinforcement matches its topic", () => {
         const exercise = generateReinforcement(topic, seed, "unit")!;
         const symbol = exercise.accepted[0];
         expect(exercise.prompt).toContain(symbol);
-        expect(exercise.hint2).toContain(exercise.explanation.match(/נמדד ב(.+?),/)?.[1] ?? "unmatched-unit");
+        expect(exercise.hint2).toContain(exercise.explanation.match(/נמדד(?:ת)? ב(.+?),/)?.[1] ?? "unmatched-unit");
       }
     }
   });
