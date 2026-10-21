@@ -244,6 +244,20 @@ describe("reinforcement topic alignment", () => {
     expect(exercise?.explanation).toContain("20 ÷ 5 = 4");
   });
 
+  it("keeps arithmetic reinforcement aligned with multiplication equations", () => {
+    const exercise = generateReinforcement("כפל במשוואות", 9, "arithmetic");
+    expect(exercise?.prompt).toContain("× X");
+    expect(exercise?.accepted).toEqual(["4"]);
+    expect(exercise?.explanation).toContain("5 × 4 = 20");
+  });
+
+  it("keeps arithmetic reinforcement aligned with division equations", () => {
+    const exercise = generateReinforcement("חילוק במשוואות", 9, "arithmetic");
+    expect(exercise?.prompt).toContain("X ÷ 5 = 4");
+    expect(exercise?.accepted).toEqual(["20"]);
+    expect(exercise?.explanation).toContain("X = 4 × 5 = 20");
+  });
+
   it("does not inject a unit exercise into a non-electrical topic", () => {
     const exercise = generateReinforcement("חזקות", 9, "unit");
     expect(exercise?.topic).toBe("חזקות");

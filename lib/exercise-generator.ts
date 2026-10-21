@@ -207,6 +207,39 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
     };
   }
 
+  if (errorType === "arithmetic" && topic === "כפל במשוואות") {
+    const factor = n;
+    const quotient = 4;
+    const product = factor * quotient;
+    return {
+      id: `generated-${topic}-arithmetic-${seed}`, topic, level: 0,
+      title: "חיזוק דיוק בכפל",
+      teachingNote: "נחשב את המכפלה ואז נבדוק איזו תוצאה מחלקת בחזרה לגורם.",
+      prompt: `${factor} × X = ${product}. איזה מספר הוא X?`,
+      accepted: [String(quotient)],
+      hint1: `חשב ${factor} × 4 לפני שבודקים את התוצאה.`,
+      hint2: `${factor} × 4 = ${product}, לכן X = 4.`,
+      explanation: `נכון. ${factor} × 4 = ${product}, ולכן X = 4.`,
+      generated: true,
+    };
+  }
+  if (errorType === "arithmetic" && topic === "חילוק במשוואות") {
+    const divisor = n;
+    const quotient = 4;
+    const answer = divisor * quotient;
+    return {
+      id: `generated-${topic}-arithmetic-${seed}`, topic, level: 0,
+      title: "חיזוק דיוק בחילוק",
+      teachingNote: "נבדוק את החישוב בעזרת הפעולה ההפוכה.",
+      prompt: `X ÷ ${divisor} = ${quotient}. איזה מספר הוא X?`,
+      accepted: [String(answer)],
+      hint1: `כדי למצוא את X, כפל את ${quotient} ב־${divisor}.`,
+      hint2: `${quotient} × ${divisor} = ${answer}.`,
+      explanation: `נכון. X = ${quotient} × ${divisor} = ${answer}.`,
+      generated: true,
+    };
+  }
+
   const targeted: Record<string, GeneratedExercise> = {
     sign: {
       id: `generated-${topic}-sign-${seed}`, topic, level: 0, title: "חיזוק סימנים",
