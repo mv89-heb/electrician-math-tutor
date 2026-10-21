@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { areaLabDefaultsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -613,6 +613,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const fractionDefaults = fractionLabDefaultsForExercise(exercise);
   const electricalDefaults = electricalLabDefaultsForExercise(exercise);
   const areaDefaults = areaLabDefaultsForExercise(exercise);
+  const areaUnits = areaLabUnitsForExercise(exercise);
   const isFractionLab = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const [a, setA] = useState(isFractionLab ? fractionDefaults.numerator : electricalDefaults.first);
   const [b, setB] = useState(isFractionLab ? fractionDefaults.denominator : electricalDefaults.second);
@@ -679,12 +680,12 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
     </> : isArea ? <>
       <div className="labShape"><div style={isSquareArea ? {width:`${length*12}px`,height:`${length*12}px`} : {width:`${length*8}%`,height:`${width*13}px`}}><span>{isSquareArea ? `${length} × ${length}` : `${length} × ${width}`}</span></div></div>
       <div className="labControls">
-        {isSquareArea ? <label>צלע <b>{length}</b><input aria-label="צלע הריבוע" type="range" min="2" max="8" value={length} onChange={e=>{const next=Number(e.target.value);setLength(next);setWidth(next)}}/></label> : <>
-          <label>אורך <b>{length}</b><input aria-label="אורך" type="range" min="2" max="8" value={length} onChange={e=>setLength(Number(e.target.value))}/></label>
-          <label>רוחב <b>{width}</b><input aria-label="רוחב" type="range" min="1" max="5" value={width} onChange={e=>setWidth(Number(e.target.value))}/></label>
+        {isSquareArea ? <label>צלע ({areaUnits.lengthUnit}) <b>{length}</b><input aria-label="צלע הריבוע" type="range" min="2" max="8" value={length} onChange={e=>{const next=Number(e.target.value);setLength(next);setWidth(next)}}/></label> : <>
+          <label>אורך ({areaUnits.lengthUnit}) <b>{length}</b><input aria-label="אורך" type="range" min="2" max="8" value={length} onChange={e=>setLength(Number(e.target.value))}/></label>
+          <label>רוחב ({areaUnits.lengthUnit}) <b>{width}</b><input aria-label="רוחב" type="range" min="1" max="5" value={width} onChange={e=>setWidth(Number(e.target.value))}/></label>
         </>}
       </div>
-      <div className="labAnswer"><small>{isSquareArea ? "שטח ריבוע = צלע × צלע" : "שטח מלבן = אורך × רוחב"}</small><strong>{isSquareArea ? `${length} × ${length} = ${length*length}` : `${length} × ${width} = ${length*width}`} יחידות²</strong></div>
+      <div className="labAnswer"><small>{isSquareArea ? "שטח ריבוע = צלע × צלע" : "שטח מלבן = אורך × רוחב"}</small><strong>{isSquareArea ? `${length} × ${length} = ${length*length}` : `${length} × ${width} = ${length*width}`} {areaUnits.areaUnit}</strong></div>
     </> : <>
       <div className="labEquation" dir="ltr"><b>{substitutedExpression}</b><span>=</span><b>{equationLab?.rhs}</b></div>
       <label className="labSingle">שנו את ערך X <b>{labX}</b><input aria-label="ערך הנעלם" type="range" min="0" max={labMax} value={labX} onChange={e=>setX(Number(e.target.value))}/></label>
