@@ -13,6 +13,7 @@ import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../l
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
+import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
 import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
@@ -437,6 +438,12 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     methodOptions = [correctMethod, `לחלק את ${total} ב־${percent}`, `להוסיף ${percent} ל־${total}`];
     firstQuestion = "איך מחשבים אחוז מתוך כמות?";
     methodExplanation = "מכפילים את הכמות באחוזים ומחלקים ב־100, כי אחוז הוא חלק מתוך מאה.";
+  } else if (basicFormulaGuidance(id)) {
+    const guidance = basicFormulaGuidance(id)!;
+    firstQuestion = guidance.question;
+    correctMethod = guidance.correct;
+    methodOptions = guidance.options;
+    methodExplanation = guidance.explanation;
   } else if (/ohm|power|חשמל/i.test(id + " " + topic) && (/\bI\s*=|זרם|\bR\s*=|התנגדות|\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote))) {
     firstQuestion = "איזו נוסחה מתאימה למה שמבקשים למצוא?";
     correctMethod = electricalGuidedFormula(exercise) ?? "I = V ÷ R";
