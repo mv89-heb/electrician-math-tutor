@@ -106,6 +106,19 @@ export function generateExercise(topic: string, seed: number): GeneratedExercise
     const percentVariants = [[10,100,10],[20,100,20],[10,200,20],[25,200,50],[50,80,40]];
     const [percent,total,result] = percentVariants[variant];
     [prompt, answer] = [`כמה זה ${percent}% מתוך ${total}?`, String(result)];
+  }
+  let hint1 = template.hint1;
+  let hint2 = template.hint2;
+  let explanation = template.explanation;
+  const percentMatch = prompt.match(/כמה זה (\\d+(?:[.,]\\d+)?)% מתוך (\\d+(?:[.,]\\d+)?)[?？]?/);
+  if (percentMatch) {
+    const percent = Number(percentMatch[1].replace(",", "."));
+    const total = Number(percentMatch[2].replace(",", "."));
+    const result = (percent * total) / 100;
+    hint1 = `${percent}% פירושם ${percent} מתוך 100. כדי למצוא את החלק, מחשבים ${total} × ${percent} ÷ 100.`;
+    hint2 = `${total} × ${percent} = ${total * percent}, ואז מחלקים ב־100: ${total * percent} ÷ 100 = ${result}.`;
+    explanation = `נכון. ${percent}% מתוך ${total} הם ${result}, כי ${total} × ${percent} ÷ 100 = ${result}.`;
+  }
   } else if (topic === "חילוק במשוואות") {
     const divisor = 2 + variant;
     const result = 3 + (seed % 4);
@@ -119,9 +132,9 @@ export function generateExercise(topic: string, seed: number): GeneratedExercise
     teachingNote: template.teachingNote,
     prompt,
     accepted: [answer],
-    hint1: template.hint1,
-    hint2: template.hint2,
-    explanation: template.explanation,
+    hint1,
+    hint2,
+    explanation,
     generated: true,
   };
 }
