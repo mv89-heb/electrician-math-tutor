@@ -651,3 +651,18 @@ describe("geometry and unit visuals match the exercise", () => {
     expect(square.prompt).toContain("5 מטרים");
   });
 });
+
+describe("electrical guided formula selection", () => {
+  it("prioritizes the requested current formula over the background power formula", async () => {
+    const { electricalGuidedFormula } = await import("./electrical-guided-formula");
+    const exercise = curriculum.find((item) => item.id === "electrical-power-sub-1")!;
+    expect(electricalGuidedFormula(exercise)).toBe("I = P ÷ V");
+  });
+
+  it("selects the formula matching the requested electrical quantity", async () => {
+    const { electricalGuidedFormula } = await import("./electrical-guided-formula");
+    expect(electricalGuidedFormula(curriculum.find((item) => item.id === "power-1")!)).toBe("P = V × I");
+    expect(electricalGuidedFormula(curriculum.find((item) => item.id === "ohm-2")!)).toBe("R = V ÷ I");
+    expect(electricalGuidedFormula(curriculum.find((item) => item.id === "ohm-1")!)).toBe("I = V ÷ R");
+  });
+});
