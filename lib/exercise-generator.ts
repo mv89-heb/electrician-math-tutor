@@ -198,7 +198,7 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       teachingNote: "מנה של שני מספרים שליליים היא חיובית.",
       prompt: `X ÷ (-${divisor}) = -4. איזה מספר הוא X?`,
       accepted: [String(answer)],
-      hint1: "כדי למצוא את X, כפל את שני האגפים ב־-divisor, כלומר במספר השלילי שבמכנה.",
+      hint1: "כדי למצוא את X, כפל את שני אגפי המשוואה במספר השלילי שבמכנה.",
       hint2: `X = (-4) × (-${divisor}) = ${answer}.`,
       explanation: `נכון. X ÷ (-${divisor}) = -4, ולכן X = (-4) × (-${divisor}) = ${answer}.`,
       generated: true,
