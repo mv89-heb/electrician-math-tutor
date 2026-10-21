@@ -719,3 +719,29 @@ describe("electrical unit reinforcement matches its topic", () => {
     }
   });
 });
+
+
+describe("guided method follows the correct order for two-step equations", () => {
+  it("removes addition before dividing", async () => {
+    const { twoStepEquationGuidance } = await import("./two-step-guidance");
+    const guidance = twoStepEquationGuidance("2 × X + 1 = 7. מה הערך של X?");
+    expect(guidance?.correct).toContain("לחסר 1");
+    expect(guidance?.correct).toContain("לפני שמחלקים");
+    expect(guidance?.options[1]).toContain("לחלק מיד");
+    expect(guidance?.explanation).toContain("מחסרים 1");
+    expect(guidance?.explanation).toContain("ואז מחלקים ב־2");
+  });
+
+  it("adds back the subtracted amount before dividing", async () => {
+    const { twoStepEquationGuidance } = await import("./two-step-guidance");
+    const guidance = twoStepEquationGuidance("3 × X − 2 = 10. מה הערך של X?");
+    expect(guidance?.correct).toContain("להוסיף 2");
+    expect(guidance?.correct).toContain("לפני שמחלקים");
+    expect(guidance?.explanation).toContain("ואז מחלקים ב־3");
+  });
+
+  it("does not capture one-step multiplication equations", async () => {
+    const { twoStepEquationGuidance } = await import("./two-step-guidance");
+    expect(twoStepEquationGuidance("3 × X = 12. מה הערך של X?")).toBeNull();
+  });
+});
