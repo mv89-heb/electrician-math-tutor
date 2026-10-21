@@ -16,6 +16,7 @@ import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { fractionGuidanceForExercise } from "../lib/fraction-guidance";
 import { divisionEquationGuidance } from "../lib/division-equation-guidance";
+import { formulaSubjectGuidance } from "../lib/formula-subject-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
 import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
@@ -440,6 +441,12 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     methodOptions = [correctMethod, `לחלק את ${total} ב־${percent}`, `להוסיף ${percent} ל־${total}`];
     firstQuestion = "איך מחשבים אחוז מתוך כמות?";
     methodExplanation = "מכפילים את הכמות באחוזים ומחלקים ב־100, כי אחוז הוא חלק מתוך מאה.";
+  } else if (formulaSubjectGuidance(id)) {
+    const guidance = formulaSubjectGuidance(id)!;
+    firstQuestion = guidance.question;
+    correctMethod = guidance.correct;
+    methodOptions = guidance.options;
+    methodExplanation = guidance.explanation;
   } else if (basicFormulaGuidance(id)) {
     const guidance = basicFormulaGuidance(id)!;
     firstQuestion = guidance.question;
