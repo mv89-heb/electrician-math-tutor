@@ -214,8 +214,10 @@ describe("generated exercise correctness", () => {
     expect(multiplication.accepted).toEqual(["4"]);
 
     const division = generateReinforcement("חילוק במשוואות", 9, "unknown")!;
-    expect(division.prompt).toBe("X + 5 = 10. איזה מספר הוא X?");
-    expect(division.accepted).toEqual(["5"]);
+    expect(division.prompt).toBe("X ÷ 3 = 7. איזה מספר הוא X?");
+    expect(division.accepted).toEqual(["21"]);
+    expect(division.hint2).toContain("7 × 3 = 21");
+    expect(division.explanation).toContain("X = 7 × 3 = 21");
   });
 });
 

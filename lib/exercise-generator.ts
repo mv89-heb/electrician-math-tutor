@@ -170,6 +170,25 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
   if (errorType === "unit" && !electricalTopics.has(topic)) return generateExercise(topic, seed);
   if (errorType === "concept" && topic !== "מהו נעלם?") return generateExercise(topic, seed);
   if (errorType === "unknown" && !equationTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "unknown" && topic === "חילוק במשוואות") {
+    const divisor = 2 + (seed % 4);
+    const quotient = 3 + (seed % 5);
+    const answer = divisor * quotient;
+    return {
+      id: `generated-${topic}-unknown-${seed}`,
+      topic,
+      level: 0,
+      title: "חיזוק מציאת הנעלם בחילוק",
+      teachingNote: "נזהה את הפעולה שנעשתה על X ונשתמש בפעולה ההפוכה כדי למצוא אותו.",
+      prompt: `X ÷ ${divisor} = ${quotient}. איזה מספר הוא X?`,
+      accepted: [String(answer)],
+      hint1: `X חולק ב־${divisor}. כדי למצוא את המספר המקורי, נשתמש בכפל.`,
+      hint2: `${quotient} × ${divisor} = ${answer}, לכן X = ${answer}.`,
+      explanation: `נכון. X ÷ ${divisor} = ${quotient}, לכן X = ${quotient} × ${divisor} = ${answer}.`,
+      generated: true,
+    };
+  }
+
   const targeted: Record<string, GeneratedExercise> = {
     sign: {
       id: `generated-${topic}-sign-${seed}`, topic, level: 0, title: "חיזוק סימנים",
