@@ -238,6 +238,22 @@ describe("reinforcement topic alignment", () => {
     expect(exercise?.explanation).toContain("X = 7 + 5 = 12");
   });
 
+  it("keeps sign reinforcement aligned with two-step equations", () => {
+    const exercise = generateReinforcement("משוואות פשוטות", 9, "sign");
+    expect(exercise?.prompt).toBe("2 × X − 2 = 6. מה הערך של X?");
+    expect(exercise?.accepted).toEqual(["4"]);
+    expect(exercise?.hint2).toContain("8 ÷ 2 = 4");
+    expect(exercise?.explanation).toContain("X = 4");
+  });
+
+  it("keeps unknown reinforcement aligned with two-step equations", () => {
+    const exercise = generateReinforcement("משוואות פשוטות", 9, "unknown");
+    expect(exercise?.prompt).toBe("2 × X + 1 = 9. מה הערך של X?");
+    expect(exercise?.accepted).toEqual(["4"]);
+    expect(exercise?.hint2).toContain("8 ÷ 2 = 4");
+    expect(exercise?.explanation).toContain("X = 4");
+  });
+
   it("keeps arithmetic reinforcement aligned with two-step equations", () => {
     const exercise = generateReinforcement("משוואות פשוטות", 9, "arithmetic");
     expect(exercise?.prompt).toBe("2 × X + 1 = 9. מה הערך של X?");
