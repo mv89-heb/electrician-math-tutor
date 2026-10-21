@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import katex from "katex";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
+import type React from "react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
 import { buildCheckpoint, checkpointPasses, shouldRunCheckpoint, type CheckpointQuestion } from "../lib/checkpoints";
@@ -75,6 +76,106 @@ function NotebookMathPreview({ value }: { value: string }) {
     })}
   </div>;
 }
+type NotebookPoint = { x: number; y: number };
+type NotebookStroke = { points: NotebookPoint[]; color: string; width: number };
+
+function HandwritingNotebook() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [strokes, setStrokes] = useState<NotebookStroke[]>([]);
+  const [activeStroke, setActiveStroke] = useState<NotebookStroke | null>(null);
+  const [tool, setTool] = useState<"pen" | "eraser">("pen");
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const redraw = () => {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width) return;
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = Math.round(rect.width * ratio);
+      canvas.height = Math.round(300 * ratio);
+      const context = canvas.getContext("2d");
+      if (!context) return;
+      context.scale(ratio, ratio);
+      context.clearRect(0, 0, rect.width, 300);
+      const allStrokes = activeStroke ? [...strokes, activeStroke] : strokes;
+      for (const stroke of allStrokes) {
+        if (!stroke.points.length) continue;
+        context.save();
+        context.globalCompositeOperation = stroke.color === "eraser" ? "destination-out" : "source-over";
+        context.strokeStyle = stroke.color === "eraser" ? "rgba(0,0,0,1)" : stroke.color;
+        context.fillStyle = stroke.color === "eraser" ? "rgba(0,0,0,1)" : stroke.color;
+        context.lineWidth = stroke.width;
+        context.lineCap = "round";
+        context.lineJoin = "round";
+        const first = stroke.points[0];
+        context.beginPath();
+        context.moveTo(first.x * rect.width, first.y * 300);
+        for (const point of stroke.points.slice(1)) context.lineTo(point.x * rect.width, point.y * 300);
+        if (stroke.points.length === 1) {
+          context.arc(first.x * rect.width, first.y * 300, stroke.width / 2, 0, Math.PI * 2);
+          context.fill();
+        } else {
+          context.stroke();
+        }
+        context.restore();
+      }
+    };
+    redraw();
+    const observer = new ResizeObserver(redraw);
+    observer.observe(canvas);
+    return () => observer.disconnect();
+  }, [strokes, activeStroke]);
+
+  function pointFromEvent(event: React.PointerEvent<HTMLCanvasElement>): NotebookPoint {
+    const rect = event.currentTarget.getBoundingClientRect();
+    return { x: Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width)), y: Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height)) };
+  }
+
+  function startStroke(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (event.button !== 0 && event.pointerType === "mouse") return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setActiveStroke({ points: [pointFromEvent(event)], color: tool === "eraser" ? "eraser" : "#172033", width: tool === "eraser" ? 20 : 2.6 });
+  }
+
+  function continueStroke(event: React.PointerEvent<HTMLCanvasElement>) {
+    if (!activeStroke) return;
+    event.preventDefault();
+    const point = pointFromEvent(event);
+    setActiveStroke((current) => current ? { ...current, points: [...current.points, point] } : current);
+  }
+
+  function finishStroke() {
+    if (activeStroke) setStrokes((current) => [...current, activeStroke]);
+    setActiveStroke(null);
+  }
+
+  return (
+    <section className="handwritingNotebook" aria-label="מחברת כתיבה ביד">
+      <div className="handwritingHeader">
+        <div><strong>מחברת לכתיבה ביד</strong><span>כתוב עם העכבר, מסך מגע או עט דיגיטלי — ממש כמו במחברת.</span></div>
+        <div className="handwritingTools" role="group" aria-label="כלי כתיבה">
+          <button type="button" className={tool === "pen" ? "handwritingTool active" : "handwritingTool"} onClick={() => setTool("pen")} aria-pressed={tool === "pen"}>✎ עט</button>
+          <button type="button" className={tool === "eraser" ? "handwritingTool active" : "handwritingTool"} onClick={() => setTool("eraser")} aria-pressed={tool === "eraser"}>⌫ מחק</button>
+          <button type="button" className="handwritingTool" onClick={() => setStrokes((current) => current.slice(0, -1))} disabled={!strokes.length} title="ביטול הקו האחרון">↶ ביטול</button>
+          <button type="button" className="handwritingTool clear" onClick={() => { setStrokes([]); setActiveStroke(null); }} disabled={!strokes.length && !activeStroke}>נקה הכול</button>
+        </div>
+      </div>
+      <canvas
+        ref={canvasRef}
+        className="handwritingCanvas"
+        aria-label="אזור כתיבה ביד. השתמש בעט, בעכבר או באצבע."
+        onPointerDown={startStroke}
+        onPointerMove={continueStroke}
+        onPointerUp={finishStroke}
+        onPointerCancel={finishStroke}
+      />
+      <div className="handwritingFootnote">הכתיבה ביד היא לליווי הפתרון. אפשר גם להקליד מתחת; הטקסט המוקלד הוא זה שניתן לקרוא ולבדוק אוטומטית.</div>
+    </section>
+  );
+}
+
 function ElectricalBridge({ topic }: { topic: string }) {
   const text =
     topic === "מהו נעלם?"
@@ -821,16 +922,17 @@ export default function Home() {
                       </button>
                     ))}
                   </div>
+                  <HandwritingNotebook />
                   <div className="notebookEditorWrap">
                     <div className="notebookEditorHeading">
-                      <strong>כתוב את הדרך</strong>
-                      <span>אפשר להקליד רגיל. לדוגמה, 3/4 יוצג למטה כשבר כמו במחברת.</span>
+                      <strong>או הקלד את הדרך והנוסחאות</strong>
+                      <span>אפשר להקליד רגיל; לדוגמה, 3/4 יוצג בתצוגה כשבר עומד כמו במחברת.</span>
                     </div>
                     <textarea ref={solutionTextareaRef} id="solution-method" dir="auto" rows={5} value={solutionMethod}
                       onChange={(event) => setSolutionMethod(event.target.value)}
                       placeholder={"לדוגמה:\n3/4 + 1/4 = 1\nהשלב הבא: 2 × 5 = 10"}
                       aria-describedby="solution-method-help" />
-                    <div className="notebookPreviewLabel">כך זה ייראה במחברת</div>
+                    <div className="notebookPreviewLabel">תצוגת הנוסחאות שהקלדת</div>
                     <NotebookMathPreview value={solutionMethod} />
                   </div>
                   <div className="solutionWritingTips" id="solution-method-help">
