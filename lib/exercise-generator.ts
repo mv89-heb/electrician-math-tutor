@@ -205,6 +205,20 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
     };
   }
 
+  if (errorType === "sign" && topic === "משוואות פשוטות") {
+    return {
+      id: `generated-${topic}-sign-${seed}`, topic, level: 1,
+      title: "חיזוק סימנים במשוואה בשני צעדים",
+      teachingNote: "במשוואה עם חיסור, מבטלים את החיסור תחילה ורק אז מחלקים במקדם של X.",
+      prompt: "2 × X − 2 = 6. מה הערך של X?",
+      accepted: ["4"],
+      hint1: "הוסף 2 לשני האגפים כדי לבטל את החיסור.",
+      hint2: "6 + 2 = 8, ואז 8 ÷ 2 = 4.",
+      explanation: "נכון. 6 + 2 = 8, ואז 8 ÷ 2 = 4, ולכן X = 4.",
+      generated: true,
+    };
+  }
+
   if (errorType === "unknown" && topic === "כפל במשוואות") {
     const factor = 2 + (seed % 6);
     const quotient = 4;
@@ -238,6 +252,20 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       hint1: `X חולק ב־${divisor}. כדי למצוא את המספר המקורי, נשתמש בכפל.`,
       hint2: `${quotient} × ${divisor} = ${answer}, לכן X = ${answer}.`,
       explanation: `נכון. X ÷ ${divisor} = ${quotient}, לכן X = ${quotient} × ${divisor} = ${answer}.`,
+      generated: true,
+    };
+  }
+
+  if (errorType === "unknown" && topic === "משוואות פשוטות") {
+    return {
+      id: `generated-${topic}-unknown-${seed}`, topic, level: 1,
+      title: "חיזוק מציאת X בשני צעדים",
+      teachingNote: "נבטל תחילה את המספר שמחובר או מחוסר, ואז נחלק במקדם של X.",
+      prompt: "2 × X + 1 = 9. מה הערך של X?",
+      accepted: ["4"],
+      hint1: "החסר 1 משני האגפים: 9 − 1 = 8.",
+      hint2: "עכשיו 2 × X = 8, ולכן X = 8 ÷ 2 = 4.",
+      explanation: "נכון. 9 − 1 = 8, ואז 8 ÷ 2 = 4, ולכן X = 4.",
       generated: true,
     };
   }
