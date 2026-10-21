@@ -66,17 +66,120 @@ function MathPrompt({ prompt }: { prompt: string }) {
   );
 }
 
+function NotebookEquationEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const current = serializeNotebookEditor(editor);
+    if (current !== value) {
+      editor.innerHTML = notebookValueToHtml(value);
+    }
+  }, [value]);
+
+  function insertFraction() {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount && editor.contains(selection.anchorNode)) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+      const fraction = document.createElement("span");
+      fraction.className = "editableNotebookFraction";
+      fraction.setAttribute("contenteditable", "false");
+      fraction.innerHTML = '<span class="editableFractionPart" contenteditable="true" data-fraction-part="numerator"></span><span class="editableFractionBar"></span><span class="editableFractionPart" contenteditable="true" data-fraction-part="denominator"></span>';
+      range.insertNode(fraction);
+      const numerator = fraction.querySelector<HTMLElement>('[data-fraction-part="numerator"]');
+      if (numerator) {
+        const nextRange = document.createRange();
+        nextRange.selectNodeContents(numerator);
+        nextRange.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(nextRange);
+      }
+    } else {
+      const fraction = document.createElement("span");
+      fraction.className = "editableNotebookFraction";
+      fraction.setAttribute("contenteditable", "false");
+      fraction.innerHTML = '<span class="editableFractionPart" contenteditable="true" data-fraction-part="numerator"></span><span class="editableFractionBar"></span><span class="editableFractionPart" contenteditable="true" data-fraction-part="denominator"></span>';
+      editor.appendChild(fraction);
+      fraction.querySelector<HTMLElement>('[data-fraction-part="numerator"]')?.focus();
+    }
+    emitValue();
+  }
+
+  function emitValue() {
+    if (editorRef.current) onChange(serializeNotebookEditor(editorRef.current));
+  }
+
+  return <div className="notebookEquationEditor">
+    <div className="notebookEditorToolbar" dir="rtl">
+      <span>כתיבה מתמטית</span>
+      <button type="button" onClick={insertFraction} aria-label="הוסף שבר עם מונה ומכנה"><span className="toolbarFraction" aria-hidden="true"><span>□</span><i></i><span>□</span></span> הוסף שבר</button>
+      <small>לחץ על השבר ומלא בנפרד את המונה ואת המכנה</small>
+    </div>
+    <div
+      ref={editorRef}
+      className="notebookEquationSurface"
+      contentEditable
+      suppressContentEditableWarning
+      role="textbox"
+      aria-label="אזור כתיבה מתמטית בסגנון מחברת"
+      aria-multiline="true"
+      dir="auto"
+      onInput={emitValue}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          document.execCommand("insertLineBreak");
+          emitValue();
+        }
+      }}
+      data-placeholder="כתוב כאן את שלבי הפתרון. כדי ליצור שבר, לחץ על ״הוסף שבר״."
+    />
+  </div>;
+}
+
+function serializeNotebookEditor(root: HTMLElement): string {
+  function read(node: Node): string {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent ?? "";
+    if (!(node instanceof HTMLElement)) return "";
+    if (node.classList.contains("editableNotebookFraction")) {
+      const numerator = node.querySelector<HTMLElement>('[data-fraction-part="numerator"]')?.innerText ?? "";
+      const denominator = node.querySelector<HTMLElement>('[data-fraction-part="denominator"]')?.innerText ?? "";
+      return "\\frac{" + numerator.trim() + "}{" + denominator.trim() + "}";
+    }
+    if (node.tagName === "BR") return "\n";
+    if (node.tagName === "DIV" || node.tagName === "P") {
+      return Array.from(node.childNodes).map(read).join("") + "\n";
+    }
+    return Array.from(node.childNodes).map(read).join("");
+  }
+  return Array.from(root.childNodes).map(read).join("").replace(/\n+$/, "");
+}
+
+function notebookValueToHtml(value: string): string {
+  if (!value) return "";
+  return value.split("\n").map((line) => {
+    const escaped = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return escaped.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g,
+      '<span class="editableNotebookFraction" contenteditable="false"><span class="editableFractionPart" contenteditable="true" data-fraction-part="numerator">$1</span><span class="editableFractionBar"></span><span class="editableFractionPart" contenteditable="true" data-fraction-part="denominator">$2</span></span>');
+  }).join("<br>");
+}
+
 function NotebookMathPreview({ value }: { value: string }) {
   if (!value.trim()) return <div className="notebookEmpty">הדרך שתכתוב תופיע כאן כמו במחברת, כולל שברים עומדים.</div>;
   return <div className="notebookPreview" aria-label="תצוגת הדרך המתמטית">
     {value.split("\n").map((line, lineIndex) => {
-      const fractionPattern = /(-?\d+)\s*\/\s*(-?\d+)/g;
+      const fractionPattern = /\\frac\{([^{}]*)\}\{([^{}]*)\}|(-?\d+)\s*\/\s*(-?\d+)/g;
       const parts: Array<{ type: "text" | "fraction"; value: string; key: string }> = [];
       let lastIndex = 0;
       for (const match of line.matchAll(fractionPattern)) {
         const index = match.index ?? 0;
         if (index > lastIndex) parts.push({ type: "text", value: line.slice(lastIndex, index), key: "text-" + lastIndex });
-        parts.push({ type: "fraction", value: "\\frac{" + match[1] + "}{" + match[2] + "}", key: "fraction-" + index });
+        parts.push({ type: "fraction", value: "\\frac{" + (match[1] ?? match[3] ?? "") + "}{" + (match[2] ?? match[4] ?? "") + "}", key: "fraction-" + index });
         lastIndex = index + match[0].length;
       }
       if (lastIndex < line.length) parts.push({ type: "text", value: line.slice(lastIndex), key: "text-" + lastIndex });
@@ -1001,10 +1104,9 @@ export default function Home() {
                       <strong>או הקלד את הדרך והנוסחאות</strong>
                       <span>אפשר להקליד רגיל; לדוגמה, 3/4 יוצג בתצוגה כשבר עומד כמו במחברת.</span>
                     </div>
-                    <textarea ref={solutionTextareaRef} id="solution-method" dir="auto" rows={5} value={solutionMethod}
-                      onChange={(event) => setSolutionMethod(event.target.value)}
-                      placeholder={"לדוגמה:\n3/4 + 1/4 = 1\nהשלב הבא: 2 × 5 = 10"}
-                      aria-describedby="solution-method-help" />
+                    <NotebookEquationEditor value={solutionMethod} onChange={setSolutionMethod} />
+                    <span className="notebookPreviewLabel">תצוגה מתמטית של הפתרון</span>
+                    <NotebookMathPreview value={solutionMethod} />
                     <div className="notebookPreviewLabel">תצוגת הנוסחאות שהקלדת</div>
                     <NotebookMathPreview value={solutionMethod} />
                   </div>
