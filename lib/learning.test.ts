@@ -783,3 +783,36 @@ describe("electrical lab matches the quantity being taught", () => {
     }
   });
 });
+
+
+describe("basic formula guided steps match the requested task", () => {
+  it("asks for resistance when voltage and current are known", async () => {
+    const { basicFormulaGuidance } = await import("./basic-formula-guidance");
+    const guidance = basicFormulaGuidance("formula-1");
+    expect(guidance?.question).toContain("התנגדות");
+    expect(guidance?.correct).toBe("R — התנגדות");
+    expect(guidance?.explanation).toContain("R = V ÷ I");
+  });
+
+  it("uses division by I to isolate resistance", async () => {
+    const { basicFormulaGuidance } = await import("./basic-formula-guidance");
+    const guidance = basicFormulaGuidance("formula-2");
+    expect(guidance?.question).toContain("לבודד את R");
+    expect(guidance?.correct).toContain("לחלק");
+    expect(guidance?.explanation).toContain("R = V ÷ I");
+  });
+
+  it("uses division by R to isolate current", async () => {
+    const { basicFormulaGuidance } = await import("./basic-formula-guidance");
+    const guidance = basicFormulaGuidance("formula-3");
+    expect(guidance?.question).toContain("לבודד את I");
+    expect(guidance?.correct).toContain("לחלק");
+    expect(guidance?.explanation).toContain("I = V ÷ R");
+  });
+
+  it("does not override unrelated lesson IDs", async () => {
+    const { basicFormulaGuidance } = await import("./basic-formula-guidance");
+    expect(basicFormulaGuidance("formula-subject-1")).toBeNull();
+    expect(basicFormulaGuidance("ohm-1")).toBeNull();
+  });
+});
