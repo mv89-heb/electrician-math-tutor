@@ -611,6 +611,16 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
       <p className="visualCaption">{visual.caption}</p>
     </div>;
   }
+  if (id.startsWith("generated-")) {
+    const equation = equationLabModelForExercise(exercise);
+    if (equation) {
+      return <div className="learningVisual" aria-label="המחשה של המשוואה שנוצרה">
+        <div className="visualHeading"><span>🧮</span><strong>המשוואה שבתרגיל</strong></div>
+        <div className="formulaVisual" dir="ltr"><span className="formulaChip">{equation.expression}</span><span className="formulaOperator">=</span><span className="formulaChip">{equation.rhs}</span></div>
+        <p className="visualCaption">הפתרון הוא X = {equation.answer}. {equation.explanation}</p>
+      </div>;
+    }
+  }
   return <div className="learningVisual" aria-label="המחשה חזותית של שלבי פתרון">
     <div className="visualHeading"><span>🧩</span><strong>פותרים צעד אחד בכל פעם</strong></div>
     <div className="stepVisual"><span><b>1</b> קוראים</span><i>←</i><span><b>2</b> בוחרים פעולה</span><i>←</i><span><b>3</b> מחשבים</span></div>
