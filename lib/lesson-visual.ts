@@ -171,3 +171,34 @@ export function percentageVisualForExercise(
     caption: `מכפילים ${totalLabel} ב־${percentLabel} ומחלקים ב־100. התוצאה היא ${result}.`,
   };
 }
+
+export type DecimalVisual = {
+  heading: string;
+  expression: string;
+  caption: string;
+};
+
+export function decimalVisualForExercise(
+  exercise: Pick<Exercise, "prompt">,
+): DecimalVisual {
+  const match = exercise.prompt.match(/מה הערך של\\s+(\\d+(?:[.,]\\d+)?)\\s*([+−-])\\s*(\\d+(?:[.,]\\d+)?)/);
+  if (!match) {
+    return {
+      heading: "חישוב מספרים עשרוניים",
+      expression: "שומרים על הערך של הספרות אחרי הנקודה",
+      caption: "בצעו את הפעולה שבתרגיל ושמרו על מיקום הנקודה העשרונית.",
+    };
+  }
+
+  const left = Number(match[1].replace(",", "."));
+  const right = Number(match[3].replace(",", "."));
+  const operator = match[2] === "+" ? "+" : "−";
+  const result = Number((match[2] === "+" ? left + right : left - right).toFixed(8)).toString();
+  const leftLabel = Number(left.toFixed(8)).toString();
+  const rightLabel = Number(right.toFixed(8)).toString();
+  return {
+    heading: "חישוב מספרים עשרוניים",
+    expression: `${leftLabel} ${operator} ${rightLabel} = ${result}`,
+    caption: `שומרים על הערך של הספרות אחרי הנקודה: ${leftLabel} ${operator} ${rightLabel} = ${result}.`,
+  };
+}
