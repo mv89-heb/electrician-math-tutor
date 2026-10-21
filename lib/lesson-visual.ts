@@ -27,7 +27,7 @@ export function fractionVisualForExercise(exercise: Pick<Exercise, "id"> & Parti
     "fraction-divide-1": { kind: "equation", heading: "חילוק שברים", label: "1/2 ÷ 1/4 = 1/2 × 4/1 = 2", caption: "הופכים את השבר השני ומחליפים חילוק בכפל." }
   };
   if (exercise.topic === "שברים" && exercise.prompt) {
-    const onePart = exercise.prompt.match(/חלק אחד מתוך (\\d+) חלקים/);
+    const onePart = exercise.prompt.match(/חלק אחד מתוך (\d+) חלקים/);
     if (onePart) {
       const count = Number(onePart[1]);
       return {
