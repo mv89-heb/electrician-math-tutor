@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson, unitConversionVisualForExercise } from "./lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isExponentLesson, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -743,5 +743,20 @@ describe("guided method follows the correct order for two-step equations", () =>
   it("does not capture one-step multiplication equations", async () => {
     const { twoStepEquationGuidance } = await import("./two-step-guidance");
     expect(twoStepEquationGuidance("3 × X = 12. מה הערך של X?")).toBeNull();
+  });
+});
+
+
+describe("interactive lab matches the lesson domain", () => {
+  it("does not classify exponent lessons with power in their IDs as electrical", () => {
+    const exponentLessons = curriculum.filter((exercise) => exercise.topic === "חזקות");
+    expect(exponentLessons.length).toBeGreaterThan(0);
+    expect(exponentLessons.every((exercise) => !isElectricalLesson(exercise))).toBe(true);
+  });
+
+  it("keeps actual electrical power and Ohm's law lessons in the electrical lab", () => {
+    for (const id of ["power-1", "power-2", "electrical-power-sub-1", "ohm-1", "ohm-2"]) {
+      expect(isElectricalLesson(curriculum.find((exercise) => exercise.id === id)!)).toBe(true);
+    }
   });
 });
