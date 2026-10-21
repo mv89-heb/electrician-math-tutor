@@ -6,11 +6,7 @@ export type MathPromptPart = { type: "text" | "math"; value: string };
  */
 export function splitMathPrompt(prompt: string): MathPromptPart[] {
   const normalizedPrompt = prompt.replace(/\\n/g, "\n").trim();
-  const atom = String.raw\`(?:[A-Za-z]\\w*|\\d+(?:[.,]\\d+)?(?:\\s*(?:V|A|W|Hz|Ω|%))?|π)\`;
-  const expressionPattern = new RegExp(
-    \`\${atom}(?:\\\\s*(?:=|\\\\+|[-−]|×|÷|\\\\*|\\\\/|≤|≥|≈)\\\\s*\${atom})+|\\\\d+[.,]\\\\d+(?:\\\\s*(?:V|A|W|Hz|Ω|%))?|\\\\d+(?:V|A|W|Hz|Ω|%)|\\\\d+[²³]\`,
-    "g",
-  );
+  const expressionPattern = /(?:[A-Za-z]\\w*|\\d+(?:[.,]\\d+)?(?:\\s*(?:V|A|W|Hz|Ω|%))?|π)(?:\\s*(?:=|\\+|[-−]|×|÷|\\*|\\/|≤|≥|≈)\\s*(?:[A-Za-z]\\w*|\\d+(?:[.,]\\d+)?(?:\\s*(?:V|A|W|Hz|Ω|%))?|π))+|\\d+[.,]\\d+(?:\\s*(?:V|A|W|Hz|Ω|%))?|\\d+(?:V|A|W|Hz|Ω|%)|\\d+[²³]/g;
   const parts: MathPromptPart[] = [];
   let lastIndex = 0;
 
