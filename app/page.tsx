@@ -110,6 +110,31 @@ function NotebookEquationEditor({ value, onChange }: { value: string; onChange: 
     emitValue();
   }
 
+  function insertSymbol(symbol: string) {
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount && editor.contains(selection.anchorNode)) {
+      const range = selection.getRangeAt(0);
+      range.deleteContents();
+      const textNode = document.createTextNode(symbol);
+      range.insertNode(textNode);
+      range.setStartAfter(textNode);
+      range.collapse(true);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      editor.appendChild(document.createTextNode(symbol));
+      const range = document.createRange();
+      range.selectNodeContents(editor);
+      range.collapse(false);
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }
+    emitValue();
+  }
+
   function emitValue() {
     if (editorRef.current) onChange(serializeNotebookEditor(editorRef.current));
   }
@@ -117,8 +142,15 @@ function NotebookEquationEditor({ value, onChange }: { value: string; onChange: 
   return <div className="notebookEquationEditor">
     <div className="notebookEditorToolbar" dir="rtl">
       <span>כתיבה קצרה וחופשית</span>
-      <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={insertFraction} aria-label="הוסף שבר עם מונה ומכנה"><span className="toolbarFraction" aria-hidden="true"><span>□</span><i></i><span>□</span></span> הוסף שבר</button>
-      
+      <div className="notebookMathButtons" role="group" aria-label="קיצורי כתיבה מתמטית">
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={insertFraction} aria-label="הוסף שבר עם מונה ומכנה"><span className="toolbarFraction" aria-hidden="true"><span>□</span><i></i><span>□</span></span> הוסף שבר</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" + ")} aria-label="הוסף סימן חיבור">＋</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" − ")} aria-label="הוסף סימן חיסור">−</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" × ")} aria-label="הוסף סימן כפל">×</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" ÷ ")} aria-label="הוסף סימן חילוק">÷</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol(" = ")} aria-label="הוסף סימן שווה">=</button>
+        <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => insertSymbol("( )")} aria-label="הוסף סוגריים">( )</button>
+      </div>
     </div>
     <div
       ref={editorRef}
