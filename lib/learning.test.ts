@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { areaLabDefaultsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
+import { areaLabDefaultsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, electricalMiniSimulatorConfigForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -964,5 +964,19 @@ describe("electrical lab defaults match the requested quantity", () => {
     expect(electricalLabDefaultsForExercise({ id: "electrical-ohm-sub-1" })).toEqual({ first: 12, second: 4 });
     expect(electricalLabDefaultsForExercise({ id: "power-1" })).toEqual({ first: 10, second: 2 });
     expect(electricalLabDefaultsForExercise({ id: "power-2" })).toEqual({ first: 12, second: 3 });
+  });
+});
+
+
+describe("electrical mini simulator appears only when it matches the exercise", () => {
+  it("uses the matching voltage and resistance for current exercises", () => {
+    expect(electricalMiniSimulatorConfigForExercise({ id: "ohm-1", topic: "חשמל — חוק אוהם" })).toEqual({ voltage: 20, resistance: 10 });
+    expect(electricalMiniSimulatorConfigForExercise({ id: "electrical-ohm-sub-1", topic: "חשמל — חוק אוהם" })).toEqual({ voltage: 12, resistance: 4 });
+  });
+
+  it("does not show the generic current simulator for resistance or power exercises", () => {
+    expect(electricalMiniSimulatorConfigForExercise({ id: "ohm-2", topic: "חשמל — חוק אוהם" })).toBeNull();
+    expect(electricalMiniSimulatorConfigForExercise({ id: "power-1", topic: "חשמל — הספק" })).toBeNull();
+    expect(electricalMiniSimulatorConfigForExercise({ id: "electrical-power-sub-1", topic: "חשמל — הספק" })).toBeNull();
   });
 });
