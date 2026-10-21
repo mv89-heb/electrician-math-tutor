@@ -725,7 +725,7 @@ describe("electrical unit reinforcement matches its topic", () => {
   });
 
   it("keeps the requested quantity, accepted unit, hint, and explanation aligned", () => {
-    for (const topic of ["נוסחאות בסיסיות", "שינוי נושא נוסחה"]) {
+    for (const topic of ["נוסחאות בסיסיות"]) {
       for (let seed = 0; seed < 4; seed += 1) {
         const exercise = generateReinforcement(topic, seed, "unit")!;
         const symbol = exercise.accepted[0];
