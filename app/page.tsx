@@ -176,6 +176,66 @@ function HandwritingNotebook() {
   );
 }
 
+type FormulaChoiceProfile = {
+  title: string;
+  known: string;
+  target: string;
+  correct: string;
+  explanation: string;
+};
+
+const formulaChoiceProfiles: Record<string, FormulaChoiceProfile> = {
+  "formula-1": { title: "איזו נוסחה תעזור למצוא התנגדות?", known: "נתונים מתח V וזרם I; מחפשים התנגדות R.", target: "R", correct: "R = V ÷ I", explanation: "כשמחפשים התנגדות ומכירים מתח וזרם, מחלקים את המתח בזרם: R = V ÷ I." },
+  "formula-2": { title: "בחר נוסחה לבידוד ההתנגדות", known: "ב־V = I × R מחפשים את R.", target: "R", correct: "R = V ÷ I", explanation: "כדי להשאיר את R לבד, מחלקים את שני הצדדים ב־I. מתקבלת הנוסחה R = V ÷ I." },
+  "formula-3": { title: "בחר נוסחה לבידוד הזרם", known: "ב־V = I × R מחפשים את I.", target: "I", correct: "I = V ÷ R", explanation: "כדי להשאיר את I לבד, מחלקים את שני הצדדים ב־R. מתקבלת הנוסחה I = V ÷ R." },
+  "ohm-1": { title: "איזו נוסחה מתאימה לחישוב הזרם?", known: "ידועים המתח V וההתנגדות R; מחפשים זרם I.", target: "I", correct: "I = V ÷ R", explanation: "חוק אוהם: זרם שווה למתח חלקי התנגדות. רק אחרי בחירת הנוסחה מציבים את הנתונים." },
+  "ohm-2": { title: "איזו נוסחה מתאימה לחישוב ההתנגדות?", known: "ידועים המתח V והזרם I; מחפשים התנגדות R.", target: "R", correct: "R = V ÷ I", explanation: "חוק אוהם: התנגדות שווה למתח חלקי זרם." },
+  "electrical-ohm-sub-1": { title: "בחר נוסחה לפני שמציבים מספרים", known: "נתונים מתח 12V והתנגדות 4Ω; מחפשים זרם.", target: "I", correct: "I = V ÷ R", explanation: "כשנתונים מתח והתנגדות ומחפשים זרם, משתמשים ב־I = V ÷ R. עכשיו אפשר להציב 12 ÷ 4." },
+  "power-1": { title: "איזו נוסחה מתאימה לחישוב ההספק?", known: "ידועים המתח V והזרם I; מחפשים הספק P.", target: "P", correct: "P = V × I", explanation: "הספק חשמלי מחושב על ידי כפל המתח בזרם: P = V × I." },
+  "power-2": { title: "בחר נוסחה לחישוב ההספק", known: "ידועים המתח V והזרם I; מחפשים הספק P.", target: "P", correct: "P = V × I", explanation: "הספק חשמלי מחושב על ידי כפל המתח בזרם: P = V × I." },
+  "electrical-power-sub-1": { title: "איך מוצאים זרם כשנתונים הספק ומתח?", known: "נתונים הספק P ומתח V; מחפשים זרם I.", target: "I", correct: "I = P ÷ V", explanation: "מתחילים מ־P = V × I ומחלקים את שני הצדדים ב־V. לכן I = P ÷ V." }
+};
+
+const formulaOptions = ["V = I × R", "I = V ÷ R", "R = V ÷ I", "P = V × I", "I = P ÷ V"];
+
+function FormulaChoicePanel({ exercise }: { exercise: Exercise }) {
+  const profile = formulaChoiceProfiles[exercise.id];
+  const [selected, setSelected] = useState("");
+  const [showReference, setShowReference] = useState(false);
+  if (!profile) return null;
+  const correct = selected === profile.correct;
+  return (
+    <section className="formulaChoicePanel" aria-label="לומדים לבחור נוסחה">
+      <div className="formulaChoiceTitle"><span aria-hidden="true">⚡</span><div><strong>קודם בוחרים נוסחה</strong><p>{profile.title}</p></div></div>
+      <p className="formulaChoiceKnown">{profile.known}</p>
+      <div className="formulaChoiceOptions" role="group" aria-label="בחירת נוסחה">
+        {formulaOptions.map((formula) => (
+          <button key={formula} type="button" dir="ltr"
+            className={"formulaChoiceOption" + (selected === formula ? (correct ? " correct" : " incorrect") : "")}
+            aria-pressed={selected === formula}
+            onClick={() => setSelected(formula)}>{formula}</button>
+        ))}
+      </div>
+      {selected && <div className={"formulaChoiceFeedback " + (correct ? "correct" : "incorrect")} role="status">
+        <strong>{correct ? "נכון! בחרת לפי הנתונים והמבוקש." : "לא בדיוק — בדוק איזה גודל צריך למצוא."}</strong>
+        {correct && <p>{profile.explanation}</p>}
+        {!correct && <p>אל תתחיל מהמספרים: קודם זהה מה נתון ומה מחפשים, ואז בחר נוסחה שמכילה אותם.</p>}
+      </div>}
+      <button type="button" className="formulaReferenceToggle" aria-expanded={showReference} onClick={() => setShowReference((value) => !value)}>
+        {showReference ? "הסתר דף נוסחאות" : "צריך עזרה? פתח דף נוסחאות"}
+      </button>
+      {showReference && <div className="formulaReference" aria-label="דף נוסחאות חשמל">
+        <div><b dir="ltr">V = I × R</b><span>חוק אוהם — מתח</span></div>
+        <div><b dir="ltr">I = V ÷ R</b><span>זרם כשידועים מתח והתנגדות</span></div>
+        <div><b dir="ltr">R = V ÷ I</b><span>התנגדות כשידועים מתח וזרם</span></div>
+        <div><b dir="ltr">P = V × I</b><span>הספק כשידועים מתח וזרם</span></div>
+        <div><b dir="ltr">I = P ÷ V</b><span>זרם כשידועים הספק ומתח</span></div>
+        <small>V — מתח (וולט) · I — זרם (אמפר) · R — התנגדות (אוהם) · P — הספק (וואט)</small>
+      </div>}
+    </section>
+  );
+}
+
 function ElectricalBridge({ topic }: { topic: string }) {
   const text =
     topic === "מהו נעלם?"
@@ -844,6 +904,7 @@ export default function Home() {
                 <FieldWorkIllustration exercise={exercise} />
                 <InteractiveLab exercise={exercise} />
                 <ElectricalMiniSimulator topic={exercise.topic} />
+                <FormulaChoicePanel key={exercise.id} exercise={exercise} />
                 <div className="question"><MathPrompt prompt={exercise.prompt} /></div>
 
                 <button type="button" className="guidedSolutionToggle" aria-expanded={showGuidedSolution} onClick={() => setShowGuidedSolution((visible) => !visible)}>
