@@ -275,6 +275,52 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
     };
   }
 
+  if (errorType === "arithmetic" && topic === "סדר פעולות") {
+    const product = n * 2;
+    const answer = product + 3;
+    return {
+      id: `generated-${topic}-arithmetic-${seed}`, topic, level: 0,
+      title: "חיזוק סדר פעולות",
+      teachingNote: "כשיש כפל וחיבור באותו תרגיל, מבצעים קודם את הכפל.",
+      prompt: `${n} × 2 + 3 = ?`,
+      accepted: [String(answer)],
+      hint1: `קודם חשב ${n} × 2.`,
+      hint2: `${n} × 2 = ${product}, ואז ${product} + 3 = ${answer}.`,
+      explanation: `נכון. קודם ${n} × 2 = ${product}, ואז ${product} + 3 = ${answer}.`,
+      generated: true,
+    };
+  }
+  if (errorType === "arithmetic" && topic === "חיבור וחיסור במשוואות") {
+    const answer = (n + 2) + n;
+    return {
+      id: `generated-${topic}-arithmetic-${seed}`, topic, level: 0,
+      title: "חיזוק חישוב במשוואה",
+      teachingNote: "כדי למצוא את X, מבטלים את החיסור באמצעות חיבור.",
+      prompt: `X − ${n} = ${n + 2}. איזה מספר הוא X?`,
+      accepted: [String(answer)],
+      hint1: `אם הפחיתו ${n}, הוסף ${n} לשני האגפים.`,
+      hint2: `${n + 2} + ${n} = ${answer}.`,
+      explanation: `נכון. X = ${n + 2} + ${n} = ${answer}.`,
+      generated: true,
+    };
+  }
+  if (errorType === "arithmetic" && topic === "משוואות פשוטות") {
+    const factor = 2;
+    const value = 4;
+    const result = factor * value + 1;
+    return {
+      id: `generated-${topic}-arithmetic-${seed}`, topic, level: 1,
+      title: "חיזוק משוואה בשני צעדים",
+      teachingNote: "נבודד את X בשני צעדים: קודם נבטל את החיבור, ואז את הכפל.",
+      prompt: `${factor} × X + 1 = ${result}. מה הערך של X?`,
+      accepted: [String(value)],
+      hint1: `קודם החסר 1 משני האגפים: ${result} − 1 = ${result - 1}.`,
+      hint2: `עכשיו ${factor} × X = ${result - 1}, ולכן X = ${result - 1} ÷ ${factor} = ${value}.`,
+      explanation: `נכון. ${result} − 1 = ${result - 1}, ואז ${result - 1} ÷ ${factor} = ${value}.`,
+      generated: true,
+    };
+  }
+
   const targeted: Record<string, GeneratedExercise> = {
     sign: {
       id: `generated-${topic}-sign-${seed}`, topic, level: 0, title: "חיזוק סימנים",
