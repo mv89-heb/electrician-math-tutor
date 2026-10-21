@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { decimalVisualForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -552,6 +552,14 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
     const visual = percentageVisualForExercise(exercise);
     return <div className="learningVisual" aria-label="המחשה חזותית לחישוב אחוזים">
       <div className="visualHeading"><span>％</span><strong>{visual.heading}</strong></div>
+      <div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.expression}</span></div>
+      <p className="visualCaption">{visual.caption}</p>
+    </div>;
+  }
+  if (exercise.topic === "מספרים עשרוניים") {
+    const visual = decimalVisualForExercise(exercise);
+    return <div className="learningVisual" aria-label="המחשה חזותית לחישוב מספרים עשרוניים">
+      <div className="visualHeading"><span>🔢</span><strong>{visual.heading}</strong></div>
       <div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.expression}</span></div>
       <p className="visualCaption">{visual.caption}</p>
     </div>;
