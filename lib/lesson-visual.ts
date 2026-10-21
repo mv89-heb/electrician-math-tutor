@@ -98,3 +98,8 @@ export function unitConversionVisualForExercise(exercise: Pick<Exercise, "id">):
     caption: "בחרו את פעולת ההמרה לפי היחידות הנתונות."
   };
 }
+
+export function isElectricalPowerLesson(exercise: Pick<Exercise, "id" | "topic">): boolean {
+  return isElectricalLesson(exercise) &&
+    (exercise.topic === "חשמל — הספק" || exercise.id.includes("electrical-power"));
+}
