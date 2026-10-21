@@ -352,5 +352,6 @@ export type ElectricalLabDefaults = {
 
 export function electricalLabDefaultsForExercise(exercise: Pick<Exercise, "id">): ElectricalLabDefaults {
   if (exercise.id === "electrical-power-sub-1") return { first: 60, second: 12 };
+  if (exercise.id === "ohm-2") return { first: 12, second: 3 };
   return { first: 12, second: 6 };
 }
