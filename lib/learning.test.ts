@@ -960,6 +960,7 @@ describe("electrical lab defaults match the requested quantity", () => {
 
   it("keeps the standard defaults for Ohm's law and power calculation labs", () => {
     expect(electricalLabDefaultsForExercise({ id: "ohm-1" })).toEqual({ first: 12, second: 6 });
+    expect(electricalLabDefaultsForExercise({ id: "ohm-2" })).toEqual({ first: 12, second: 3 });
     expect(electricalLabDefaultsForExercise({ id: "power-1" })).toEqual({ first: 12, second: 6 });
   });
 });
