@@ -41,7 +41,7 @@ function MathPrompt({ prompt }: { prompt: string }) {
   const normalizedPrompt = prompt.replace(/\\n/g, "\n").trim();
   // Keep complete decimal values and mathematical expressions together in LTR,
   // while leaving the Hebrew instructions in their natural RTL direction.
-  const expressionPattern = /(?:[A-Za-z]\\w*|\\d+(?:[.,]\\d+)?)(?:\\s*(?:=|\\+|[-−]|×|÷|\\*|\/|≤|≥|≈)\\s*(?:[A-Za-z]\\w*|\\d+(?:[.,]\\d+)?))+/g;
+  const expressionPattern = /(?:[A-Za-z]\w*|\d+(?:[.,]\d+)?)(?:\s*(?:=|\+|[-−]|×|÷|\*|\/|≤|≥|≈)\s*(?:[A-Za-z]\w*|\d+(?:[.,]\d+)?))+|\d+[.,]\d+/g;
   const parts: Array<{ type: "text" | "math"; value: string }> = [];
   let lastIndex = 0;
 
@@ -61,7 +61,7 @@ function MathPrompt({ prompt }: { prompt: string }) {
     <div className="promptStack" dir="rtl">
       {parts.map((part, index) =>
         part.type === "math"
-          ? <div className="mathLine" dir="ltr" lang="en" key={`math-${index}`}><RenderedMath value={part.value} /></div>
+          ? <div className="mathLine" dir="ltr" lang="en" key={\`math-\${index}\`}><RenderedMath value={part.value} /></div>
           : part.value.trim()
             ? <div className="promptText" dir="rtl" key={index}>{part.value.trim()}</div>
             : null,
