@@ -485,7 +485,7 @@ describe("generated question feedback consistency", () => {
   it("uses the actual divisor in generated division explanations", () => {
     for (let seed = 0; seed < 5; seed += 1) {
       const exercise = generateExercise("חילוק במשוואות", seed);
-      const divisor = exercise?.prompt.match(/÷\\s*(\\d+)/)?.[1];
+      const divisor = exercise?.prompt.split("÷")[1]?.match(/[0-9]+/)?.[0];
       expect(exercise?.explanation).toContain(exercise?.accepted[0] ?? "");
       expect(exercise?.explanation).toContain(divisor ?? "no-divisor");
     }
