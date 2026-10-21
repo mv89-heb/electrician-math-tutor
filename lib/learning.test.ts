@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { areaLabDefaultsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, electricalMiniSimulatorConfigForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
+import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, electricalMiniSimulatorConfigForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -978,5 +978,16 @@ describe("electrical mini simulator appears only when it matches the exercise", 
     expect(electricalMiniSimulatorConfigForExercise({ id: "ohm-2", topic: "חשמל — חוק אוהם" })).toBeNull();
     expect(electricalMiniSimulatorConfigForExercise({ id: "power-1", topic: "חשמל — הספק" })).toBeNull();
     expect(electricalMiniSimulatorConfigForExercise({ id: "electrical-power-sub-1", topic: "חשמל — הספק" })).toBeNull();
+  });
+});
+
+
+describe("area lab units match the exercise", () => {
+  it("uses square centimeters for the rectangle lesson", () => {
+    expect(areaLabUnitsForExercise({ id: "geometry-area-rectangle-1" })).toEqual({ lengthUnit: "ס״מ", areaUnit: "סמ״ר" });
+  });
+
+  it("uses meters and square meters for the square lesson", () => {
+    expect(areaLabUnitsForExercise({ id: "geometry-area-square-1" })).toEqual({ lengthUnit: "מ׳", areaUnit: "מ״ר" });
   });
 });
