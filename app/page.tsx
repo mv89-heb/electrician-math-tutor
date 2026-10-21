@@ -1247,7 +1247,7 @@ export default function Home() {
                     <LessonVisual exercise={exercise} />
                     <FieldWorkIllustration exercise={exercise} />
                     <InteractiveLab key={exercise.id} exercise={exercise} />
-                    <ElectricalMiniSimulator topic={exercise.topic} />
+                    <ElectricalMiniSimulator key={exercise.id} topic={exercise.topic} exerciseId={exercise.id} />
                     <FormulaChoicePanel key={exercise.id} exercise={exercise} />
                   </div>
                 </details>
