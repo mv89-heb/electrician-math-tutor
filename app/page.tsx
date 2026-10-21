@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -611,15 +611,17 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
 
 function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const fractionDefaults = fractionLabDefaultsForExercise(exercise);
+  const areaDefaults = areaLabDefaultsForExercise(exercise);
   const [a, setA] = useState(fractionDefaults.numerator);
   const [b, setB] = useState(fractionDefaults.denominator);
-  const [length, setLength] = useState(5);
-  const [width, setWidth] = useState(3);
+  const [length, setLength] = useState(areaDefaults.length);
+  const [width, setWidth] = useState(areaDefaults.width);
   const [x, setX] = useState(4);
   const isElectrical = isElectricalLesson(exercise);
   const isPowerLesson = isElectricalPowerLesson(exercise);
   const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
+  const isSquareArea = exercise.id.includes("area-square");
   const equationLab = equationLabModelForExercise(exercise);
   const isBeginner = Boolean(equationLab);
   const labMax = Math.max(10, Math.ceil((equationLab?.answer ?? 0) + 3));
@@ -654,12 +656,14 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
         <p>נסו להגדיל את המתח, ואז את ההתנגדות. מתי הזרם גדל ומתי הוא קטן?</p>
       </>}
     </> : isArea ? <>
-      <div className="labShape"><div style={{width:`${length*8}%`,height:`${width*13}px`}}><span>{length} × {width}</span></div></div>
+      <div className="labShape"><div style={isSquareArea ? {width:`${length*12}px`,height:`${length*12}px`} : {width:`${length*8}%`,height:`${width*13}px`}}><span>{isSquareArea ? `${length} × ${length}` : `${length} × ${width}`}</span></div></div>
       <div className="labControls">
-        <label>אורך <b>{length}</b><input aria-label="אורך" type="range" min="2" max="8" value={length} onChange={e=>setLength(Number(e.target.value))}/></label>
-        <label>רוחב <b>{width}</b><input aria-label="רוחב" type="range" min="1" max="5" value={width} onChange={e=>setWidth(Number(e.target.value))}/></label>
+        {isSquareArea ? <label>צלע <b>{length}</b><input aria-label="צלע הריבוע" type="range" min="2" max="8" value={length} onChange={e=>{const next=Number(e.target.value);setLength(next);setWidth(next)}}/></label> : <>
+          <label>אורך <b>{length}</b><input aria-label="אורך" type="range" min="2" max="8" value={length} onChange={e=>setLength(Number(e.target.value))}/></label>
+          <label>רוחב <b>{width}</b><input aria-label="רוחב" type="range" min="1" max="5" value={width} onChange={e=>setWidth(Number(e.target.value))}/></label>
+        </>}
       </div>
-      <div className="labAnswer"><small>שטח = אורך × רוחב</small><strong>{length} × {width} = {length*width} יחידות²</strong></div>
+      <div className="labAnswer"><small>{isSquareArea ? "שטח ריבוע = צלע × צלע" : "שטח מלבן = אורך × רוחב"}</small><strong>{isSquareArea ? `${length} × ${length} = ${length*length}` : `${length} × ${width} = ${length*width}`} יחידות²</strong></div>
     </> : <>
       <div className="labEquation" dir="ltr"><b>{substitutedExpression}</b><span>=</span><b>{equationLab?.rhs}</b></div>
       <label className="labSingle">שנו את ערך X <b>{labX}</b><input aria-label="ערך הנעלם" type="range" min="0" max={labMax} value={labX} onChange={e=>setX(Number(e.target.value))}/></label>
