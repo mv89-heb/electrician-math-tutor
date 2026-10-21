@@ -931,3 +931,40 @@ body{color:var(--ink)}
 .editableFractionPart:focus{background:#eff6ff;border-radius:3px}
 .notebookEquationSurface:focus{box-shadow:inset 0 0 0 2px rgba(79,127,219,.25)}
 @media(max-width:600px){.notebookEquationSurface{font-size:17px;padding:10px}.notebookEditorToolbar{gap:6px}.notebookEditorToolbar small{flex-basis:100%}}
+
+
+/* Calmer, focused notebook workspace: show one writing mode at a time. */
+.solutionMethodField{gap:12px;margin:10px 0 14px;padding:14px;border-color:#e5eaf2;background:#fbfcff}
+.solutionBuilderHeading{gap:4px}
+.solutionBuilderHeading label{font-size:15px}
+.solutionBuilderHeading>span{font-size:12px;line-height:1.5}
+.solutionModeTabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:5px;border:1px solid #e5eaf2;border-radius:12px;background:#f1f5f9}
+.solutionModeTab{min-height:42px;padding:9px 10px;border:1px solid transparent;border-radius:9px;background:transparent;color:#52627a;font:inherit;font-size:13px;font-weight:750;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
+.solutionModeTab.active{border-color:#dbe5f3;background:#fff;color:#1d3558;box-shadow:0 1px 3px rgba(15,23,42,.06)}
+.solutionModeTab:focus-visible,.writingHelpersToggle:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
+.notebookEditorWrap{gap:8px}
+.notebookModeHint{margin:0;padding:0 2px;color:#667085;font-size:11px;line-height:1.6}
+.notebookEquationEditor{border-radius:11px}
+.notebookEditorToolbar{gap:7px;padding:8px 10px}
+.notebookEditorToolbar>span{display:none}
+.notebookEditorToolbar small{font-size:11px}
+.notebookEquationSurface{min-height:145px;font-size:19px;line-height:2;background-size:100% 2em;background-image:linear-gradient(transparent calc(2em - 1px),#dce7f6 calc(2em - 1px));}
+.handwritingNotebook{gap:8px;padding:10px}
+.handwritingHeader{gap:8px;align-items:flex-start}
+.handwritingHeader>div:first-child strong{font-size:13px}
+.handwritingHeader>div:first-child span{font-size:11px;line-height:1.5}
+.handwritingCanvas{height:210px}
+.handwritingFootnote{font-size:10px;line-height:1.5}
+.writingHelpersToggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:10px 2px 2px;border:0;border-top:1px solid #e5eaf2;background:transparent;color:#435570;font:inherit;font-size:12px;font-weight:750;text-align:right;cursor:pointer}
+.writingHelpers{display:grid;gap:8px;padding:10px;border:1px solid #e5eaf2;border-radius:10px;background:#f7f9fc}
+.writingHelpers p{margin:0;color:#667085;font-size:11px;line-height:1.5}
+.writingHelpers .solutionSymbols{padding:6px;gap:5px;background:#fff}
+.writingHelpers .solutionSymbolButton{min-width:38px;padding:6px 10px}
+@media(max-width:600px){
+  .solutionMethodField{padding:10px;gap:10px}
+  .solutionModeTab{font-size:12px;padding:8px 5px}
+  .notebookEquationSurface{min-height:130px;font-size:17px;padding:9px 11px}
+  .notebookEditorToolbar small{flex-basis:100%}
+  .handwritingTools{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .handwritingCanvas{height:190px}
+}
