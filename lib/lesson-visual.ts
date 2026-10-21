@@ -344,3 +344,13 @@ export function reduceFractionForLab(numerator: number, denominator: number): Re
     denominator: denominator / divisor,
   };
 }
+
+export type ElectricalLabDefaults = {
+  first: number;
+  second: number;
+};
+
+export function electricalLabDefaultsForExercise(exercise: Pick<Exercise, "id">): ElectricalLabDefaults {
+  if (exercise.id === "electrical-power-sub-1") return { first: 60, second: 12 };
+  return { first: 12, second: 6 };
+}
