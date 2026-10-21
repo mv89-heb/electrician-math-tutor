@@ -5,6 +5,7 @@ import { generateExercise, generateReinforcement } from "./exercise-generator";
 import { buildTopicMasteryTest } from "./mastery";
 import { fractionGuidanceForExercise } from "./fraction-guidance";
 import { formulaSubjectGuidance } from "./formula-subject-guidance";
+import { geometryGuidanceForExercise } from "./geometry-guidance";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
@@ -1072,5 +1073,24 @@ describe("formula-subject guidance matches the variable being isolated", () => {
     const guidance = formulaSubjectGuidance("formula-subject-2");
     expect(guidance?.correct).toBe("לחלק את שני האגפים ב־L");
     expect(guidance?.explanation).toContain("W = A ÷ L");
+  });
+});
+
+
+describe("geometry and unit conversion guidance matches the exercise", () => {
+  it("uses the correct conversion factor for millimeters and centimeters", () => {
+    expect(geometryGuidanceForExercise("units-mm-cm-1")?.correct).toContain("ב־10");
+    expect(geometryGuidanceForExercise("units-cm-m-1")?.correct).toContain("ב־100");
+  });
+
+  it("uses the matching area formula for rectangles, squares, and circles", () => {
+    expect(geometryGuidanceForExercise("geometry-area-rectangle-1")?.correct).toContain("אורך ברוחב");
+    expect(geometryGuidanceForExercise("geometry-area-square-1")?.correct).toContain("הצלע בעצמה");
+    expect(geometryGuidanceForExercise("geometry-area-circle-1")?.explanation).toContain("12.56 סמ״ר");
+  });
+
+  it("uses the correct operation for radius and diameter conversions", () => {
+    expect(geometryGuidanceForExercise("geometry-diameter-1")?.correct).toContain("לחלק");
+    expect(geometryGuidanceForExercise("geometry-radius-1")?.correct).toContain("לכפול");
   });
 });
