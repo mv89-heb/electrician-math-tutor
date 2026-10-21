@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { decimalVisualForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { decimalVisualForExercise, equationLabModelForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -619,7 +619,14 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const isPowerLesson = isElectricalPowerLesson(exercise);
   const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
-  const isBeginner = exercise.id.startsWith("zero-");
+  const equationLab = equationLabModelForExercise(exercise);
+  const isBeginner = Boolean(equationLab);
+  const labMax = Math.max(10, Math.ceil((equationLab?.answer ?? 0) + 3));
+  const labX = Math.min(x, labMax);
+  const evaluatedLeft = equationLab ? equationLab.coefficient * labX + equationLab.offset : 0;
+  const evaluatedLeftLabel = Number(evaluatedLeft.toFixed(8)).toString();
+  const equationMatches = Boolean(equationLab && Math.abs(evaluatedLeft - equationLab.rhs) < 1e-9);
+  const substitutedExpression = equationLab ? equationLab.expression.replace("X", String(labX)) : "";
   if (!isElectrical && !isArea && !isBeginner && !isFraction) return null;
   return <section className="interactiveLab" aria-label="מעבדת למידה אינטראקטיבית">
     <div className="labTitle"><span>{isElectrical ? "⚡" : isArea ? "📐" : isFraction ? "🧩" : "⚖️"}</span><div><strong>{isPowerLesson ? "מעבדת הספק חשמלי" : isElectrical ? "מעבדת חוק אוהם" : isArea ? "מעבדת שטח" : isFraction ? "מעבדת שברים" : "מאזני הנעלם"}</strong><small>שנו את הערכים וראו מיד מה משתנה</small></div></div>
@@ -653,10 +660,10 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
       </div>
       <div className="labAnswer"><small>שטח = אורך × רוחב</small><strong>{length} × {width} = {length*width} יחידות²</strong></div>
     </> : <>
-      <div className="labEquation" dir="ltr"><b>{x}</b><span>+</span><b>3</b><span>=</span><b>7</b></div>
-      <label className="labSingle">שנו את הנעלם x <b>{x}</b><input aria-label="ערך הנעלם" type="range" min="0" max="7" value={x} onChange={e=>setX(Number(e.target.value))}/></label>
-      <div className={"labAnswer " + (x === 4 ? "labCorrect" : "")}><small>{x === 4 ? "מצוין — מצאתם את הפתרון" : "נסו למצוא מספר שמשלים ל־7"}</small><strong>{x} + 3 {x + 3 === 7 ? "=" : "≠"} 7</strong></div>
-      <p>כדי למצוא את x, חשבו 7 פחות 3. הפתרון הוא 4, כי 4 + 3 = 7.</p>
+      <div className="labEquation" dir="ltr"><b>{substitutedExpression}</b><span>=</span><b>{equationLab?.rhs}</b></div>
+      <label className="labSingle">שנו את ערך X <b>{labX}</b><input aria-label="ערך הנעלם" type="range" min="0" max={labMax} value={labX} onChange={e=>setX(Number(e.target.value))}/></label>
+      <div className={"labAnswer " + (equationMatches ? "labCorrect" : "")}><small>{equationMatches ? "מצוין — מצאתם את הפתרון" : `נסו למצוא ערך X שמקיים את המשוואה`}</small><strong>{substitutedExpression} = {evaluatedLeftLabel} {equationMatches ? "=" : "≠"} {equationLab?.rhs}</strong></div>
+      <p>{equationLab?.explanation}</p>
     </>}
   </section>;
 }

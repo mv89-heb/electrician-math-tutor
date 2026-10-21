@@ -6,7 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
-import { decimalVisualForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
+import { decimalVisualForExercise, equationLabModelForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -879,5 +879,34 @@ describe("decimal visuals match the current operation", () => {
     expect(exercise.prompt).toBe("מה הערך של 2.5 - 0.5?");
     expect(exercise.accepted).toEqual(["2"]);
     expect(visual.expression).toBe("2.5 − 0.5 = 2");
+  });
+});
+
+
+describe("interactive equation lab matches the active beginner exercise", () => {
+  it("models one-step addition, subtraction, multiplication, and division correctly", () => {
+    const cases = [
+      ["zero-2", "X + 1", 4, 3],
+      ["zero-4b", "X − 2", 6, 8],
+      ["zero-5b", "3 × X", 12, 4],
+      ["zero-6", "X ÷ 2", 4, 8],
+    ] as const;
+    for (const [id, expression, rhs, answer] of cases) {
+      const model = equationLabModelForExercise(curriculum.find((exercise) => exercise.id === id)!);
+      expect(model).toMatchObject({ expression, rhs, answer });
+    }
+  });
+
+  it("matches both steps in equations with addition or subtraction outside the multiplication", () => {
+    const additionModel = equationLabModelForExercise(curriculum.find((exercise) => exercise.id === "zero-7")!);
+    expect(additionModel).toMatchObject({ expression: "2 × X + 1", rhs: 7, answer: 3, coefficient: 2, offset: 1 });
+
+    const subtractionModel = equationLabModelForExercise(curriculum.find((exercise) => exercise.id === "zero-7b")!);
+    expect(subtractionModel).toMatchObject({ expression: "3 × X − 2", rhs: 10, answer: 4, coefficient: 3, offset: -2 });
+  });
+
+  it("does not show the equation lab for non-equation beginner exercises", () => {
+    expect(equationLabModelForExercise(curriculum.find((exercise) => exercise.id === "zero-1")!)).toBeNull();
+    expect(equationLabModelForExercise(curriculum.find((exercise) => exercise.id === "zero-8")!)).toBeNull();
   });
 });
