@@ -12,6 +12,7 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
+import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { fractionVisualForExercise, formulaVisualForExercise, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
