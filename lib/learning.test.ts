@@ -6,6 +6,7 @@ import { buildTopicMasteryTest } from "./mastery";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
+import { isExponentLesson } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
   it("keeps a resolved exercise as a stable snapshot after learning state changes", () => {
@@ -566,5 +567,16 @@ describe("error guidance matches the current exercise", () => {
     const exercise = generateReinforcement("חילוק במשוואות", 9, "unknown")!;
     expect(exercise.prompt).toContain("X ÷ 3");
     expect(errorGuidance(exercise, "20")).toContain("X מחולק ב־3");
+  });
+});
+
+describe("lesson visuals match the learning topic", () => {
+  it("shows exponent visuals for powers instead of the electrical power formula", () => {
+    const exponentLessons = curriculum.filter((exercise) => exercise.topic === "חזקות");
+    const electricalPowerLessons = curriculum.filter((exercise) => exercise.topic === "חשמל — הספק");
+    expect(exponentLessons.length).toBeGreaterThan(0);
+    expect(exponentLessons.every(isExponentLesson)).toBe(true);
+    expect(electricalPowerLessons.length).toBeGreaterThan(0);
+    expect(electricalPowerLessons.some(isExponentLesson)).toBe(false);
   });
 });

@@ -12,6 +12,7 @@ import { chooseNextExercise, emptyLearningState, loadLearningState, recordAttemp
 import { buildTopicMasteryTest, masteryPasses, type MasteryQuestion } from "../lib/mastery";
 import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
+import { isExponentLesson } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -547,7 +548,16 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
       <p className="visualCaption">{circle ? "הקוטר עובר דרך המרכז; הרדיוס הוא חצי ממנו." : area ? "סופרים כמה מקום הצורה תופסת — ביחידות בריבוע." : "מ־מ״מ לס״מ מחלקים ב־10; מס״מ למטר מחלקים ב־100."}</p>
     </div>;
   }
-  if (id.includes("ohm") || id.includes("power") || id.includes("formula")) {
+  if (isExponentLesson(exercise)) {
+    const match = exercise.prompt.match(/(\d+)²/);
+    const base = match ? Number(match[1]) : 2;
+    return <div className="learningVisual" aria-label="המחשה חזותית של חזקות">
+      <div className="visualHeading"><span>🔢</span><strong>חזקה היא כפל של מספר בעצמו</strong></div>
+      <div className="formulaVisual" dir="ltr"><span className="formulaChip">{base}²</span><span className="formulaOperator">=</span><span className="formulaChip">{base} × {base}</span><span className="formulaOperator">=</span><span className="formulaChip">{base * base}</span></div>
+      <p className="visualCaption">{base}² פירושו {base} × {base}, ולכן התוצאה היא {base * base}.</p>
+    </div>;
+  }
+  if (id.includes("ohm") || (id.includes("power") && !isExponentLesson(exercise)) || id.includes("formula")) {
     return <div className="learningVisual" aria-label="המחשה חזותית של נוסחה">
       <div className="visualHeading"><span>⚡</span><strong>נוסחה היא מתכון עם מקומות למספרים</strong></div>
       <div className="formulaVisual" dir="ltr"><span className="formulaChip">V</span><span className="formulaOperator">=</span><span className="formulaChip">I</span><span className="formulaOperator">×</span><span className="formulaChip">R</span></div>
