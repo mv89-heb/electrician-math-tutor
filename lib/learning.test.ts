@@ -1105,3 +1105,15 @@ describe("formula isolation reinforcement stays on topic", () => {
     expect(exercise?.explanation).toContain("מחלקים את שני האגפים");
   });
 });
+
+
+describe("unknown concept reinforcement teaches the concept of X", () => {
+  it("asks what X represents instead of returning a generic arithmetic exercise", () => {
+    const exercise = generateReinforcement("מהו נעלם?", 3, "concept");
+    expect(exercise?.title).toBe("מבינים מהו נעלם");
+    expect(exercise?.prompt).toContain("מה מייצגת האות X");
+    expect(exercise?.accepted).toContain("המספר הלא ידוע");
+    expect(exercise?.hint1).toContain("מספר");
+    expect(exercise?.explanation).toContain("מייצגת את המספר הלא ידוע");
+  });
+});
