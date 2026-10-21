@@ -55,18 +55,18 @@ export type FormulaVisual = {
 export function formulaVisualForExercise(exercise: Pick<Exercise, "id" | "topic">): FormulaVisual {
   if (exercise.id === "formula-subject-1") {
     return {
-      heading: "מבודדים משתנה בנוסחה",
-      lhs: "A", operator: "=", rhs: "B × C",
-      legend: ["A = התוצאה", "B ו־C = גורמים בנוסחה"],
-      caption: "כדי לבודד את C, מחלקים את שני אגפי A = B × C ב־B (כאשר B אינו אפס): C = A/B."
+      heading: "מבודדים את C בנוסחה",
+      lhs: "C", operator: "=", rhs: "A ÷ B",
+      legend: ["C = המשתנה המבוקש", "A = התוצאה", "B = גורם שאינו אפס"],
+      caption: "מחלקים את שני האגפים ב־B ומקבלים C = A ÷ B."
     };
   }
   if (exercise.id === "formula-subject-2") {
     return {
-      heading: "מבודדים רוחב בנוסחת שטח",
-      lhs: "A", operator: "=", rhs: "L × W",
-      legend: ["A = שטח", "L = אורך", "W = רוחב"],
-      caption: "כדי למצוא רוחב, מחלקים את השטח באורך: W = A/L."
+      heading: "מבודדים את W בנוסחת שטח",
+      lhs: "W", operator: "=", rhs: "A ÷ L",
+      legend: ["W = רוחב", "A = שטח", "L = אורך שאינו אפס"],
+      caption: "מחלקים את השטח באורך ומקבלים W = A ÷ L."
     };
   }
   if (["formula-1", "formula-2", "ohm-2"].includes(exercise.id)) {

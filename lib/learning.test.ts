@@ -4,6 +4,7 @@ import { checkpointPasses } from "./checkpoints";
 import { generateExercise, generateReinforcement } from "./exercise-generator";
 import { buildTopicMasteryTest } from "./mastery";
 import { fractionGuidanceForExercise } from "./fraction-guidance";
+import { formulaSubjectGuidance } from "./formula-subject-guidance";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
 import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
@@ -638,8 +639,10 @@ describe("formula visuals match the lesson topic", () => {
   it("uses the actual algebraic formula in formula-subject lessons", () => {
     const generic = curriculum.find((item) => item.id === "formula-subject-1")!;
     const area = curriculum.find((item) => item.id === "formula-subject-2")!;
-    expect(formulaVisualForExercise(generic).rhs).toBe("B × C");
-    expect(formulaVisualForExercise(area).rhs).toBe("L × W");
+    expect(formulaVisualForExercise(generic).lhs).toBe("C");
+    expect(formulaVisualForExercise(generic).rhs).toBe("A ÷ B");
+    expect(formulaVisualForExercise(area).lhs).toBe("W");
+    expect(formulaVisualForExercise(area).rhs).toBe("A ÷ L");
   });
 
   it("shows the rearranged formula for the quantity the exercise asks to find", () => {
@@ -1054,5 +1057,20 @@ describe("division equation guidance includes the actual divisor", () => {
     const { divisionEquationGuidance } = await import("./division-equation-guidance");
     expect(divisionEquationGuidance("X ÷ 0 = 4")).toBeNull();
     expect(divisionEquationGuidance("2 × X = 8")).toBeNull();
+  });
+});
+
+
+describe("formula-subject guidance matches the variable being isolated", () => {
+  it("guides isolation of C by dividing by B", () => {
+    const guidance = formulaSubjectGuidance("formula-subject-1");
+    expect(guidance?.correct).toBe("לחלק את שני האגפים ב־B");
+    expect(guidance?.explanation).toContain("C = A ÷ B");
+  });
+
+  it("guides isolation of W by dividing by L", () => {
+    const guidance = formulaSubjectGuidance("formula-subject-2");
+    expect(guidance?.correct).toBe("לחלק את שני האגפים ב־L");
+    expect(guidance?.explanation).toContain("W = A ÷ L");
   });
 });
