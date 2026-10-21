@@ -14,7 +14,7 @@ import { answerMatches, normalizeAnswer } from "../lib/answer-checker";
 import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -593,6 +593,7 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const [width, setWidth] = useState(3);
   const [x, setX] = useState(4);
   const isElectrical = isElectricalLesson(exercise);
+  const isPowerLesson = isElectricalPowerLesson(exercise);
   const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
   const isBeginner = exercise.id.startsWith("zero-");
@@ -604,13 +605,23 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
       <div className="labControls"><label>מונה — החלקים הצבועים <b>{Math.min(a,b)}</b><input aria-label="מונה השבר" type="range" min="1" max={b} value={Math.min(a,b)} onChange={e=>setA(Number(e.target.value))}/></label><label>מכנה — כל החלקים <b>{b}</b><input aria-label="מכנה השבר" type="range" min="2" max="12" value={b} onChange={e=>{const next=Number(e.target.value);setB(next);setA(Math.min(next,a))}}/></label></div>
       <div className="labAnswer"><small>השבר שמוצג</small><strong>{Math.min(a,b)} / {b}</strong></div><p>כדי לצמצם שבר, מחלקים את המונה והמכנה באותו מספר. החלק של השלם נשאר שווה.</p>
     </> : isElectrical ? <>
-      <div className="labFormula" dir="ltr"><b>V = I × R</b></div>
-      <div className="labControls">
-        <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
-        <label>התנגדות (אוהם) <b>{b} Ω</b><input aria-label="התנגדות" type="range" min="1" max="12" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
-      </div>
-      <div className="labAnswer"><small>הזרם = מתח ÷ התנגדות</small><strong>{a} ÷ {b} = {(a/b).toFixed(2)} אמפר</strong></div>
-      <p>נסו להגדיל את המתח, ואז את ההתנגדות. מתי הזרם גדל ומתי הוא קטן?</p>
+      {isPowerLesson ? <>
+        <div className="labFormula" dir="ltr"><b>P = V × I</b></div>
+        <div className="labControls">
+          <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
+          <label>זרם (אמפר) <b>{b} A</b><input aria-label="זרם" type="range" min="1" max="12" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+        </div>
+        <div className="labAnswer"><small>הספק = מתח × זרם</small><strong>{a} × {b} = {a*b} וואט</strong></div>
+        <p>נסו לשנות את המתח ואת הזרם. כשאחד מהם גדל והשני נשאר קבוע, ההספק משתנה בהתאם.</p>
+      </> : <>
+        <div className="labFormula" dir="ltr"><b>V = I × R</b></div>
+        <div className="labControls">
+          <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
+          <label>התנגדות (אוהם) <b>{b} Ω</b><input aria-label="התנגדות" type="range" min="1" max="12" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+        </div>
+        <div className="labAnswer"><small>הזרם = מתח ÷ התנגדות</small><strong>{a} ÷ {b} = {(a/b).toFixed(2)} אמפר</strong></div>
+        <p>נסו להגדיל את המתח, ואז את ההתנגדות. מתי הזרם גדל ומתי הוא קטן?</p>
+      </>}
     </> : isArea ? <>
       <div className="labShape"><div style={{width:`${length*8}%`,height:`${width*13}px`}}><span>{length} × {width}</span></div></div>
       <div className="labControls">
