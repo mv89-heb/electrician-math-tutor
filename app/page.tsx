@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { areaLabDefaultsForExercise, decimalVisualForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { areaLabDefaultsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -611,15 +611,19 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
 
 function InteractiveLab({ exercise }: { exercise: Exercise }) {
   const fractionDefaults = fractionLabDefaultsForExercise(exercise);
+  const electricalDefaults = electricalLabDefaultsForExercise(exercise);
   const areaDefaults = areaLabDefaultsForExercise(exercise);
-  const [a, setA] = useState(fractionDefaults.numerator);
-  const [b, setB] = useState(fractionDefaults.denominator);
+  const isFractionLab = exercise.id.includes("fraction") && exercise.id.includes("reduce");
+  const [a, setA] = useState(isFractionLab ? fractionDefaults.numerator : electricalDefaults.first);
+  const [b, setB] = useState(isFractionLab ? fractionDefaults.denominator : electricalDefaults.second);
   const [length, setLength] = useState(areaDefaults.length);
   const [width, setWidth] = useState(areaDefaults.width);
   const [x, setX] = useState(4);
   const reducedFraction = reduceFractionForLab(Math.min(a, b), b);
   const isElectrical = isElectricalLesson(exercise);
   const isPowerLesson = isElectricalPowerLesson(exercise);
+  const isPowerSubLesson = exercise.id === "electrical-power-sub-1";
+  const isResistanceLesson = exercise.id === "ohm-2";
   const isFraction = exercise.id.includes("fraction") && exercise.id.includes("reduce");
   const isArea = /area-rectangle|area-square/i.test(exercise.id);
   const isSquareArea = exercise.id.includes("area-square");
@@ -639,7 +643,15 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
       <div className="labControls"><label>מונה — החלקים הצבועים <b>{Math.min(a,b)}</b><input aria-label="מונה השבר" type="range" min="1" max={b} value={Math.min(a,b)} onChange={e=>setA(Number(e.target.value))}/></label><label>מכנה — כל החלקים <b>{b}</b><input aria-label="מכנה השבר" type="range" min="2" max="12" value={b} onChange={e=>{const next=Number(e.target.value);setB(next);setA(Math.min(next,a))}}/></label></div>
       <div className="labAnswer"><small>השבר המצומצם</small><strong>{Math.min(a,b)} / {b} = {reducedFraction.numerator} / {reducedFraction.denominator}</strong></div><p>כדי לצמצם שבר, מחלקים את המונה והמכנה באותו מספר. החלק של השלם נשאר שווה.</p>
     </> : isElectrical ? <>
-      {isPowerLesson ? <>
+      {isPowerSubLesson ? <>
+        <div className="labFormula" dir="ltr"><b>I = P ÷ V</b></div>
+        <div className="labControls">
+          <label>הספק (וואט) <b>{a} W</b><input aria-label="הספק" type="range" min="10" max="120" step="10" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
+          <label>מתח (וולט) <b>{b} V</b><input aria-label="מתח" type="range" min="1" max="24" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+        </div>
+        <div className="labAnswer"><small>זרם = הספק ÷ מתח</small><strong>{a} ÷ {b} = {(a/b).toFixed(2)} אמפר</strong></div>
+        <p>שנו את ההספק ואת המתח וראו כיצד הם משפיעים על הזרם. אם ההספק נשאר קבוע והמתח גדל, הזרם קטן.</p>
+      </> : isPowerLesson ? <>
         <div className="labFormula" dir="ltr"><b>P = V × I</b></div>
         <div className="labControls">
           <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
@@ -647,6 +659,14 @@ function InteractiveLab({ exercise }: { exercise: Exercise }) {
         </div>
         <div className="labAnswer"><small>הספק = מתח × זרם</small><strong>{a} × {b} = {a*b} וואט</strong></div>
         <p>נסו לשנות את המתח ואת הזרם. כשאחד מהם גדל והשני נשאר קבוע, ההספק משתנה בהתאם.</p>
+      </> : isResistanceLesson ? <>
+        <div className="labFormula" dir="ltr"><b>R = V ÷ I</b></div>
+        <div className="labControls">
+          <label>מתח (וולט) <b>{a} V</b><input aria-label="מתח" type="range" min="1" max="24" value={a} onChange={e=>setA(Number(e.target.value))}/></label>
+          <label>זרם (אמפר) <b>{b} A</b><input aria-label="זרם" type="range" min="1" max="12" value={b} onChange={e=>setB(Number(e.target.value))}/></label>
+        </div>
+        <div className="labAnswer"><small>התנגדות = מתח ÷ זרם</small><strong>{a} ÷ {b} = {(a/b).toFixed(2)} אוהם</strong></div>
+        <p>שנו את המתח ואת הזרם. כדי למצוא התנגדות, מחלקים את המתח בזרם.</p>
       </> : <>
         <div className="labFormula" dir="ltr"><b>V = I × R</b></div>
         <div className="labControls">
