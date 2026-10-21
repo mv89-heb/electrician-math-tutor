@@ -52,7 +52,7 @@ function MathPrompt({ prompt }: { prompt: string }) {
     <div className="promptStack" dir="rtl">
       {parts.map((part, index) =>
         part.type === "math"
-          ? <div className="mathLine" dir="ltr" lang="en" key={\`math-\${index}\`}><RenderedMath value={part.value} /></div>
+          ? <div className="mathLine" dir="ltr" lang="en" key={`math-${index}`}><RenderedMath value={part.value} /></div>
           : part.value.trim()
             ? <div className="promptText" dir="rtl" key={index}>{part.value.trim()}</div>
             : null,
