@@ -205,14 +205,14 @@ function HandwritingNotebook() {
     if (!canvas) return;
     const redraw = () => {
       const rect = canvas.getBoundingClientRect();
-      if (!rect.width) return;
+      if (!rect.width || !rect.height) return;
       const ratio = window.devicePixelRatio || 1;
       canvas.width = Math.round(rect.width * ratio);
-      canvas.height = Math.round(300 * ratio);
+      canvas.height = Math.round(rect.height * ratio);
       const context = canvas.getContext("2d");
       if (!context) return;
       context.scale(ratio, ratio);
-      context.clearRect(0, 0, rect.width, 300);
+      context.clearRect(0, 0, rect.width, rect.height);
       const allStrokes = activeStroke ? [...strokes, activeStroke] : strokes;
       for (const stroke of allStrokes) {
         if (!stroke.points.length) continue;
@@ -225,8 +225,8 @@ function HandwritingNotebook() {
         context.lineJoin = "round";
         const first = stroke.points[0];
         context.beginPath();
-        context.moveTo(first.x * rect.width, first.y * 300);
-        for (const point of stroke.points.slice(1)) context.lineTo(point.x * rect.width, point.y * 300);
+        context.moveTo(first.x * rect.width, first.y * rect.height);
+        for (const point of stroke.points.slice(1)) context.lineTo(point.x * rect.width, point.y * rect.height);
         if (stroke.points.length === 1) {
           context.arc(first.x * rect.width, first.y * 300, stroke.width / 2, 0, Math.PI * 2);
           context.fill();
