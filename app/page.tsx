@@ -438,9 +438,7 @@ function buildGuidedSolutionSteps(exercise: Exercise): GuidedSolutionStep[] {
     methodExplanation = "מכפילים את הכמות באחוזים ומחלקים ב־100, כי אחוז הוא חלק מתוך מאה.";
   } else if (/ohm|power|חשמל/i.test(id + " " + topic) && (/\bI\s*=|זרם|\bR\s*=|התנגדות|\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote))) {
     firstQuestion = "איזו נוסחה מתאימה למה שמבקשים למצוא?";
-    if (/\bP\s*=|הספק/i.test(prompt + " " + exercise.teachingNote)) correctMethod = "P = V × I";
-    else if (/\bR\s*=|התנגדות/i.test(prompt + " " + exercise.teachingNote)) correctMethod = "R = V ÷ I";
-    else correctMethod = "I = V ÷ R";
+    correctMethod = electricalGuidedFormula(exercise) ?? "I = V ÷ R";
     methodOptions = [correctMethod, correctMethod === "I = V ÷ R" ? "I = V × R" : "I = V ÷ R", "P = V × I", "V = I × R"].filter((value, index, all) => all.indexOf(value) === index);
     if (!methodOptions.includes(correctMethod)) methodOptions.unshift(correctMethod);
     methodExplanation = "בחרנו נוסחה לפי הגודל שאותו צריך לחשב. לפני החישוב מוודאים שהנוסחה מתאימה לנתונים.";
