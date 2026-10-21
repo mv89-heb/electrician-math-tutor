@@ -42,13 +42,31 @@ export function geometryGuidanceForExercise(exerciseId: string): GeometryGuidanc
       explanation: "שטח ריבוע הוא צלע כפול צלע: 5 × 5 = 25 מ״ר.",
     };
   }
-  if (exerciseId === "geometry-area-circle-1") {
-    const correct = "להכפיל את π בריבוע הרדיוס";
+  if (exerciseId === "geometry-diameter-1") {
+    const correct = "לחלק את הקוטר ב־2";
     return {
-      question: "איך מחשבים שטח של עיגול?",
+      question: "איך מוצאים רדיוס כשנתון הקוטר?",
       correct,
-      options: [correct, "להכפיל את הרדיוס ב־2", "לחבר את הרדיוס לקוטר"],
-      explanation: "שטח עיגול הוא A = π × r². עבור רדיוס 2, השטח הוא 4π יחידות שטח.",
+      options: [correct, "לכפול את הקוטר ב־2", "לחסר 2 מהקוטר"],
+      explanation: "הרדיוס הוא חצי מהקוטר: 14 ÷ 2 = 7 ס״מ.",
+    };
+  }
+  if (exerciseId === "geometry-radius-1") {
+    const correct = "לכפול את הרדיוס ב־2";
+    return {
+      question: "איך מוצאים קוטר כשנתון הרדיוס?",
+      correct,
+      options: [correct, "לחלק את הרדיוס ב־2", "להוסיף 2 לרדיוס"],
+      explanation: "הקוטר הוא פעמיים הרדיוס: 2 × 4 = 8 ס״מ.",
+    };
+  }
+  if (exerciseId === "geometry-area-circle-1") {
+    const correct = "להעלות את הרדיוס בריבוע ולכפול ב־3.14";
+    return {
+      question: "מהו הצעד הנכון לחישוב שטח העיגול הזה?",
+      correct,
+      options: [correct, "לכפול את הרדיוס ב־2", "לחבר את הרדיוס לקוטר"],
+      explanation: "A = 3.14 × 2² = 3.14 × 4 = 12.56 סמ״ר.",
     };
   }
   return null;
