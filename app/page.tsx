@@ -15,7 +15,7 @@ import { errorGuidance } from "../lib/error-guidance";
 import { electricalGuidedFormula } from "../lib/electrical-guided-formula";
 import { basicFormulaGuidance } from "../lib/basic-formula-guidance";
 import { twoStepEquationGuidance } from "../lib/two-step-guidance";
-import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, unitConversionVisualForExercise } from "../lib/lesson-visual";
+import { fractionVisualForExercise, formulaVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, unitConversionVisualForExercise } from "../lib/lesson-visual";
 import { buildFinalExam, finalExamPasses, FINAL_EXAM_REQUIRED, FINAL_EXAM_TOTAL, type FinalExamQuestion } from "../lib/final-exam";
 import { ElectricalMiniSimulator } from "../components/ElectricalMiniSimulator";
 import { FieldWorkIllustration } from "../components/FieldWorkIllustration";
@@ -546,6 +546,14 @@ function LessonVisual({ exercise }: { exercise: Exercise }) {
         <div className="fractionBar" dir="ltr">{Array.from({length: visual.count}, (_, i) => <span key={i} className={i < visual.filled ? "piece filled" : "piece"} />)}</div>
         <div className="fractionLabels" dir="ltr"><strong>{visual.label}</strong><span>{visual.caption}</span></div>
       </div> : <><div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.label}</span></div><p className="visualCaption">{visual.caption}</p></>}
+    </div>;
+  }
+  if (exercise.topic === "אחוזים" || /\\d+(?:[.,]\\d+)?%\\s*מתוך/.test(exercise.prompt)) {
+    const visual = percentageVisualForExercise(exercise);
+    return <div className="learningVisual" aria-label="המחשה חזותית לחישוב אחוזים">
+      <div className="visualHeading"><span>％</span><strong>{visual.heading}</strong></div>
+      <div className="formulaVisual" dir="ltr"><span className="formulaChip">{visual.expression}</span></div>
+      <p className="visualCaption">{visual.caption}</p>
     </div>;
   }
   if (id.includes("units")) {
