@@ -837,3 +837,12 @@ body{color:var(--ink)}
 .fieldSafetyNote{display:flex;align-items:flex-start;gap:6px;margin:8px 0 0;color:#8a5a12;font-size:11px;line-height:1.55}
 .fieldSafetyNote span{flex:none;font-weight:900}
 @media(max-width:600px){.fieldIllustration{padding:12px}.fieldIllustrationHeader strong{font-size:14px}.fieldSceneSvg{min-height:130px}.fieldIllustrationCaption{font-size:12px}}
+
+
+/* Keep guided answers optional: the learner sees the main answer field first. */
+.guidedSolutionToggle{display:flex;width:100%;align-items:center;justify-content:space-between;gap:14px;margin:0 0 18px;padding:15px 17px;border:1px solid #d5e1f2;border-radius:13px;background:#f8fbff;color:#24334d;text-align:right;cursor:pointer;font:inherit}
+.guidedSolutionToggle>span:first-child{display:flex;flex-direction:column;gap:4px}
+.guidedSolutionToggle strong{font-size:14px}
+.guidedSolutionToggle small{color:#64748b;font-size:12px;font-weight:500;line-height:1.5}
+.guidedSolutionToggleIcon{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:9px;background:#e6eefb;color:#2457d6;font-size:21px;font-weight:700}
+.guidedSolutionToggle:focus-visible{outline:3px solid #1769ff55;outline-offset:2px}
