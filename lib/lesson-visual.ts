@@ -351,7 +351,13 @@ export type ElectricalLabDefaults = {
 };
 
 export function electricalLabDefaultsForExercise(exercise: Pick<Exercise, "id">): ElectricalLabDefaults {
-  if (exercise.id === "electrical-power-sub-1") return { first: 60, second: 12 };
-  if (exercise.id === "ohm-2") return { first: 12, second: 3 };
-  return { first: 12, second: 6 };
+  const defaults: Record<string, ElectricalLabDefaults> = {
+    "ohm-1": { first: 20, second: 10 },
+    "ohm-2": { first: 12, second: 3 },
+    "electrical-ohm-sub-1": { first: 12, second: 4 },
+    "power-1": { first: 10, second: 2 },
+    "power-2": { first: 12, second: 3 },
+    "electrical-power-sub-1": { first: 60, second: 12 },
+  };
+  return defaults[exercise.id] ?? { first: 12, second: 6 };
 }
