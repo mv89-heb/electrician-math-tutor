@@ -222,6 +222,28 @@ describe("generated exercise correctness", () => {
 });
 
 describe("reinforcement topic alignment", () => {
+  it("keeps arithmetic reinforcement aligned with order of operations", () => {
+    const exercise = generateReinforcement("סדר פעולות", 9, "arithmetic");
+    expect(exercise?.prompt).toBe("5 × 2 + 3 = ?");
+    expect(exercise?.accepted).toEqual(["13"]);
+    expect(exercise?.explanation).toContain("5 × 2 = 10");
+    expect(exercise?.explanation).toContain("10 + 3 = 13");
+  });
+
+  it("keeps arithmetic reinforcement aligned with addition and subtraction equations", () => {
+    const exercise = generateReinforcement("חיבור וחיסור במשוואות", 9, "arithmetic");
+    expect(exercise?.prompt).toBe("X − 5 = 7. איזה מספר הוא X?");
+    expect(exercise?.accepted).toEqual(["12"]);
+    expect(exercise?.explanation).toContain("X = 7 + 5 = 12");
+  });
+
+  it("keeps arithmetic reinforcement aligned with two-step equations", () => {
+    const exercise = generateReinforcement("משוואות פשוטות", 9, "arithmetic");
+    expect(exercise?.prompt).toBe("2 × X + 1 = 9. מה הערך של X?");
+    expect(exercise?.accepted).toEqual(["4"]);
+    expect(exercise?.explanation).toContain("8 ÷ 2 = 4");
+  });
+
   it("does not inject an unrelated operation exercise into a fractions topic", () => {
     const exercise = generateReinforcement("שברים", 9, "operation");
     expect(exercise?.topic).toBe("שברים");
