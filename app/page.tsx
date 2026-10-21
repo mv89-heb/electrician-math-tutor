@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import katex from "katex";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
 import { curriculum, firstExercise, type Exercise } from "../lib/curriculum";
 import { diagnosticAnswerIsCorrect, diagnosticQuestions } from "../lib/diagnostic";
@@ -52,6 +53,28 @@ function MathPrompt({ prompt }: { prompt: string }) {
   );
 }
 
+function NotebookMathPreview({ value }: { value: string }) {
+  if (!value.trim()) return <div className="notebookEmpty">הדרך שתכתוב תופיע כאן כמו במחברת, כולל שברים עומדים.</div>;
+  return <div className="notebookPreview" aria-label="תצוגת הדרך המתמטית">
+    {value.split("\n").map((line, lineIndex) => {
+      const fractionPattern = /(-?\d+)\s*\/\s*(-?\d+)/g;
+      const parts: Array<{ type: "text" | "fraction"; value: string; key: string }> = [];
+      let lastIndex = 0;
+      for (const match of line.matchAll(fractionPattern)) {
+        const index = match.index ?? 0;
+        if (index > lastIndex) parts.push({ type: "text", value: line.slice(lastIndex, index), key: "text-" + lastIndex });
+        parts.push({ type: "fraction", value: "\\frac{" + match[1] + "}{" + match[2] + "}", key: "fraction-" + index });
+        lastIndex = index + match[0].length;
+      }
+      if (lastIndex < line.length) parts.push({ type: "text", value: line.slice(lastIndex), key: "text-" + lastIndex });
+      return <div className="notebookLine" key={lineIndex} dir="auto">
+        {parts.length === 0 ? <span>&nbsp;</span> : parts.map((part) => part.type === "text"
+          ? <span key={part.key}>{part.value}</span>
+          : <span className="notebookFraction" key={part.key} dir="ltr" dangerouslySetInnerHTML={{ __html: katex.renderToString(part.value, { throwOnError: false, output: "html" }) }} />)}
+      </div>;
+    })}
+  </div>;
+}
 function ElectricalBridge({ topic }: { topic: string }) {
   const text =
     topic === "מהו נעלם?"
@@ -784,6 +807,7 @@ export default function Home() {
                   </div>
                   <div className="solutionSymbols" aria-label="הוספת סימן מתמטי">
                     {[
+                      { label: "½ שבר", value: "3/4" },
                       { label: "+ חיבור", value: " + " }, { label: "− חיסור", value: " − " },
                       { label: "× כפל", value: " × " }, { label: "÷ חילוק", value: " ÷ " },
                       { label: "= שווה", value: " = " }, { label: "² חזקה", value: "²" },
@@ -797,10 +821,18 @@ export default function Home() {
                       </button>
                     ))}
                   </div>
-                  <textarea ref={solutionTextareaRef} id="solution-method" dir="auto" rows={5} value={solutionMethod}
-                    onChange={(event) => setSolutionMethod(event.target.value)}
-                    placeholder={"לדוגמה:\nנוסחה: U = R × I\nהצבה: U = 6 × 2\nחישוב: U = 12 V"}
-                    aria-describedby="solution-method-help" />
+                  <div className="notebookEditorWrap">
+                    <div className="notebookEditorHeading">
+                      <strong>כתוב את הדרך</strong>
+                      <span>אפשר להקליד רגיל. לדוגמה, 3/4 יוצג למטה כשבר כמו במחברת.</span>
+                    </div>
+                    <textarea ref={solutionTextareaRef} id="solution-method" dir="auto" rows={5} value={solutionMethod}
+                      onChange={(event) => setSolutionMethod(event.target.value)}
+                      placeholder={"לדוגמה:\n3/4 + 1/4 = 1\nהשלב הבא: 2 × 5 = 10"}
+                      aria-describedby="solution-method-help" />
+                    <div className="notebookPreviewLabel">כך זה ייראה במחברת</div>
+                    <NotebookMathPreview value={solutionMethod} />
+                  </div>
                   <div className="solutionWritingTips" id="solution-method-help">
                     <strong>אפשר לכתוב ממש במילים שלך</strong>
                     <span>למשל: „חילקתי את המתח בהתנגדות, ולכן הזרם הוא 2 אמפר”.</span>
