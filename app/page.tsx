@@ -201,7 +201,7 @@ const formulaOptions = ["V = I × R", "I = V ÷ R", "R = V ÷ I", "P = V × I", 
 function FormulaChoicePanel({ exercise }: { exercise: Exercise }) {
   const profile = formulaChoiceProfiles[exercise.id];
   const [selected, setSelected] = useState("");
-  const [showReference, setShowReference] = useState(false);
+  const [showReference, setShowReference] = useState(() => ["formula-1", "formula-2", "formula-3"].includes(exercise.id));
   if (!profile) return null;
   const correct = selected === profile.correct;
   return (
