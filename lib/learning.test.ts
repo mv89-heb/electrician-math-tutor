@@ -666,3 +666,40 @@ describe("electrical guided formula selection", () => {
     expect(electricalGuidedFormula(curriculum.find((item) => item.id === "ohm-1")!)).toBe("I = V ÷ R");
   });
 });
+
+
+describe("electrical unit reinforcement matches its topic", () => {
+  it("asks about watts for electrical power", () => {
+    const exercise = generateReinforcement("חשמל — הספק", 0, "unit")!;
+    expect(exercise.prompt).toContain("הספק");
+    expect(exercise.accepted).toContain("W");
+    expect(exercise.hint2).toContain("וואט");
+    expect(exercise.explanation).toContain("וואט");
+  });
+
+  it("rotates through voltage, current, and resistance units for Ohm's law", () => {
+    const expected = [
+      { name: "מתח", symbol: "V", unit: "וולט" },
+      { name: "זרם", symbol: "A", unit: "אמפר" },
+      { name: "התנגדות", symbol: "Ω", unit: "אוהם" },
+    ];
+    expected.forEach(({ name, symbol, unit }, seed) => {
+      const exercise = generateReinforcement("חשמל — חוק אוהם", seed, "unit")!;
+      expect(exercise.prompt).toContain(name);
+      expect(exercise.accepted).toContain(symbol);
+      expect(exercise.hint2).toContain(unit);
+      expect(exercise.explanation).toContain(unit);
+    });
+  });
+
+  it("keeps the requested quantity, accepted unit, hint, and explanation aligned", () => {
+    for (const topic of ["נוסחאות בסיסיות", "שינוי נושא נוסחה"]) {
+      for (let seed = 0; seed < 4; seed += 1) {
+        const exercise = generateReinforcement(topic, seed, "unit")!;
+        const symbol = exercise.accepted[0];
+        expect(exercise.prompt).toContain(symbol);
+        expect(exercise.hint2).toContain(exercise.explanation.match(/נמדד(?:ת)? ב(.+?),/)?.[1] ?? "unmatched-unit");
+      }
+    }
+  });
+});

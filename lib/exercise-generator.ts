@@ -357,16 +357,35 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
       hint2: `התחל מ־${n} והוסף אליו ${n + 3}.`,
       explanation: `נכון. ${n} + ${n + 3} = ${n + n + 3}.`, generated: true,
     },
-    unit: {
-      id: `generated-${topic}-unit-${seed}`, topic, level: 1, title: "חיזוק יחידות חשמל",
-      teachingNote: "בחשמל חשוב לזהות גם את הגודל וגם את היחידה שלו.",
-      prompt: "איזו יחידה מתאימה לזרם חשמלי: V, A או Ω?",
-      accepted: ["A", "a", "אמפר"],
-      hint1: "חשוב על האות I בחוק אוהם.",
-      hint2: "זרם נמדד באמפר.",
-      explanation: "נכון. זרם חשמלי נמדד באמפר, והסימון הוא A.",
-      generated: true,
-    },
+    unit: (() => {
+      const quantities = topic === "חשמל — הספק"
+        ? [{ name: "הספק", symbol: "W", unit: "וואט", hint: "האות P מייצגת הספק." }]
+        : topic === "חשמל — חוק אוהם"
+          ? [
+              { name: "מתח", symbol: "V", unit: "וולט", hint: "האות V מייצגת מתח." },
+              { name: "זרם", symbol: "A", unit: "אמפר", hint: "האות I מייצגת זרם." },
+              { name: "התנגדות", symbol: "Ω", unit: "אוהם", hint: "האות R מייצגת התנגדות." },
+            ]
+          : [
+              { name: "מתח", symbol: "V", unit: "וולט", hint: "האות V מייצגת מתח." },
+              { name: "זרם", symbol: "A", unit: "אמפר", hint: "האות I מייצגת זרם." },
+              { name: "התנגדות", symbol: "Ω", unit: "אוהם", hint: "האות R מייצגת התנגדות." },
+              { name: "הספק", symbol: "W", unit: "וואט", hint: "האות P מייצגת הספק." },
+            ];
+      const quantity = quantities[((seed % quantities.length) + quantities.length) % quantities.length];
+      const measuredVerb = quantity.name === "התנגדות" ? "נמדדת" : "נמדד";
+      const options = topic === "חשמל — הספק" ? "W, V או A" : "V, A, Ω או W";
+      return {
+        id: `generated-${topic}-unit-${seed}`, topic, level: 1, title: "חיזוק יחידות חשמל",
+        teachingNote: "בחשמל חשוב לזהות גם את הגודל וגם את היחידה שלו.",
+        prompt: `איזו יחידה מתאימה ל${quantity.name}: ${options}?`,
+        accepted: [quantity.symbol, quantity.unit, quantity.symbol.toLowerCase()],
+        hint1: quantity.hint,
+        hint2: `${quantity.name} ${measuredVerb} ב${quantity.unit}.`,
+        explanation: `נכון. ${quantity.name} ${measuredVerb} ב${quantity.unit}, והסימון הוא ${quantity.symbol}.`,
+        generated: true,
+      };
+    })(),
     concept: {
       id: `generated-${topic}-concept-${seed}`, topic, level: 0, title: "חיזוק הבנת הנעלם",
       teachingNote: "לפני החישוב נזהה מה ידוע ומה אנחנו מחפשים.",
