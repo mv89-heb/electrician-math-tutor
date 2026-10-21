@@ -822,3 +822,18 @@ body{color:var(--ink)}
 .finalAnswerPanel>label{display:block;margin-bottom:.55rem;font-weight:800}
 .solutionMethodField{margin-top:.5rem;padding:1rem;border:1px solid #e0e7f1;border-radius:14px;background:#fbfcff;display:grid;gap:.8rem}
 @media(max-width:600px){.guidedSolution{padding:.85rem}.finalAnswerPanel{padding:.85rem}}
+
+
+/* Practical field-work illustrations */
+.fieldIllustration{margin:0 0 17px;padding:15px 17px;border:1px solid #d9e4f1;border-radius:16px;background:linear-gradient(145deg,#f8fbff,#fff);direction:rtl}
+.fieldIllustrationHeader{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.fieldIllustrationBadge{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:#eaf1ff;font-size:21px}
+.fieldIllustrationHeader>div{display:grid;gap:3px}
+.fieldIllustrationKicker{font-size:10px;font-weight:850;letter-spacing:.04em;color:#2563eb}
+.fieldIllustrationHeader strong{font-size:15px;color:#172033}
+.fieldScene{overflow:hidden;border:1px solid #e1e8f2;border-radius:13px;background:#edf2f8}
+.fieldSceneSvg{display:block;width:100%;height:auto;max-height:250px}
+.fieldIllustrationCaption{margin:10px 0 0;color:#475569;font-size:13px;line-height:1.65}
+.fieldSafetyNote{display:flex;align-items:flex-start;gap:6px;margin:8px 0 0;color:#8a5a12;font-size:11px;line-height:1.55}
+.fieldSafetyNote span{flex:none;font-weight:900}
+@media(max-width:600px){.fieldIllustration{padding:12px}.fieldIllustrationHeader strong{font-size:14px}.fieldSceneSvg{min-height:130px}.fieldIllustrationCaption{font-size:12px}}
