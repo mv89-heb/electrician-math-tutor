@@ -25,6 +25,18 @@ function isCorrect(answer: string, exercise: Exercise) {
   return answerMatches(answer, exercise.accepted);
 }
 
+function toKatexExpression(value: string) {
+  return value
+    .replace(/([A-Za-z0-9]+)\s*(?:÷|\/)\s*([A-Za-z0-9]+)/g, "\\frac{$1}{$2}")
+    .replace(/×/g, "\\times")
+    .replace(/−/g, "-");
+}
+
+function RenderedMath({ value, displayMode = true }: { value: string; displayMode?: boolean }) {
+  const expression = toKatexExpression(value);
+  return <span className="renderedMath" dir="ltr" dangerouslySetInnerHTML={{ __html: katex.renderToString(expression, { throwOnError: false, output: "html", displayMode }) }} />;
+}
+
 function MathPrompt({ prompt }: { prompt: string }) {
   const normalizedPrompt = prompt.replace(/\\n/g, "\n");
   const expressionPattern = /(?:[A-Za-z0-9]+\s*)?(?:[=+\-−×÷*/]\s*[A-Za-z0-9]+(?:\s*[=+\-−×÷*/]\s*[A-Za-z0-9]+)*)/g;
@@ -45,9 +57,9 @@ function MathPrompt({ prompt }: { prompt: string }) {
     <div className="promptStack">
       {parts.map((part, index) =>
         part.type === "math"
-          ? <div className="mathLine" dir="ltr" lang="en" key={`math-${index}`}>{part.value}</div>
+          ? <div className="mathLine" dir="ltr" lang="en" key={\`math-\${index}\`}><RenderedMath value={part.value} /></div>
           : part.value.trim()
-            ? <div className="promptText" key={`text-${index}`}>{part.value.trim()}</div>
+            ? <div className="promptText" key={index}>{part.value.trim()}</div>
             : null,
       )}
     </div>
@@ -213,7 +225,7 @@ function FormulaChoicePanel({ exercise }: { exercise: Exercise }) {
           <button key={formula} type="button" dir="ltr"
             className={"formulaChoiceOption" + (selected === formula ? (correct ? " correct" : " incorrect") : "")}
             aria-pressed={selected === formula}
-            onClick={() => setSelected(formula)}>{formula}</button>
+            onClick={() => setSelected(formula)}><RenderedMath value={formula} displayMode={false} /></button>
         ))}
       </div>
       {selected && <div className={"formulaChoiceFeedback " + (correct ? "correct" : "incorrect")} role="status">
@@ -225,11 +237,11 @@ function FormulaChoicePanel({ exercise }: { exercise: Exercise }) {
         {showReference ? "הסתר דף נוסחאות" : "צריך עזרה? פתח דף נוסחאות"}
       </button>
       {showReference && <div className="formulaReference" aria-label="דף נוסחאות חשמל">
-        <div><b dir="ltr">V = I × R</b><span>חוק אוהם — מתח</span></div>
-        <div><b dir="ltr">I = V ÷ R</b><span>זרם כשידועים מתח והתנגדות</span></div>
-        <div><b dir="ltr">R = V ÷ I</b><span>התנגדות כשידועים מתח וזרם</span></div>
-        <div><b dir="ltr">P = V × I</b><span>הספק כשידועים מתח וזרם</span></div>
-        <div><b dir="ltr">I = P ÷ V</b><span>זרם כשידועים הספק ומתח</span></div>
+        <div><b dir="ltr"><RenderedMath value="V = I × R" displayMode={false} /></b><span>חוק אוהם — מתח</span></div>
+        <div><b dir="ltr"><RenderedMath value="I = V ÷ R" displayMode={false} /></b><span>זרם כשידועים מתח והתנגדות</span></div>
+        <div><b dir="ltr"><RenderedMath value="R = V ÷ I" displayMode={false} /></b><span>התנגדות כשידועים מתח וזרם</span></div>
+        <div><b dir="ltr"><RenderedMath value="P = V × I" displayMode={false} /></b><span>הספק כשידועים מתח וזרם</span></div>
+        <div><b dir="ltr"><RenderedMath value="I = P ÷ V" displayMode={false} /></b><span>זרם כשידועים הספק ומתח</span></div>
         <small>V — מתח (וולט) · I — זרם (אמפר) · R — התנגדות (אוהם) · P — הספק (וואט)</small>
       </div>}
     </section>
