@@ -235,6 +235,15 @@ describe("reinforcement topic alignment", () => {
     expect(exercise?.accepted).toEqual(["20"]);
   });
 
+  it("uses multiplication when reinforcing an unknown in multiplication equations", () => {
+    const exercise = generateReinforcement("כפל במשוואות", 9, "unknown");
+    expect(exercise?.topic).toBe("כפל במשוואות");
+    expect(exercise?.prompt).toContain("× X");
+    expect(exercise?.accepted).toEqual(["4"]);
+    expect(exercise?.hint1).toContain("חלק");
+    expect(exercise?.explanation).toContain("20 ÷ 5 = 4");
+  });
+
   it("does not inject a unit exercise into a non-electrical topic", () => {
     const exercise = generateReinforcement("חזקות", 9, "unit");
     expect(exercise?.topic).toBe("חזקות");

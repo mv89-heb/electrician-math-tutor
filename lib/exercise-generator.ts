@@ -170,6 +170,24 @@ export function generateReinforcement(topic: string, seed: number, errorType?: "
   if (errorType === "unit" && !electricalTopics.has(topic)) return generateExercise(topic, seed);
   if (errorType === "concept" && topic !== "מהו נעלם?") return generateExercise(topic, seed);
   if (errorType === "unknown" && !equationTopics.has(topic)) return generateExercise(topic, seed);
+  if (errorType === "unknown" && topic === "כפל במשוואות") {
+    const factor = 2 + (seed % 6);
+    const quotient = 4;
+    const product = factor * quotient;
+    return {
+      id: `generated-${topic}-unknown-${seed}`,
+      topic,
+      level: 0,
+      title: "חיזוק מציאת הנעלם בכפל",
+      teachingNote: "כדי למצוא את X כשהוא מוכפל במספר, נשתמש בפעולה ההפוכה: חילוק.",
+      prompt: `${factor} × X = ${product}. איזה מספר הוא X?`,
+      accepted: [String(quotient)],
+      hint1: `כדי לבודד את X, חלק את שני הצדדים ב־${factor}.`,
+      hint2: `${product} ÷ ${factor} = ${quotient}, לכן X = ${quotient}.`,
+      explanation: `נכון. ${factor} × X = ${product}, ולכן X = ${product} ÷ ${factor} = ${quotient}.`,
+      generated: true,
+    };
+  }
   if (errorType === "unknown" && topic === "חילוק במשוואות") {
     const divisor = 2 + (seed % 4);
     const quotient = 3 + (seed % 5);
