@@ -301,6 +301,11 @@ export function chooseNextExercise(curriculum: Exercise[], state: LearningState)
   return first ? curriculum.findIndex((exercise) => exercise.id === first.id) : 0;
 }
 
+function nonNegativeInteger(value: unknown): number {
+  const numeric = Number(value);
+  return Number.isFinite(numeric) && numeric >= 0 ? Math.floor(numeric) : 0;
+}
+
 export function loadLearningState(storage: Storage | null): LearningState {
   if (!storage) return emptyLearningState;
 
@@ -313,17 +318,19 @@ export function loadLearningState(storage: Storage | null): LearningState {
 
     const rawStats = parsed.stats && typeof parsed.stats === "object" ? parsed.stats as Record<string, TopicStats> : {};
     const stats = Object.fromEntries(Object.entries(rawStats).map(([topic, value]) => [topic, {
-      attempts: Number(value?.attempts) || 0,
-      correct: Number(value?.correct) || 0,
-      hints: Number(value?.hints) || 0,
-      streak: Number(value?.streak) || 0,
-      unassistedCorrect: Number(value?.unassistedCorrect) || 0,
+      attempts: nonNegativeInteger(value?.attempts),
+      correct: nonNegativeInteger(value?.correct),
+      hints: nonNegativeInteger(value?.hints),
+      streak: nonNegativeInteger(value?.streak),
+      unassistedCorrect: nonNegativeInteger(value?.unassistedCorrect),
     }]));
 
     return {
       ...emptyLearningState,
       ...parsed,
       version: 7,
+      currentIndex: nonNegativeInteger(parsed.currentIndex),
+      attempts: nonNegativeInteger(parsed.attempts),
       stats,
       completed: Array.isArray(parsed.completed) ? parsed.completed : [],
       mistakes: Array.isArray(parsed.mistakes) ? parsed.mistakes : [],
@@ -332,7 +339,7 @@ export function loadLearningState(storage: Storage | null): LearningState {
       reviews: parsed.reviews && typeof parsed.reviews === "object" ? parsed.reviews as Record<string, ReviewCard> : {},
       errors: Array.isArray(parsed.errors) ? parsed.errors as ErrorRecord[] : [],
       masteryTests: parsed.masteryTests && typeof parsed.masteryTests === "object" ? parsed.masteryTests as Record<string, MasteryTestResult> : {},
-      finalExamPassed: Boolean(parsed.finalExamPassed),
+      finalExamPassed: parsed.finalExamPassed === true,
     };
   } catch {
     return emptyLearningState;
