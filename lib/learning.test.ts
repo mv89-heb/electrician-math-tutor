@@ -626,7 +626,7 @@ describe("fraction visuals match their exercise", () => {
 
 describe("formula visuals match the lesson topic", () => {
   it("uses the electrical power formula for power lessons", () => {
-    for (const id of ["power-1", "power-2", "electrical-power-sub-1"]) {
+    for (const id of ["power-1", "power-2"]) {
       const exercise = curriculum.find((item) => item.id === id);
       expect(exercise).toBeDefined();
       expect(formulaVisualForExercise(exercise!).lhs).toBe("P");
@@ -641,10 +641,21 @@ describe("formula visuals match the lesson topic", () => {
     expect(formulaVisualForExercise(area).rhs).toBe("L × W");
   });
 
-  it("keeps Ohm's law visuals for Ohm's law lessons", () => {
-    const exercise = curriculum.find((item) => item.id === "ohm-1")!;
-    expect(formulaVisualForExercise(exercise).lhs).toBe("V");
-    expect(formulaVisualForExercise(exercise).rhs).toBe("I × R");
+  it("shows the rearranged formula for the quantity the exercise asks to find", () => {
+    for (const id of ["formula-1", "formula-2", "ohm-2"]) {
+      const visual = formulaVisualForExercise(curriculum.find((item) => item.id === id)!);
+      expect(visual.lhs).toBe("R");
+      expect(visual.rhs).toBe("V ÷ I");
+    }
+    for (const id of ["formula-3", "ohm-1", "electrical-ohm-sub-1"]) {
+      const visual = formulaVisualForExercise(curriculum.find((item) => item.id === id)!);
+      expect(visual.lhs).toBe("I");
+      expect(visual.rhs).toBe("V ÷ R");
+    }
+    const powerSub = formulaVisualForExercise(curriculum.find((item) => item.id === "electrical-power-sub-1")!);
+    expect(powerSub.lhs).toBe("I");
+    expect(powerSub.rhs).toBe("P ÷ V");
+    expect(powerSub.caption).toContain("ההספק במתח");
   });
 });
 
