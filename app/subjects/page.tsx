@@ -71,7 +71,7 @@ export default function SubjectsPage() {
         <nav className="subjectsFilters" aria-label="סינון מקצועות">
           <button type="button" className={activeCategory === "all" ? "subjectsFilter active" : "subjectsFilter"} aria-pressed={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setSelectedSubjectId(null); }}>כל המקצועות ({subjectCatalog.length})</button>
           {subjectCategories.map((category) => (
-            <button key={category.id} type="button" className={activeCategory === category.id ? "subjectsFilter active" : "subjectsFilter"} aria-pressed={activeCategory === category.id} onClick={() => { setActiveCategory(category.id); setSelectedSubjectId(null); }}>{category.title}</button>
+            <button id={category.id} key={category.id} type="button" className={activeCategory === category.id ? "subjectsFilter active" : "subjectsFilter"} aria-pressed={activeCategory === category.id} onClick={() => { setActiveCategory(category.id); setSelectedSubjectId(null); }}>{category.title}</button>
           ))}
         </nav>
 
