@@ -77,7 +77,7 @@ export default function SubjectUnitPage() {
   return (
     <main dir="rtl" className="unitPage">
       <style>{`
-        .unitPage{min-height:100vh;background:#f4f7fb;color:#17243a;padding:26px 18px 60px}
+        .unitPage{min-height:100vh;background:var(--bg);color:var(--ink);padding:26px 18px 60px}
         .unitWrap{max-width:850px;margin:0 auto}
         .unitNav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
         .unitNav a{color:#245b91;text-decoration:none;font-weight:700}
@@ -85,7 +85,7 @@ export default function SubjectUnitPage() {
         .unitEyebrow{font-size:13px;color:#b9d8f4;font-weight:700;margin-bottom:8px}
         .unitHero h1{font-size:clamp(25px,4vw,34px);line-height:1.25;margin:0 0 9px}
         .unitHero p{color:#e0edf8;line-height:1.7;margin:0}
-        .unitCard{background:white;border:1px solid #e2e9f1;border-radius:17px;padding:22px;margin-bottom:14px}
+        .unitCard{background:white;border:1px solid var(--line);border-radius:17px;padding:22px;margin-bottom:14px}
         .unitCard h2{font-size:19px;margin:0 0 12px}
         .unitCard p{line-height:1.8;color:#4b5d73;margin:0}
         .unitMath{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
@@ -98,7 +98,7 @@ export default function SubjectUnitPage() {
         .unitFeedback.wrong{background:#fff4e8;color:#81501b}
         .unitSafety{border-right:4px solid #d59a32;background:#fff8e8;color:#72521c;padding:13px 15px;border-radius:9px;line-height:1.7;margin-top:14px}
         .unitComplete{width:100%;border:0;border-radius:12px;background:#183b63;color:#fff;padding:14px;font:inherit;font-weight:800;cursor:pointer}
-        .unitComplete.done{background:#e4f3e9;color:#25613c}.unitSequence{align-items:center;background:#fff;border:1px solid #e2e9f1;border-radius:14px;padding:14px 16px;margin:16px 0}.unitSequence a{color:#245b91;text-decoration:none;font-weight:700}.unitSequence span{font-size:12px;color:#748399}
+        .unitComplete.done{background:#e4f3e9;color:#25613c}.unitSequence{align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:16px 0}.unitSequence a{color:#245b91;text-decoration:none;font-weight:700}.unitSequence span{font-size:12px;color:#748399}
         @media(max-width:600px){.unitPage{padding:16px 12px 40px}.unitHero{padding:22px 18px}.unitCard{padding:18px}}
       `}</style>
       <div className="unitWrap">
