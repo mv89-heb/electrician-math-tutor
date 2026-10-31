@@ -4,8 +4,8 @@ import "./globals.css";
 import { AppNavigation } from "../components/AppNavigation";
 
 export const metadata: Metadata = {
-  title: "מתמטיקה לחשמלאי מוסמך",
-  description: "מורה פרטי אינטראקטיבי למתמטיקה לקראת לימודי חשמלאי מוסמך",
+  title: "ספארקי | מרכז הלמידה לחשמלאי מוסמך",
+  description: "סביבת למידה אינטראקטיבית לחשמלאי מוסמך: מקצועות לימוד, מתמטיקה, מעבדות ומעקב התקדמות.",
 };
 
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode}>) {
