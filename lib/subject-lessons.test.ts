@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lessonForUnit } from "./subject-lessons";
+import { evaluateLessonAnswer, lessonForUnit } from "./subject-lessons";
 import { subjectCatalog } from "./subject-catalog";
 import { emptySubjectProgress, parseSubjectProgress, setUnitCompleted } from "./subject-progress";
 
@@ -104,6 +104,24 @@ describe("subject lessons", () => {
     expect(lessonForUnit("electrical-theory", "electrical-quantities")?.mathWalkthrough?.length ?? 0).toBeGreaterThan(0);
     expect(lessonForUnit("plc", "plc-logic")?.title).toContain("לוגיקה");
     expect(lessonForUnit("safety", "electrical-hazards")?.safetyNote).toBeTruthy();
+  });
+});
+
+describe("lesson answer feedback", () => {
+  const lesson = lessonForUnit("electrical-theory", "electrical-quantities")!;
+
+  it("shows the authored explanation after a correct answer", () => {
+    const result = evaluateLessonAnswer(lesson, lesson.correctChoice);
+    expect(result.correct).toBe(true);
+    expect(result.message).toBe(lesson.feedback);
+  });
+
+  it("does not reveal the correct answer explanation after an incorrect answer", () => {
+    const wrongChoice = (lesson.correctChoice + 1) % lesson.choices.length;
+    const result = evaluateLessonAnswer(lesson, wrongChoice);
+    expect(result.correct).toBe(false);
+    expect(result.message).not.toBe(lesson.feedback);
+    expect(result.message).toContain("נסה שוב");
   });
 });
 

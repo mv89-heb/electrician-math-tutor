@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { getSubjectById, getSubjectUnit, subjectCatalog } from "../../../../lib/subject-catalog";
-import { lessonForUnit } from "../../../../lib/subject-lessons";
+import { evaluateLessonAnswer, lessonForUnit } from "../../../../lib/subject-lessons";
 import { DcCircuitLab, OhmsLawLab } from "../../../../components/ElectricalLabs";
 import {
   emptySubjectProgress,
@@ -67,7 +67,8 @@ export default function SubjectUnitPage() {
   const currentUnitIndex = allUnits.findIndex((item) => item.subjectId === subjectId && item.unit.id === unitId);
   const previousUnit = currentUnitIndex > 0 ? allUnits[currentUnitIndex - 1] : undefined;
   const nextUnit = currentUnitIndex >= 0 ? allUnits[currentUnitIndex + 1] : undefined;
-  const correct = answer === lesson.correctChoice;
+  const answerEvaluation = answer === null ? null : evaluateLessonAnswer(lesson, answer);
+  const correct = answerEvaluation?.correct ?? false;
 
   function toggleComplete() {
     setProgress((current) => setUnitCompleted(current, progressKey, !isCompleted));
@@ -157,7 +158,7 @@ export default function SubjectUnitPage() {
           {checked && (
             <div className={correct ? "unitFeedback" : "unitFeedback wrong"} role="status">
               <strong>{correct ? "מצוין!" : "עדיין לא. נסה שוב."}</strong>
-              <div>{lesson.feedback}</div>
+              <div>{answerEvaluation?.message}</div>
             </div>
           )}
         </section>
