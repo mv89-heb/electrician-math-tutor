@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { getSubjectById, getSubjectUnit, subjectCatalog } from "../../../../lib/subject-catalog";
 import { lessonForUnit } from "../../../../lib/subject-lessons";
+import { DcCircuitLab, OhmsLawLab } from "../../../../components/ElectricalLabs";
 import {
   emptySubjectProgress,
   parseSubjectProgress,
@@ -119,6 +120,9 @@ export default function SubjectUnitPage() {
             <ol className="unitSteps">{lesson.mathWalkthrough.map((step) => <li key={step}>{step}</li>)}</ol>
           )}
         </section>
+
+        {subjectId === "electrical-theory" && unitId === "electrical-quantities" && <OhmsLawLab />}
+        {subjectId === "electrical-theory" && unitId === "dc-circuits" && <DcCircuitLab />}
 
         <section className="unitCard">
           <h2>בדיקת הבנה קצרה</h2>
