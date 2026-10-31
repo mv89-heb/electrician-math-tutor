@@ -43,6 +43,6 @@ export function AppNavigation() {
       <Link href="/" className="appMobileBrand"><span>⚡</span><strong>ספארקי</strong></Link>
       <span>מרכז הלמידה לחשמל</span>
     </header>
-    <nav className="appMobileNav appUnifiedMobileNav" dir="rtl" aria-label="ניווט ראשי"><NavigationLinks mobile /></nav>
+    <nav className="appUnifiedMobileNav" dir="rtl" aria-label="ניווט ראשי"><NavigationLinks mobile /></nav>
   </>;
 }
