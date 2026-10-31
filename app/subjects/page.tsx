@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AppNavigation } from "../../components/AppNavigation";
 import { useEffect, useMemo, useState } from "react";
 import { getSubjectsByCategory, subjectCategories, subjectCatalog } from "../../lib/subject-catalog";
 import { parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../../lib/subject-progress";
@@ -28,7 +29,7 @@ export default function SubjectsPage() {
     : subjects;
 
   return (
-    <main dir="rtl" className="subjectsPage">
+    <><AppNavigation /><main dir="rtl" className="subjectsPage">
       <style>{`
         .subjectsPage{min-height:100vh;background:#f4f7fb;color:#17243a;padding:28px 20px 64px;font-family:inherit}
         .subjectsWrap{max-width:1120px;margin:0 auto}
@@ -119,6 +120,6 @@ export default function SubjectsPage() {
           כל 54 היחידות כוללות שיעור ייעודי עם הסבר, דוגמה ובדיקת הבנה. סימולטורים, תרגול מדורג והרחבה למספר שיעורים בכל יחידה יתווספו בשלבי הפיתוח הבאים.
         </footer>
       </div>
-    </main>
+    </main></>
   );
 }
