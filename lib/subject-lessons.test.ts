@@ -135,6 +135,14 @@ describe("subject progress", () => {
     expect(parseSubjectProgress(JSON.stringify({ version: 1, completedUnitIds: ["a", "a"], updatedAt: 1 })).completedUnitIds).toEqual(["a"]);
   });
 
+  it("counts only unique completed ids that still exist in the curriculum", async () => {
+    const { countCompletedSubjectUnits } = await import("./subject-progress");
+    const first = subjectCatalog[0].units[0];
+    const validId = `${subjectCatalog[0].id}:${first.id}`;
+    expect(countCompletedSubjectUnits([validId, validId, "removed-subject:old-unit", ""])).toBe(1);
+    expect(countCompletedSubjectUnits(["removed-subject:old-unit"])).toBe(0);
+  });
+
   it("adds and removes completed units without changing the math curriculum state", () => {
     const completed = setUnitCompleted(emptySubjectProgress, "theory:ohm", true, 100);
     expect(completed.completedUnitIds).toEqual(["theory:ohm"]);
