@@ -261,12 +261,6 @@ export function topicMastery(stats?: TopicStats): number {
   return Math.round((accuracy * 0.6 + unassisted * 0.25 + consistency * 0.15) * 100);
 }
 
-function firstIncomplete(curriculum: Exercise[], state: LearningState) {
-  return curriculum
-    .map((exercise, index) => ({ exercise, index }))
-    .find(({ exercise }) => !state.completed.includes(exercise.id));
-}
-
 export function chooseNextExercise(curriculum: Exercise[], state: LearningState): number {
   const ordered = orderedExercises(curriculum);
   const due = dueReviewIds(state);
