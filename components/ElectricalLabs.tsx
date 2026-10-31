@@ -30,7 +30,7 @@ function CircuitDiagram({ mode, resistance1, resistance2, voltage }: { mode: "si
         : `מעגל טורי עם שני נגדים ${resistance1} ו-${resistance2} אוהם ומקור ${voltage} וולט`}>
         {parallel ? (
           <>
-            <path d="M90 35 H170 M90 185 H170 M170 35 V185 M390 35 V185 M390 35 H470 V185 H390" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M90 35 H170 M90 185 H170 M90 35 V76 M90 116 V185 M170 35 V185 M390 35 V185 M390 35 H470 V185 H390" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
             <path d="M170 35 H225 M335 35 H390 M170 185 H225 M335 185 H390" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
             <rect x="225" y="20" width="110" height="30" rx="6" fill="#dceaf7" stroke="#28669d" strokeWidth="3" />
             <rect x="225" y="170" width="110" height="30" rx="6" fill="#dceaf7" stroke="#28669d" strokeWidth="3" />
@@ -84,7 +84,7 @@ export function OhmsLawLab() {
         <NumberControl label="מתח" value={voltage} min={0} max={48} unit="V" onChange={setVoltage} />
         <NumberControl label="התנגדות" value={resistance} min={1} max={100} unit="Ω" onChange={setResistance} />
       </div>
-      <div className="labResults">
+      <div className="labResults" aria-live="polite" aria-atomic="true">
         <div><span>זרם מחושב</span><strong>{result.current.toFixed(3)} A</strong></div>
         <div><span>הספק מחושב</span><strong>{result.power.toFixed(2)} W</strong></div>
       </div>
