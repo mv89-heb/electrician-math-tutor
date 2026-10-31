@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "katex/dist/katex.min.css";
 import "./globals.css";
 import { AppNavigation } from "../components/AppNavigation";
+import { AppNavigation } from "../components/AppNavigation";
 
 export const metadata: Metadata = {
   title: "מתמטיקה לחשמלאי מוסמך",
