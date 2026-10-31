@@ -200,7 +200,7 @@ export const subjectCatalog: SubjectDefinition[] = [
     status: "core",
     units: [
       { id: "technical-records", title: "רישום נתונים", description: "תנאי בדיקה, יחידות, תאריך ומכשור.", mathConnections: ["טבלאות", "יחידות"] },
-      { id: "technical-reports", title: "כתיבת דו"ח", description: "מטרה, שיטה, תוצאות, מסקנות והמלצות.", mathConnections: ["אחוזים", "גרפים", "עיגול"] },
+      { id: "technical-reports", title: "כתיבת דוח", description: "מטרה, שיטה, תוצאות, מסקנות והמלצות.", mathConnections: ["אחוזים", "גרפים", "עיגול"] },
     ],
   },
   {
