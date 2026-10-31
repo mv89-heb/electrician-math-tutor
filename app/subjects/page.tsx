@@ -41,7 +41,7 @@ export default function SubjectsPage() {
         .subjectUnits h3{font-size:12px;color:#66758a;margin:0 0 9px}
         .subjectUnits ul{padding:0 18px 0 0;margin:0}
         .subjectUnits li{margin:0 0 9px;color:#263a53;font-size:13px;line-height:1.55}
-        .subjectUnits li span{display:block;color:#7a8798;font-size:12px}
+        .subjectUnits li span{display:block;color:#7a8798;font-size:12px}.subjectUnits li a{color:#1d5a9b;font-weight:700;text-decoration:none}.subjectUnits li a:hover{text-decoration:underline}
         .subjectMath{margin-top:12px;display:flex;flex-wrap:wrap;gap:5px}
         .subjectMath span{font-size:11px;background:#f1f5f9;color:#53677f;border-radius:6px;padding:4px 7px}
         .subjectsFooter{margin-top:28px;text-align:center;color:#68798e;font-size:13px;line-height:1.7}
@@ -79,10 +79,10 @@ export default function SubjectsPage() {
               </div>
               <p>{subject.description}</p>
               <div className="subjectUnits">
-                <h3>{subject.units.length} יחידות לימוד</h3>
+                <h3>{subject.units.length} יחידות לימוד · פתיחת שיעור בלחיצה</h3>
                 <ul>
                   {subject.units.map((unit) => (
-                    <li key={unit.id}>{unit.title}<span>{unit.description}</span></li>
+                    <li key={unit.id}><Link href={`/subjects/${subject.id}/${unit.id}`}>{unit.title} ←</Link><span>{unit.description}</span></li>
                   ))}
                 </ul>
               </div>
