@@ -39,10 +39,6 @@ export function AppNavigation() {
         <div><strong>לומדים צעד אחר צעד</strong><span>בלי מבחן כניסה ובלי לחץ</span></div>
       </div>
     </aside>
-    <header className="appMobileHeader" dir="rtl">
-      <Link href="/" className="appMobileBrand"><span>⚡</span><strong>ספארקי</strong></Link>
-      <span>מרכז הלמידה לחשמל</span>
-    </header>
     <nav className="appUnifiedMobileNav" dir="rtl" aria-label="ניווט ראשי"><NavigationLinks mobile /></nav>
   </>;
 }
