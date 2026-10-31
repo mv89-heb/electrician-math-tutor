@@ -18,7 +18,7 @@ describe("subject lessons", () => {
   });
 
   it("keeps explicit authored lesson coverage for major professional topics", () => {
-    expect(lessonForUnit("electrical-theory", "electrical-quantities")?.mathWalkthrough?.length).toBeGreaterThan(0);
+    expect(lessonForUnit("electrical-theory", "electrical-quantities")?.mathWalkthrough?.length ?? 0).toBeGreaterThan(0);
     expect(lessonForUnit("plc", "plc-logic")?.title).toContain("לוגיקה");
     expect(lessonForUnit("safety", "electrical-hazards")?.safetyNote).toBeTruthy();
   });
