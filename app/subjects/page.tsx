@@ -78,9 +78,9 @@ export default function SubjectsPage() {
         </div>
 
         <nav className="subjectsFilters" aria-label="סינון מקצועות">
-          <button type="button" className={activeCategory === "all" ? "subjectsFilter active" : "subjectsFilter"} onClick={() => { setActiveCategory("all"); setSelectedSubjectId(null); }}>כל המקצועות ({subjectCatalog.length})</button>
+          <button type="button" className={activeCategory === "all" ? "subjectsFilter active" : "subjectsFilter"} aria-pressed={activeCategory === "all"} onClick={() => { setActiveCategory("all"); setSelectedSubjectId(null); }}>כל המקצועות ({subjectCatalog.length})</button>
           {subjectCategories.map((category) => (
-            <button key={category.id} type="button" className={activeCategory === category.id ? "subjectsFilter active" : "subjectsFilter"} onClick={() => { setActiveCategory(category.id); setSelectedSubjectId(null); }}>{category.title}</button>
+            <button key={category.id} type="button" className={activeCategory === category.id ? "subjectsFilter active" : "subjectsFilter"} aria-pressed={activeCategory === category.id} onClick={() => { setActiveCategory(category.id); setSelectedSubjectId(null); }}>{category.title}</button>
           ))}
         </nav>
 
@@ -94,9 +94,9 @@ export default function SubjectsPage() {
                 <span className={subject.status === "core" ? "subjectStatus" : "subjectStatus extra"}>{subject.status === "core" ? "מקצוע ליבה" : "הרחבה"}</span>
               </div>
               <p>{subject.description}</p>
-              {!selectedSubjectId && <button type="button" className="subjectChoose" onClick={() => setSelectedSubjectId(subject.id)}>בחירת המקצוע ולצפייה ביחידות ←</button>}
+              {!selectedSubjectId && <button type="button" className="subjectChoose" aria-expanded={selectedSubjectId === subject.id} aria-controls={`subject-units-${subject.id}`} onClick={() => setSelectedSubjectId(subject.id)}>בחירת המקצוע ולצפייה ביחידות ←</button>}
               <div className="subjectProgress">{subject.units.filter((unit) => completedUnitIds.includes(`${subject.id}:${unit.id}`)).length} מתוך {subject.units.length} יחידות הושלמו</div>
-              {selectedSubjectId === subject.id && <div className="subjectUnits">
+              {selectedSubjectId === subject.id && <div className="subjectUnits" id={`subject-units-${subject.id}`}>
                 <h3>{subject.units.length} יחידות לימוד · פתיחת שיעור בלחיצה</h3>
                 <ul>
                   {subject.units.map((unit) => (
@@ -116,7 +116,7 @@ export default function SubjectsPage() {
         <footer className="subjectsFooter">
           {subjectCatalog.filter((subject) => subject.status === "core").length} מקצועות ליבה · {subjectCatalog.reduce((sum, subject) => sum + subject.units.length, 0)} יחידות לימוד במפת התוכן
           <br />
-          כל 54 היחידות כוללות שיעור ייעודי עם הסבר, דוגמה ובדיקת הבנה. סימולטורים, תרגול מדורג והרחבה למספר שיעורים בכל יחידה יתווספו בשלבי הפיתוח הבאים.
+          כל 54 היחידות כוללות שיעור ייעודי עם הסבר, דוגמה ובדיקת הבנה. מעבדות אינטראקטיביות זמינות כרגע לחוק אוהם ולמעגלי זרם ישר; מעבדות נוספות והרחבה למספר שיעורים בכל יחידה יתווספו בהמשך.
         </footer>
       </div>
     </main>
