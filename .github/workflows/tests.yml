@@ -24,6 +24,8 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --no-audit --no-fund
+      - name: Report dependency security audit
+        run: npm audit || true
       - name: Run learning and exercise tests
         run: npm test
       - name: Verify production build
