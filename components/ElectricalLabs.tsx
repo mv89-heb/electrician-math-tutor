@@ -116,7 +116,7 @@ export function DcCircuitLab() {
         <NumberControl label="נגד ראשון" value={resistance1} min={1} max={100} unit="Ω" onChange={setResistance1} />
         <NumberControl label="נגד שני" value={resistance2} min={1} max={100} unit="Ω" onChange={setResistance2} />
       </div>
-      <div className="labResults">
+      <div className="labResults" aria-live="polite" aria-atomic="true">
         <div><span>התנגדות שקולה</span><strong>{result.equivalentResistance.toFixed(2)} Ω</strong></div>
         <div><span>זרם כולל</span><strong>{result.totalCurrent.toFixed(3)} A</strong></div>
         <div><span>הספק כולל</span><strong>{result.totalPower.toFixed(2)} W</strong></div>
