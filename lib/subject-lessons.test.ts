@@ -50,6 +50,44 @@ describe("subject lessons", () => {
     }
   });
 
+  it("provides authored, safety-aware lessons for installation, control, lab, and reporting units", () => {
+    const authoredKeys = [
+      ["electrical-installations", "installation-structure"],
+      ["electrical-installations", "loads-circuits"],
+      ["electrical-installations", "inspection-maintenance"],
+      ["installation-design", "plans-symbols"],
+      ["installation-design", "load-schedule"],
+      ["installation-design", "design-calculations"],
+      ["installation-design", "design-documentation"],
+      ["practical-electrical-work", "tools-components"],
+      ["practical-electrical-work", "safe-wiring-lab"],
+      ["practical-electrical-work", "fault-scenarios"],
+      ["control-switching", "control-components"],
+      ["control-switching", "control-diagrams"],
+      ["plc", "plc-architecture"],
+      ["plc", "plc-functions"],
+      ["plc", "plc-simulation"],
+      ["electrical-measurements", "measurement-tools"],
+      ["electrical-measurements", "measurement-circuits"],
+      ["technical-reporting", "technical-records"],
+      ["technical-reporting", "technical-reports"],
+      ["safety", "safe-work-principles"],
+      ["safety", "lab-safety"],
+    ] as const;
+
+    for (const [subjectId, unitId] of authoredKeys) {
+      const lesson = lessonForUnit(subjectId, unitId);
+      expect(lesson?.title).toBeTruthy();
+      expect(lesson?.title.startsWith("מבוא:")).toBe(false);
+      expect(lesson?.explanation.length ?? 0).toBeGreaterThan(100);
+      expect(lesson?.example.length ?? 0).toBeGreaterThan(20);
+      expect(lesson?.checkQuestion.length ?? 0).toBeGreaterThan(10);
+      expect(lesson?.choices.length).toBe(3);
+    }
+    expect(lessonForUnit("practical-electrical-work", "safe-wiring-lab")?.safetyNote).toBeTruthy();
+    expect(lessonForUnit("safety", "lab-safety")?.safetyNote).toBeTruthy();
+  });
+
   it("keeps explicit authored lesson coverage for major professional topics", () => {
     expect(lessonForUnit("electrical-theory", "electrical-quantities")?.mathWalkthrough?.length ?? 0).toBeGreaterThan(0);
     expect(lessonForUnit("plc", "plc-logic")?.title).toContain("לוגיקה");
