@@ -1,11 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getSubjectsByCategory, subjectCategories, subjectCatalog } from "../../lib/subject-catalog";
+import { parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../../lib/subject-progress";
 
 export default function SubjectsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [completedUnitIds, setCompletedUnitIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      setCompletedUnitIds(parseSubjectProgress(window.localStorage.getItem(SUBJECT_PROGRESS_STORAGE_KEY)).completedUnitIds);
+    } catch {
+      setCompletedUnitIds([]);
+    }
+  }, []);
   const subjects = useMemo(
     () => activeCategory === "all"
       ? subjectCatalog
@@ -34,7 +44,7 @@ export default function SubjectsPage() {
         .subjectCard{background:#fff;border:1px solid #e2e9f1;border-radius:18px;padding:19px;box-shadow:0 5px 18px #1c35500a}
         .subjectCardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
         .subjectCard h2{font-size:19px;margin:0 0 7px;color:#1a2c44}
-        .subjectCard p{font-size:14px;line-height:1.65;color:#65758b;margin:0 0 14px}
+        .subjectProgress{font-size:12px;color:#356348;background:#edf7f0;border-radius:8px;padding:7px 9px;margin:0 0 13px;display:inline-block}.subjectCard p{font-size:14px;line-height:1.65;color:#65758b;margin:0 0 14px}
         .subjectStatus{font-size:11px;border-radius:999px;padding:5px 9px;background:#eaf2fb;color:#28547e;white-space:nowrap}
         .subjectStatus.extra{background:#f3efff;color:#6545a0}
         .subjectUnits{border-top:1px solid #edf1f6;padding-top:12px}
