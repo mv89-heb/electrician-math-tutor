@@ -171,6 +171,6 @@ export default function SubjectUnitPage() {
           </button>
         </section>
       </div>
-    </main>
+    </main></>
   );
 }
