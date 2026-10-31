@@ -46,6 +46,10 @@ test("a unit is completed only after a correct answer and completion persists", 
   await expect(page.getByRole("status")).toContainText("מצוין!");
   await page.getByRole("button", { name: "סמן יחידה כהושלמה" }).click();
   await expect(page.getByText("היחידה סומנה כהושלמה.")).toBeVisible();
+  await expect.poll(() => page.evaluate(() => {
+    const raw = window.localStorage.getItem("electrician-subject-progress-v1");
+    return raw ? JSON.parse(raw).completedUnitIds.includes("mathematics:arithmetic-units") : false;
+  })).toBe(true);
 
   await page.reload();
   await expect(page.getByText("היחידה סומנה כהושלמה.")).toBeVisible();
