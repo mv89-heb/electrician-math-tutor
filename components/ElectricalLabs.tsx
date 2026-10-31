@@ -3,6 +3,61 @@
 import { useMemo, useState } from "react";
 import { calculateOhmsLaw, calculateTwoResistorCircuit } from "../lib/electrical-labs";
 
+function CircuitDiagram({ mode, resistance1, resistance2, voltage }: { mode: "single" | "series" | "parallel"; resistance1: number; resistance2?: number; voltage: number }) {
+  if (mode === "single") {
+    return (
+      <div className="labDiagram">
+        <svg viewBox="0 0 560 190" role="img" aria-label={`מעגל סגור עם מקור מתח של ${voltage} וולט ונגד של ${resistance1} אוהם`}>
+          <path d="M105 35 H455 V155 H105 V115 M105 75 V35" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M83 76 H127 M92 114 H118" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+          <rect x="245" y="20" width="90" height="30" rx="6" fill="#dceaf7" stroke="#28669d" strokeWidth="3" />
+          <text x="290" y="40" textAnchor="middle" fontSize="14" fontWeight="700" fill="#173e66">{resistance1} Ω</text>
+          <text x="65" y="145" textAnchor="middle" fontSize="13" fill="currentColor">מקור</text>
+          <text x="65" y="162" textAnchor="middle" fontSize="12" fill="currentColor">{voltage} V</text>
+          <text x="290" y="88" textAnchor="middle" fontSize="13" fill="currentColor">נגד</text>
+          <path d="M370 95 l13 -8 v16 z" fill="#2b8a63" />
+          <text x="290" y="180" textAnchor="middle" fontSize="12" fill="currentColor">מסלול זרם במעגל סגור</text>
+        </svg>
+      </div>
+    );
+  }
+
+  const parallel = mode === "parallel";
+  return (
+    <div className="labDiagram">
+      <svg viewBox="0 0 560 220" role="img" aria-label={parallel
+        ? `מעגל מקבילי עם שני ענפים, נגדים ${resistance1} ו-${resistance2} אוהם ומקור ${voltage} וולט`
+        : `מעגל טורי עם שני נגדים ${resistance1} ו-${resistance2} אוהם ומקור ${voltage} וולט`}>
+        {parallel ? (
+          <>
+            <path d="M90 35 H170 M90 185 H170 M90 35 V76 M90 116 V185 M170 35 V185 M390 35 V185 M390 35 H470 V185 H390" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M170 35 H225 M335 35 H390 M170 185 H225 M335 185 H390" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+            <rect x="225" y="20" width="110" height="30" rx="6" fill="#dceaf7" stroke="#28669d" strokeWidth="3" />
+            <rect x="225" y="170" width="110" height="30" rx="6" fill="#dceaf7" stroke="#28669d" strokeWidth="3" />
+            <text x="280" y="40" textAnchor="middle" fontSize="14" fontWeight="700" fill="#173e66">R1 · {resistance1} Ω</text>
+            <text x="280" y="190" textAnchor="middle" fontSize="14" fontWeight="700" fill="#173e66">R2 · {resistance2} Ω</text>
+            <text x="280" y="12" textAnchor="middle" fontSize="12" fill="currentColor">ענף 1</text>
+            <text x="280" y="215" textAnchor="middle" fontSize="12" fill="currentColor">ענף 2</text>
+          </>
+        ) : (
+          <>
+            <path d="M90 35 H145 M245 35 H300 M400 35 H470 V185 H90 V125 M90 75 V35" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+            <rect x="145" y="20" width="100" height="30" rx="6" fill="#dceaf7" stroke="#28669d" strokeWidth="3" />
+            <rect x="300" y="20" width="100" height="30" rx="6" fill="#dceaf7" stroke="#28669d" strokeWidth="3" />
+            <text x="195" y="40" textAnchor="middle" fontSize="14" fontWeight="700" fill="#173e66">{resistance1} Ω</text>
+            <text x="350" y="40" textAnchor="middle" fontSize="14" fontWeight="700" fill="#173e66">{resistance2} Ω</text>
+            <text x="270" y="12" textAnchor="middle" fontSize="12" fill="currentColor">אותו זרם עובר בשני הנגדים</text>
+          </>
+        )}
+        <path d="M68 76 H112 M78 116 H102" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+        <text x="42" y="145" textAnchor="middle" fontSize="13" fill="currentColor">מקור</text>
+        <text x="42" y="163" textAnchor="middle" fontSize="12" fill="currentColor">{voltage} V</text>
+        <path d="M430 95 l13 -8 v16 z" fill="#2b8a63" />
+      </svg>
+    </div>
+  );
+}
+
 function NumberControl({ label, value, min, max, step = 1, unit, onChange }: {
   label: string; value: number; min: number; max: number; step?: number; unit: string; onChange: (value: number) => void;
 }) {
@@ -24,11 +79,12 @@ export function OhmsLawLab() {
     <section className="electricalLab" aria-label="סימולטור חוק אוהם">
       <style>{labStyles}</style>
       <div className="labHeading"><span>מעבדה אינטראקטיבית 01</span><h3>משחקים עם חוק אוהם</h3><p>שנה את המתח או את ההתנגדות וראה כיצד הזרם וההספק משתנים בזמן אמת.</p></div>
+      <CircuitDiagram mode="single" resistance1={resistance} voltage={voltage} />
       <div className="labControls">
         <NumberControl label="מתח" value={voltage} min={0} max={48} unit="V" onChange={setVoltage} />
         <NumberControl label="התנגדות" value={resistance} min={1} max={100} unit="Ω" onChange={setResistance} />
       </div>
-      <div className="labResults">
+      <div className="labResults" aria-live="polite" aria-atomic="true">
         <div><span>זרם מחושב</span><strong>{result.current.toFixed(3)} A</strong></div>
         <div><span>הספק מחושב</span><strong>{result.power.toFixed(2)} W</strong></div>
       </div>
@@ -54,6 +110,7 @@ export function DcCircuitLab() {
         <button type="button" aria-pressed={mode === "series"} className={mode === "series" ? "active" : ""} onClick={() => setMode("series")}>חיבור טורי</button>
         <button type="button" aria-pressed={mode === "parallel"} className={mode === "parallel" ? "active" : ""} onClick={() => setMode("parallel")}>חיבור מקבילי</button>
       </div>
+      <CircuitDiagram mode={mode} resistance1={resistance1} resistance2={resistance2} voltage={voltage} />
       <div className="labControls">
         <NumberControl label="מתח המקור" value={voltage} min={0} max={48} unit="V" onChange={setVoltage} />
         <NumberControl label="נגד ראשון" value={resistance1} min={1} max={100} unit="Ω" onChange={setResistance1} />
@@ -79,6 +136,8 @@ const labStyles = `
   .labHeading span{font-size:11px;font-weight:800;color:#3974a8;letter-spacing:.04em}
   .labHeading h3{font-size:20px;margin:5px 0}
   .labHeading p{font-size:14px;line-height:1.65;color:#526981;margin:0}
+  .labDiagram{background:#fff;border:1px solid #dce6f0;border-radius:13px;padding:12px;margin-top:16px;overflow:hidden}
+  .labDiagram svg{display:block;width:100%;height:auto;max-height:230px;color:#315a7d}
   .labControls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;margin:18px 0}
   .labControl{display:flex;flex-direction:column;gap:8px;font-size:14px}
   .labControl strong{color:#173e66}
