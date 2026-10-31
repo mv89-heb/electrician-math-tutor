@@ -17,6 +17,39 @@ describe("subject lessons", () => {
     }
   });
 
+  it("provides authored, non-placeholder lessons for the expanded foundations", () => {
+    const authoredKeys = [
+      ["mathematics", "arithmetic-units"],
+      ["mathematics", "algebra-equations"],
+      ["mathematics", "powers-roots"],
+      ["mathematics", "percent-ratio"],
+      ["mathematics", "graphs-geometry"],
+      ["mathematics", "trigonometry"],
+      ["physics", "physical-measurement"],
+      ["physics", "matter-charge"],
+      ["physics", "energy-power"],
+      ["physics", "magnetism-induction"],
+      ["technical-english", "technical-vocabulary"],
+      ["technical-english", "datasheets"],
+      ["electrical-theory", "three-phase"],
+      ["industrial-electronics", "passive-components"],
+      ["industrial-electronics", "semiconductors"],
+      ["industrial-electronics", "power-conversion"],
+      ["electrical-machines", "generators"],
+      ["electrical-machines", "machine-protection"],
+    ] as const;
+
+    for (const [subjectId, unitId] of authoredKeys) {
+      const lesson = lessonForUnit(subjectId, unitId);
+      expect(lesson?.title).toBeTruthy();
+      expect(lesson?.title.startsWith("מבוא:")).toBe(false);
+      expect(lesson?.explanation.length ?? 0).toBeGreaterThan(100);
+      expect(lesson?.example.length ?? 0).toBeGreaterThan(20);
+      expect(lesson?.checkQuestion.length ?? 0).toBeGreaterThan(10);
+      expect(lesson?.choices.length).toBe(3);
+    }
+  });
+
   it("keeps explicit authored lesson coverage for major professional topics", () => {
     expect(lessonForUnit("electrical-theory", "electrical-quantities")?.mathWalkthrough?.length ?? 0).toBeGreaterThan(0);
     expect(lessonForUnit("plc", "plc-logic")?.title).toContain("לוגיקה");
