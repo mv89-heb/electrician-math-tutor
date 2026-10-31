@@ -75,8 +75,7 @@ export default function SubjectsPage() {
           ))}
         </nav>
 
-        {selectedSubjectId && <div className="subjectSelectionBar"><div><h2>המקצוע שנבחר ללמידה</h2><p>כאן מופיעות יחידות הלימוד של המקצוע שבחרת.</p></div><button type="button" className="subjectBackButton" onClick={() => setSelectedSubjectId(null)}>← חזרה לבחירת מקצועות</button></div>}
-        {!selectedSubjectId && <div className="subjectSelectionBar"><div><h2>באיזה מקצוע תרצה ללמוד?</h2><p>בחר מקצוע אחד כדי להציג את יחידות הלימוד שלו ולהתחיל ללמוד.</p></div></div>}
+        <div className="subjectSelectionBar"><div><h2>{selectedSubjectId ? "המקצוע שנבחר ללמידה" : "באיזה מקצוע תרצה ללמוד?"}</h2><p>{selectedSubjectId ? "כאן מופיעות יחידות הלימוד של המקצוע שבחרת." : "בחר מקצוע אחד כדי להציג את יחידות הלימוד שלו ולהתחיל ללמוד."}</p></div></div>
         <section className="subjectsGrid" aria-live="polite">
           {visibleSubjects.map((subject) => (
             <article className="subjectCard" key={subject.id}>
@@ -85,7 +84,7 @@ export default function SubjectsPage() {
                 <span className={subject.status === "core" ? "subjectStatus" : "subjectStatus extra"}>{subject.status === "core" ? "מקצוע ליבה" : "הרחבה"}</span>
               </div>
               <p>{subject.description}</p>
-              {!selectedSubjectId && <button type="button" className="subjectChoose" aria-expanded={selectedSubjectId === subject.id} aria-controls={`subject-units-${subject.id}`} onClick={() => setSelectedSubjectId(subject.id)}>בחירת המקצוע ולצפייה ביחידות ←</button>}
+              <button type="button" className="subjectChoose" aria-expanded={selectedSubjectId === subject.id} aria-controls={`subject-units-${subject.id}`} onClick={() => setSelectedSubjectId(selectedSubjectId === subject.id ? null : subject.id)}>{selectedSubjectId === subject.id ? "הסתרת יחידות ↑" : "בחירת המקצוע ולצפייה ביחידות ←"}</button>
               <div className="subjectProgress">{subject.units.filter((unit) => completedUnitIds.includes(`${subject.id}:${unit.id}`)).length} מתוך {subject.units.length} יחידות הושלמו</div>
               <div className="subjectUnits" id={`subject-units-${subject.id}`} hidden={selectedSubjectId !== subject.id}>
                 {selectedSubjectId === subject.id && <>
