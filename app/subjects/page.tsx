@@ -32,10 +32,6 @@ export default function SubjectsPage() {
       <style>{`
         .subjectsPage{min-height:100vh;background:#f4f7fb;color:#17243a;padding:28px 20px 64px;font-family:inherit}
         .subjectsWrap{max-width:1120px;margin:0 auto}
-        .subjectsTop{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
-        .subjectsBrand{font-weight:800;font-size:18px;display:flex;align-items:center;gap:10px}
-        .subjectsBrandMark{width:38px;height:38px;border-radius:13px;background:#172f53;color:#fff;display:grid;place-items:center}
-        .subjectsBack{color:#1d5a9b;text-decoration:none;font-weight:700}
         .subjectsHero{background:linear-gradient(120deg,#122b4d,#1d527b);color:#fff;border-radius:24px;padding:30px;margin-bottom:24px;box-shadow:0 14px 34px #122b4d1c}
         .subjectsEyebrow{font-size:13px;color:#b9d8f4;font-weight:700;margin-bottom:10px}
         .subjectsHero h1{font-size:clamp(26px,4vw,38px);margin:0 0 12px;line-height:1.2}
@@ -62,11 +58,6 @@ export default function SubjectsPage() {
         @media(max-width:600px){.subjectsPage{padding:18px 13px 44px}.subjectsHero{padding:23px 19px;border-radius:19px}}
       `}</style>
       <div className="subjectsWrap">
-        <header className="subjectsTop">
-          <div className="subjectsBrand"><span className="subjectsBrandMark">⚡</span><span>ספארקי · מסלול חשמלאי מוסמך</span></div>
-          <Link href="/" className="subjectsBack">חזרה ללמידה ←</Link>
-        </header>
-
         <section className="subjectsHero">
           <div className="subjectsEyebrow">מפת הלימודים שלך</div>
           <h1>לומדים חשמל. מבינים איך הכול מתחבר.</h1>
