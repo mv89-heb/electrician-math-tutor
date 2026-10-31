@@ -6,7 +6,6 @@ import {
   Activity,
   BookOpen,
   ChartNoAxesCombined,
-  CircuitBoard,
   FlaskConical,
   GraduationCap,
   Home,
@@ -50,6 +49,7 @@ export function AppNavigation() {
         </div>
       </aside>
       <header className="appTopbar" dir="rtl">
+        <Link href="/" className="appTopbarBrand" aria-label="ספארקי — מסך הבית"><span className="appBrandMark">⚡</span><strong>ספארקי</strong></Link>
         <div className="appTopbarContext">
           <span className="appTopbarPulse" />
           <span>סביבת הלמידה שלך</span>
