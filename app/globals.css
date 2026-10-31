@@ -1066,7 +1066,7 @@ body{background:#f5f7fb}
 .appSidebarBottom strong{font-size:10px;color:#34445e}
 .appSidebarBottom span{margin-top:4px;font-size:9px;color:#8793a5}
 #main-content{min-height:100vh;margin-right:264px;outline:none}
-.appMobileHeader{display:none}
+
 .appUnifiedMobileNav{display:none}
 @media(max-width:900px){
   .appSidebar{width:228px;padding-inline:14px}
@@ -1074,12 +1074,9 @@ body{background:#f5f7fb}
 }
 @media(max-width:760px){
   .appSidebar{display:none}
-  #main-content{margin-right:0;min-height:calc(100vh - 58px);padding-bottom:78px}
-  .appMobileHeader{height:58px;position:sticky;top:0;z-index:110;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(255,255,255,.96);border-bottom:1px solid #e5eaf2;backdrop-filter:blur(14px)}
-  .appMobileBrand{display:flex;align-items:center;gap:8px;color:#172b49;text-decoration:none}
+  #main-content{margin-right:0;min-height:100vh;padding-bottom:78px}
   .appMobileBrand span{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#245eea;color:#fff}
   .appMobileBrand strong{font-size:15px;font-weight:950}
-  .appMobileHeader>span{font-size:10px;color:#8390a3;font-weight:700}
   .appUnifiedMobileNav{position:fixed;z-index:130;inset:auto 0 0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:8px 7px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid #e5eaf2;box-shadow:0 -8px 28px rgba(24,43,72,.08);backdrop-filter:blur(16px)}
   .appNavItem.mobile{min-height:53px;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:4px 2px;border:0;border-radius:11px;text-align:center}
   .appNavItem.mobile.active{background:#edf4ff}
