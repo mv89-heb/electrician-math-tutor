@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { getSubjectsByCategory, subjectCategories, subjectCatalog } from "../../lib/subject-catalog";
+import { getCategoryIdFromHash, getSubjectsByCategory, subjectCategories, subjectCatalog } from "../../lib/subject-catalog";
 import { parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../../lib/subject-progress";
 
 export default function SubjectsPage() {
@@ -19,8 +19,8 @@ export default function SubjectsPage() {
   }, []);
 
   useEffect(() => {
-    const categoryId = window.location.hash.slice(1);
-    if (subjectCategories.some((category) => category.id === categoryId)) {
+    const categoryId = getCategoryIdFromHash(window.location.hash);
+    if (categoryId) {
       setActiveCategory(categoryId);
       setSelectedSubjectId(null);
     }
