@@ -9,7 +9,7 @@ import {
 import { subjectCatalog, subjectCategories } from "../lib/subject-catalog";
 import { curriculum } from "../lib/curriculum";
 import { chooseNextExercise, emptyLearningState, loadLearningState, type LearningState } from "../lib/learning";
-import { parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../lib/subject-progress";
+import { countCompletedSubjectUnits, parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../lib/subject-progress";
 
 const totalUnits = subjectCatalog.reduce((sum, subject) => sum + subject.units.length, 0);
 const coreSubjects = subjectCatalog.filter((subject) => subject.status === "core").length;
@@ -22,7 +22,7 @@ export default function HomePage() {
   useEffect(() => {
     try {
       setLearning(loadLearningState(window.localStorage));
-      setCompletedUnits(parseSubjectProgress(window.localStorage.getItem(SUBJECT_PROGRESS_STORAGE_KEY)).completedUnitIds.length);
+      setCompletedUnits(countCompletedSubjectUnits(parseSubjectProgress(window.localStorage.getItem(SUBJECT_PROGRESS_STORAGE_KEY)).completedUnitIds));
     } catch {
       setLearning(emptyLearningState);
       setCompletedUnits(0);
