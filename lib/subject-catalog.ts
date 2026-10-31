@@ -256,6 +256,13 @@ export function getSubjectsByCategory(categoryId: string): SubjectDefinition[] {
   return subjectCatalog.filter((subject) => subject.categoryId === categoryId);
 }
 
+export function getCategoryIdFromHash(hash: string): string | undefined {
+  const categoryId = hash.startsWith("#") ? hash.slice(1) : hash;
+  return subjectCategories.some((category) => category.id === categoryId)
+    ? categoryId
+    : undefined;
+}
+
 export function getSubjectUnit(subjectId: string, unitId: string): SubjectUnit | undefined {
   return getSubjectById(subjectId)?.units.find((unit) => unit.id === unitId);
 }
