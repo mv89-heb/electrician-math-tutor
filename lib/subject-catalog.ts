@@ -196,7 +196,7 @@ export const subjectCatalog: SubjectDefinition[] = [
     id: "technical-reporting",
     categoryId: "measurement",
     title: "תיעוד ודיווח טכני",
-    description: "כתיבת דו"חות, טבלאות, ממצאים ומסקנות.",
+    description: "כתיבת דוחות, טבלאות, ממצאים ומסקנות.",
     status: "core",
     units: [
       { id: "technical-records", title: "רישום נתונים", description: "תנאי בדיקה, יחידות, תאריך ומכשור.", mathConnections: ["טבלאות", "יחידות"] },
