@@ -96,14 +96,16 @@ export default function SubjectsPage() {
               <p>{subject.description}</p>
               {!selectedSubjectId && <button type="button" className="subjectChoose" aria-expanded={selectedSubjectId === subject.id} aria-controls={`subject-units-${subject.id}`} onClick={() => setSelectedSubjectId(subject.id)}>בחירת המקצוע ולצפייה ביחידות ←</button>}
               <div className="subjectProgress">{subject.units.filter((unit) => completedUnitIds.includes(`${subject.id}:${unit.id}`)).length} מתוך {subject.units.length} יחידות הושלמו</div>
-              {selectedSubjectId === subject.id && <div className="subjectUnits" id={`subject-units-${subject.id}`}>
-                <h3>{subject.units.length} יחידות לימוד · פתיחת שיעור בלחיצה</h3>
-                <ul>
-                  {subject.units.map((unit) => (
-                    <li key={unit.id}><Link href={`/subjects/${subject.id}/${unit.id}`}>{unit.title} ←</Link><span>{unit.description}</span></li>
-                  ))}
-                </ul>
-              </div>}
+              <div className="subjectUnits" id={`subject-units-${subject.id}`} hidden={selectedSubjectId !== subject.id}>
+                {selectedSubjectId === subject.id && <>
+                  <h3>{subject.units.length} יחידות לימוד · פתיחת שיעור בלחיצה</h3>
+                  <ul>
+                    {subject.units.map((unit) => (
+                      <li key={unit.id}><Link href={`/subjects/${subject.id}/${unit.id}`}>{unit.title} ←</Link><span>{unit.description}</span></li>
+                    ))}
+                  </ul>
+                </>}
+              </div>
               {selectedSubjectId === subject.id && subject.units.some((unit) => unit.mathConnections.length > 0) && (
                 <div className="subjectMath" aria-label="קשרי מתמטיקה">
                   {[...new Set(subject.units.flatMap((unit) => unit.mathConnections))].map((item) => <span key={item}>מתמטיקה: {item}</span>)}
