@@ -127,7 +127,7 @@ export default function SubjectUnitPage() {
                 className={answer === index ? "unitChoice selected" : "unitChoice"}
                 onClick={() => { setAnswer(index); setChecked(false); }}
               >
-                {String.fromCharCode(א".charCodeAt(0) + index)}. {choice}
+                {["א", "ב", "ג", "ד"][index]}. {choice}
               </button>
             ))}
           </div>
