@@ -7,6 +7,7 @@ import { parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../../lib/su
 
 export default function SubjectsPage() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
   const [completedUnitIds, setCompletedUnitIds] = useState<string[]>([]);
 
   useEffect(() => {
@@ -22,6 +23,9 @@ export default function SubjectsPage() {
       : getSubjectsByCategory(activeCategory),
     [activeCategory],
   );
+  const visibleSubjects = selectedSubjectId
+    ? subjects.filter((subject) => subject.id === selectedSubjectId)
+    : subjects;
 
   return (
     <main dir="rtl" className="subjectsPage">
@@ -40,7 +44,7 @@ export default function SubjectsPage() {
         .subjectsFilters{display:flex;gap:8px;overflow:auto;padding:2px 0 14px;margin-bottom:8px}
         .subjectsFilter{white-space:nowrap;border:1px solid #d8e1ed;background:#fff;border-radius:999px;padding:9px 14px;color:#42536a;font:inherit;font-size:13px;cursor:pointer}
         .subjectsFilter.active{background:#183b63;color:white;border-color:#183b63}
-        .subjectsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+        .subjectsGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}.subjectChoose{border:0;border-radius:10px;background:#eaf2fb;color:#1d5a9b;padding:9px 12px;font:inherit;font-size:13px;font-weight:800;cursor:pointer;white-space:nowrap}.subjectChoose:hover{background:#dceafa}.subjectSelectionBar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:4px 0 16px}.subjectSelectionBar h2{font-size:19px;margin:0;color:#1a2c44}.subjectSelectionBar p{font-size:13px;color:#68798e;margin:5px 0 0}.subjectBackButton{border:1px solid #d8e1ed;background:#fff;color:#1d5a9b;border-radius:10px;padding:9px 13px;font:inherit;font-weight:700;cursor:pointer}
         .subjectCard{background:#fff;border:1px solid #e2e9f1;border-radius:18px;padding:19px;box-shadow:0 5px 18px #1c35500a}
         .subjectCardHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
         .subjectCard h2{font-size:19px;margin:0 0 7px;color:#1a2c44}
@@ -74,30 +78,33 @@ export default function SubjectsPage() {
         </div>
 
         <nav className="subjectsFilters" aria-label="סינון מקצועות">
-          <button type="button" className={activeCategory === "all" ? "subjectsFilter active" : "subjectsFilter"} onClick={() => setActiveCategory("all")}>כל המקצועות ({subjectCatalog.length})</button>
+          <button type="button" className={activeCategory === "all" ? "subjectsFilter active" : "subjectsFilter"} onClick={() => { setActiveCategory("all"); setSelectedSubjectId(null); }}>כל המקצועות ({subjectCatalog.length})</button>
           {subjectCategories.map((category) => (
-            <button key={category.id} type="button" className={activeCategory === category.id ? "subjectsFilter active" : "subjectsFilter"} onClick={() => setActiveCategory(category.id)}>{category.title}</button>
+            <button key={category.id} type="button" className={activeCategory === category.id ? "subjectsFilter active" : "subjectsFilter"} onClick={() => { setActiveCategory(category.id); setSelectedSubjectId(null); }}>{category.title}</button>
           ))}
         </nav>
 
+        {selectedSubjectId && <div className="subjectSelectionBar"><div><h2>המקצוע שנבחר ללמידה</h2><p>כאן מופיעות יחידות הלימוד של המקצוע שבחרת.</p></div><button type="button" className="subjectBackButton" onClick={() => setSelectedSubjectId(null)}>← חזרה לבחירת מקצועות</button></div>}
+        {!selectedSubjectId && <div className="subjectSelectionBar"><div><h2>באיזה מקצוע תרצה ללמוד?</h2><p>בחר מקצוע אחד כדי להציג את יחידות הלימוד שלו ולהתחיל ללמוד.</p></div></div>}
         <section className="subjectsGrid" aria-live="polite">
-          {subjects.map((subject) => (
+          {visibleSubjects.map((subject) => (
             <article className="subjectCard" key={subject.id}>
               <div className="subjectCardHead">
                 <h2>{subject.title}</h2>
                 <span className={subject.status === "core" ? "subjectStatus" : "subjectStatus extra"}>{subject.status === "core" ? "מקצוע ליבה" : "הרחבה"}</span>
               </div>
               <p>{subject.description}</p>
+              {!selectedSubjectId && <button type="button" className="subjectChoose" onClick={() => setSelectedSubjectId(subject.id)}>בחירת המקצוע ולצפייה ביחידות ←</button>}
               <div className="subjectProgress">{subject.units.filter((unit) => completedUnitIds.includes(`${subject.id}:${unit.id}`)).length} מתוך {subject.units.length} יחידות הושלמו</div>
-              <div className="subjectUnits">
+              {selectedSubjectId === subject.id && <div className="subjectUnits">
                 <h3>{subject.units.length} יחידות לימוד · פתיחת שיעור בלחיצה</h3>
                 <ul>
                   {subject.units.map((unit) => (
                     <li key={unit.id}><Link href={`/subjects/${subject.id}/${unit.id}`}>{unit.title} ←</Link><span>{unit.description}</span></li>
                   ))}
                 </ul>
-              </div>
-              {subject.units.some((unit) => unit.mathConnections.length > 0) && (
+              </div>}
+              {selectedSubjectId === subject.id && subject.units.some((unit) => unit.mathConnections.length > 0) && (
                 <div className="subjectMath" aria-label="קשרי מתמטיקה">
                   {[...new Set(subject.units.flatMap((unit) => unit.mathConnections))].map((item) => <span key={item}>מתמטיקה: {item}</span>)}
                 </div>
