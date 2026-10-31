@@ -36,6 +36,13 @@ export default function SubjectUnitPage() {
     }
   }, []);
 
+  // A Next.js route transition may reuse this page component for the next unit.
+  // Never carry an answer or a successful checkpoint into a different lesson.
+  useEffect(() => {
+    setAnswer(null);
+    setChecked(false);
+  }, [subjectId, unitId]);
+
   useEffect(() => {
     if (progress.updatedAt === 0) return;
     try {
@@ -127,12 +134,13 @@ export default function SubjectUnitPage() {
         <section className="unitCard">
           <h2>בדיקת הבנה קצרה</h2>
           <p>{lesson.checkQuestion}</p>
-          <div className="unitChoices">
+          <div className="unitChoices" role="group" aria-label="אפשרויות תשובה">
             {lesson.choices.map((choice, index) => (
               <button
                 key={choice}
                 type="button"
                 className={answer === index ? "unitChoice selected" : "unitChoice"}
+                aria-pressed={answer === index}
                 onClick={() => { setAnswer(index); setChecked(false); }}
               >
                 {["א", "ב", "ג", "ד"][index]}. {choice}
