@@ -17,6 +17,14 @@ export default function SubjectsPage() {
       setCompletedUnitIds([]);
     }
   }, []);
+
+  useEffect(() => {
+    const categoryId = window.location.hash.slice(1);
+    if (subjectCategories.some((category) => category.id === categoryId)) {
+      setActiveCategory(categoryId);
+      setSelectedSubjectId(null);
+    }
+  }, []);
   const subjects = useMemo(
     () => activeCategory === "all"
       ? subjectCatalog
