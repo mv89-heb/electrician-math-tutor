@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "16.4.3",
@@ -27,7 +28,8 @@
     "vitest": "^5.0.5",
     "baseline-browser-mapping": "latest",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.4.3"
+    "eslint-config-next": "16.4.3",
+    "@playwright/test": "1.56.1"
   },
   "overrides": {
     "tinypool": "2.2.0",
