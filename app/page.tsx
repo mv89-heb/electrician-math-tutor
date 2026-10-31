@@ -1,12 +1,13 @@
 import Link from "next/link";
-import { ArrowLeft, BookOpen, CircuitBoard, GraduationCap, Layers3, Sparkles, Zap } from "lucide-react";
+import { ArrowLeft, BookOpen, CircuitBoard, GraduationCap, Layers3, Sparkles, Zap, ChartNoAxesCombined } from "lucide-react";
 import { subjectCatalog, subjectCategories } from "../lib/subject-catalog";
 const totalUnits=subjectCatalog.reduce((sum,subject)=>sum+subject.units.length,0);
 const coreSubjects=subjectCatalog.filter(subject=>subject.status==="core").length;
 const quickLinks=[
 {href:"/subjects",icon:Layers3,eyebrow:"תוכנית הלימודים",title:"בחירת מקצוע",description:"כל מקצועות החשמל, מחולקים לתחומים וליחידות לימוד.",action:"לצפייה במקצועות",tone:"blue"},
 {href:"/math",icon:BookOpen,eyebrow:"תרגול אישי",title:"מתמטיקה לחשמלאים",description:"תרגול מותאם, הסברים קצרים, מחברת פתרון והמחשות.",action:"המשך לתרגול",tone:"violet"},
-{href:"/labs",icon:CircuitBoard,eyebrow:"למידה מעשית",title:"מעבדות וסימולציות",description:"לומדים דרך מעגלים, רכיבים ותרחישים מעשיים בסביבה לימודית.",action:"לכניסה למעבדות",tone:"amber"}];
+{href:"/labs",icon:CircuitBoard,eyebrow:"למידה מעשית",title:"מעבדות וסימולציות",description:"לומדים דרך מעגלים, רכיבים ותרחישים מעשיים בסביבה לימודית.",action:"לכניסה למעבדות",tone:"amber"},
+{href:"/progress",icon:ChartNoAxesCombined,eyebrow:"מעקב אישי",title:"ההתקדמות שלי",description:"צפייה בהישגים, בתרגול וביחידות הלימוד שהושלמו.",action:"לצפייה בהתקדמות",tone:"green"}];
 export default function HomePage(){return <main className="homeDashboard" dir="rtl">
 <section className="homeHero"><div className="homeHeroCopy"><div className="homeEyebrow"><Sparkles size={15}/> סביבת הלמידה לחשמלאי מוסמך</div><h1>שלום, וברוך הבא<br/><span>לומדים חשמל צעד אחר צעד.</span></h1><p>כל מה שצריך ללמידה במקום אחד — מקצועות, תרגול מתמטיקה, הסברים וסימולציות אינטראקטיביות.</p><div className="homeHeroActions"><Link className="homePrimaryAction" href="/subjects">לגילוי תוכנית הלימודים <ArrowLeft size={18}/></Link><Link className="homeSecondaryAction" href="/math">מעבר לתרגול מתמטיקה</Link></div></div><div className="homeHeroArt" aria-hidden="true"><div className="homeOrb homeOrbOne"/><div className="homeOrb homeOrbTwo"/><div className="homeBolt"><Zap size={76} fill="currentColor" strokeWidth={1.2}/></div><div className="homeCircuitLine lineOne"/><div className="homeCircuitLine lineTwo"/><span className="homeFloatingTag tagOne">לומדים</span><span className="homeFloatingTag tagTwo">מתרגלים</span></div></section>
 <section className="homeStats" aria-label="נתוני תוכנית הלימודים"><article className="homeStat"><span className="homeStatIcon"><GraduationCap size={20}/></span><div><strong>{coreSubjects}</strong><span>מקצועות מרכזיים</span></div></article><article className="homeStat"><span className="homeStatIcon"><BookOpen size={20}/></span><div><strong>{totalUnits}</strong><span>יחידות לימוד בקטלוג</span></div></article><article className="homeStat"><span className="homeStatIcon"><Layers3 size={20}/></span><div><strong>{subjectCategories.length}</strong><span>תחומי לימוד</span></div></article></section>
