@@ -1075,8 +1075,6 @@ body{background:#f5f7fb}
 @media(max-width:760px){
   .appSidebar{display:none}
   #main-content{margin-right:0;min-height:100vh;padding-bottom:78px}
-  .appMobileBrand span{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#245eea;color:#fff}
-  .appMobileBrand strong{font-size:15px;font-weight:950}
   .appUnifiedMobileNav{position:fixed;z-index:130;inset:auto 0 0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:8px 7px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid #e5eaf2;box-shadow:0 -8px 28px rgba(24,43,72,.08);backdrop-filter:blur(16px)}
   .appNavItem.mobile{min-height:53px;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:4px 2px;border:0;border-radius:11px;text-align:center}
   .appNavItem.mobile.active{background:#edf4ff}
@@ -1187,3 +1185,10 @@ body{background:#f5f7fb}
 .homeTrustNote>a{margin-right:51px}
 }
 @media(prefers-reduced-motion:reduce){.homeVisualRing,.homePrimaryAction,.homeExploreCard,.homeProgressTrack span{animation:none;transition:none}}
+
+
+/* Accessibility: consistent keyboard focus and respect reduced-motion preferences. */
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:0.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:0.01ms!important}
+}
