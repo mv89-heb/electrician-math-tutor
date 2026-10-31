@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { subjectCatalog, subjectCategories } from "./subject-catalog";
+import { getCategoryIdFromHash, subjectCatalog, subjectCategories } from "./subject-catalog";
 
 describe("subject catalog", () => {
   it("contains unique subject and unit identifiers", () => {
@@ -29,6 +29,15 @@ describe("subject catalog", () => {
     expect(linkedSubjects.every((subject) =>
       subject.units.some((unit) => unit.mathConnections.length > 0),
     )).toBe(true);
+  });
+
+
+  it("resolves only known category anchors from lesson links", () => {
+    expect(getCategoryIdFromHash("#foundations")).toBe("foundations");
+    expect(getCategoryIdFromHash("#electrical-theory")).toBe("electrical-theory");
+    expect(getCategoryIdFromHash("installations")).toBe("installations");
+    expect(getCategoryIdFromHash("#unknown-category")).toBeUndefined();
+    expect(getCategoryIdFromHash("")).toBeUndefined();
   });
 
   it("does not contain empty subjects or units", () => {
