@@ -151,8 +151,8 @@ export default function SubjectUnitPage() {
         <section className="unitCard" style={{ marginTop: 15 }}>
           <h2>ההתקדמות שלך</h2>
           <p>{isCompleted ? "היחידה סומנה כהושלמה." : "לאחר הלמידה ובדיקת ההבנה, אפשר לסמן את היחידה כהושלמה."}</p>
-          <button type="button" className={isCompleted ? "unitComplete done" : "unitComplete"} onClick={toggleComplete} style={{ marginTop: 14 }}>
-            {isCompleted ? "הסר סימון השלמה" : "סמן יחידה כהושלמה"}
+          <button type="button" className={isCompleted ? "unitComplete done" : "unitComplete"} onClick={toggleComplete} disabled={!isCompleted && !(checked && correct)} style={{ marginTop: 14, opacity: !isCompleted && !(checked && correct) ? .5 : 1 }}>
+            {isCompleted ? "הסר סימון השלמה" : checked && correct ? "סמן יחידה כהושלמה" : "יש לענות נכון על בדיקת ההבנה תחילה"}
           </button>
         </section>
       </div>
