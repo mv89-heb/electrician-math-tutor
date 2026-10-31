@@ -1036,3 +1036,57 @@ html{scroll-padding-top:88px}.skipToContent{position:fixed;z-index:1000;top:8px;
 
 /* Responsive progress overview and five destination navigation. */
 .progressPage{max-width:1120px;margin:0 auto;padding:42px 28px 80px;color:#17263e}.progressHeader>span{display:inline-flex;align-items:center;gap:7px;color:#3267cf;font-size:12px;font-weight:850}.progressHeader h1{margin:12px 0 8px;font-size:clamp(28px,4vw,40px);font-weight:900}.progressHeader p{margin:0;color:#6c7b91;font-size:14px;line-height:1.8}.progressMetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:26px 0}.progressMetric{display:flex;align-items:center;gap:12px;padding:17px;border:1px solid #e1e8f1;border-radius:16px;background:#fff}.progressMetricIcon{width:42px;height:42px;display:grid;place-items:center;flex:none;border-radius:13px;background:#edf3ff;color:#2860d9}.progressMetric strong,.progressMetric small{display:block}.progressMetric strong{font-size:23px;font-weight:900}.progressMetric small{margin-top:4px;color:#718096;font-size:11px;line-height:1.4}.progressPanels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.progressPanelCard{padding:22px;border:1px solid #e1e8f1;border-radius:18px;background:#fff}.progressPanelTitle{display:flex;align-items:center;gap:12px}.progressPanelTitle h2{margin:0;font-size:17px}.progressPanelTitle p{margin:5px 0 0;color:#718096;font-size:11px}.progressBarTrack{height:11px;margin:25px 0 11px;border-radius:999px;background:#edf1f7;overflow:hidden}.progressBarTrack>span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2860d9,#5b91f5)}.progressBarMeta{display:flex;justify-content:space-between;gap:10px;color:#718096;font-size:11px}.progressBarMeta strong{color:#285ed2;font-size:12px}.progressAction{display:inline-flex;align-items:center;gap:8px;margin-top:20px;color:#285ed2;text-decoration:none;font-size:12px;font-weight:850}.progressFooter{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-top:20px;padding:18px 20px;border:1px solid #dce7f7;border-radius:16px;background:#f7faff}.progressFooter strong{font-size:13px}.progressFooter p{margin:5px 0 0;color:#718096;font-size:11px;line-height:1.6}.progressHomeLink{display:inline-flex;align-items:center;gap:7px;white-space:nowrap;color:#285ed2;text-decoration:none;font-size:12px;font-weight:850}@media(max-width:900px) and (min-width:761px){.appTopbar{gap:12px;padding-inline:18px}.appNavLink{padding:0 9px;gap:6px;font-size:11px}.appNavLink svg{width:16px;height:16px}.appBrand small{display:none}}@media(max-width:760px){.appMobileNav{grid-template-columns:repeat(5,minmax(0,1fr))}.appMobileNavLink{font-size:9px}.progressPage{padding:28px 15px 105px}.progressMetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.progressMetric{padding:12px 10px;gap:8px}.progressMetricIcon{width:34px;height:34px}.progressMetric strong{font-size:19px}.progressMetric small{font-size:9px}.progressPanels{grid-template-columns:1fr;gap:11px}.progressPanelCard{padding:18px}.progressFooter{align-items:flex-start;flex-direction:column}.progressHomeLink{margin-top:4px}}
+
+
+/* Unified navigation redesign: persistent desktop sidebar and compact mobile dock. */
+body{background:#f5f7fb}
+.appSidebar{position:fixed;z-index:120;inset:0 0 0 auto;width:264px;display:flex;flex-direction:column;padding:25px 18px 20px;background:#fff;border-left:1px solid #e5eaf2;box-shadow:-8px 0 30px rgba(24,43,72,.035)}
+.appSidebarBrand{display:flex;align-items:center;gap:12px;padding:4px 8px 27px;color:#172b49;text-decoration:none;border-bottom:1px solid #edf0f5}
+.appSidebarLogo{width:46px;height:46px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#3479f6,#1747b9);color:#fff;box-shadow:0 8px 18px rgba(36,94,234,.2)}
+.appSidebarBrand strong,.appSidebarBrand small{display:block}
+.appSidebarBrand strong{font-size:19px;font-weight:950;letter-spacing:-.4px}
+.appSidebarBrand small{margin-top:4px;color:#8290a5;font-size:10px;font-weight:650}
+.appSidebarSectionLabel{margin:27px 10px 11px;color:#99a4b5;font-size:10px;font-weight:900;letter-spacing:.08em}
+.appSidebarNav{display:flex;flex-direction:column;gap:7px}
+.appNavItem{position:relative;min-height:60px;display:flex;align-items:center;gap:11px;padding:9px 10px;border:1px solid transparent;border-radius:14px;color:#62718a;text-decoration:none;transition:background .18s,border-color .18s,color .18s}
+.appNavItem:hover{background:#f5f8fd;color:#245bd4}
+.appNavItem.active{background:linear-gradient(110deg,#edf4ff,#f7faff);border-color:#dce8ff;color:#2058d8}
+.appNavItem.active::before{content:"";position:absolute;right:-18px;top:12px;bottom:12px;width:3px;border-radius:3px;background:#2865e8}
+.appNavItemIcon{width:39px;height:39px;display:grid;place-items:center;flex:none;border-radius:12px;background:#f2f5fa;color:#71819a}
+.appNavItem.active .appNavItemIcon{background:#dce9ff;color:#245bd4}
+.appNavItemCopy{min-width:0;flex:1}
+.appNavItemCopy strong,.appNavItemCopy small{display:block}
+.appNavItemCopy strong{font-size:12px;font-weight:850}
+.appNavItemCopy small{margin-top:4px;color:#8995a8;font-size:9px;line-height:1.4}
+.appNavChevron{color:#9ba8bb}
+.appNavItem.active .appNavChevron{color:#2865e8}
+.appSidebarBottom{display:flex;align-items:center;gap:10px;margin-top:auto;padding:14px 12px;border:1px solid #e8edf5;border-radius:15px;background:#f8faff}
+.appSidebarSpark{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:#fff1c9;color:#9b6b00;font-size:19px}
+.appSidebarBottom strong,.appSidebarBottom span{display:block}
+.appSidebarBottom strong{font-size:10px;color:#34445e}
+.appSidebarBottom span{margin-top:4px;font-size:9px;color:#8793a5}
+#main-content{min-height:100vh;margin-right:264px;outline:none}
+.appMobileHeader{display:none}
+.appUnifiedMobileNav{display:none}
+@media(max-width:900px){
+  .appSidebar{width:228px;padding-inline:14px}
+  #main-content{margin-right:228px}
+}
+@media(max-width:760px){
+  .appSidebar{display:none}
+  #main-content{margin-right:0;min-height:calc(100vh - 58px);padding-bottom:78px}
+  .appMobileHeader{height:58px;position:sticky;top:0;z-index:110;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:rgba(255,255,255,.96);border-bottom:1px solid #e5eaf2;backdrop-filter:blur(14px)}
+  .appMobileBrand{display:flex;align-items:center;gap:8px;color:#172b49;text-decoration:none}
+  .appMobileBrand span{width:31px;height:31px;display:grid;place-items:center;border-radius:10px;background:#245eea;color:#fff}
+  .appMobileBrand strong{font-size:15px;font-weight:950}
+  .appMobileHeader>span{font-size:10px;color:#8390a3;font-weight:700}
+  .appUnifiedMobileNav{position:fixed;z-index:130;inset:auto 0 0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:2px;padding:8px 7px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid #e5eaf2;box-shadow:0 -8px 28px rgba(24,43,72,.08);backdrop-filter:blur(16px)}
+  .appNavItem.mobile{min-height:53px;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:4px 2px;border:0;border-radius:11px;text-align:center}
+  .appNavItem.mobile.active{background:#edf4ff}
+  .appNavItem.mobile.active::before{inset:0 25% auto;width:auto;height:2px}
+  .appNavItem.mobile .appNavItemIcon{width:auto;height:auto;background:transparent;color:#8290a4}
+  .appNavItem.mobile.active .appNavItemIcon{background:transparent;color:#245bd4}
+  .appNavItem.mobile .appNavItemCopy{flex:none}
+  .appNavItem.mobile .appNavItemCopy strong{font-size:9px;white-space:nowrap}
+}
+@media(prefers-reduced-motion:reduce){.appNavItem{transition:none}}
