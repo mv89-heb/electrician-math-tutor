@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { getSubjectById, getSubjectUnit } from "../../../../lib/subject-catalog";
+import { getSubjectById, getSubjectUnit, subjectCatalog } from "../../../../lib/subject-catalog";
 import { lessonForUnit } from "../../../../lib/subject-lessons";
 import {
   emptySubjectProgress,
@@ -55,6 +55,10 @@ export default function SubjectUnitPage() {
     );
   }
 
+  const allUnits = subjectCatalog.flatMap((item) => item.units.map((entry) => ({ subjectId: item.id, subjectTitle: item.title, unit: entry })));
+  const currentUnitIndex = allUnits.findIndex((item) => item.subjectId === subjectId && item.unit.id === unitId);
+  const previousUnit = currentUnitIndex > 0 ? allUnits[currentUnitIndex - 1] : undefined;
+  const nextUnit = currentUnitIndex >= 0 ? allUnits[currentUnitIndex + 1] : undefined;
   const correct = answer === lesson.correctChoice;
 
   function toggleComplete() {
@@ -85,7 +89,7 @@ export default function SubjectUnitPage() {
         .unitFeedback.wrong{background:#fff4e8;color:#81501b}
         .unitSafety{border-right:4px solid #d59a32;background:#fff8e8;color:#72521c;padding:13px 15px;border-radius:9px;line-height:1.7;margin-top:14px}
         .unitComplete{width:100%;border:0;border-radius:12px;background:#183b63;color:#fff;padding:14px;font:inherit;font-weight:800;cursor:pointer}
-        .unitComplete.done{background:#e4f3e9;color:#25613c}
+        .unitComplete.done{background:#e4f3e9;color:#25613c}.unitSequence{align-items:center;background:#fff;border:1px solid #e2e9f1;border-radius:14px;padding:14px 16px;margin:16px 0}.unitSequence a{color:#245b91;text-decoration:none;font-weight:700}.unitSequence span{font-size:12px;color:#748399}
         @media(max-width:600px){.unitPage{padding:16px 12px 40px}.unitHero{padding:22px 18px}.unitCard{padding:18px}}
       `}</style>
       <div className="unitWrap">
@@ -147,6 +151,12 @@ export default function SubjectUnitPage() {
         </section>
 
         {lesson.safetyNote && <aside className="unitSafety">{lesson.safetyNote}</aside>}
+
+        <nav className="unitNav unitSequence" aria-label="ניווט בין יחידות הלימוד">
+          {previousUnit ? <Link href={`/subjects/${previousUnit.subjectId}/${previousUnit.unit.id}`}>← הקודם: {previousUnit.unit.title}</Link> : <span>תחילת מסלול הלימוד</span>}
+          <span>יחידה {currentUnitIndex + 1} מתוך {allUnits.length}</span>
+          {nextUnit ? <Link href={`/subjects/${nextUnit.subjectId}/${nextUnit.unit.id}`}>הבא: {nextUnit.unit.title} ←</Link> : <Link href="/subjects">סיום המסלול · מפת הלימודים</Link>}
+        </nav>
 
         <section className="unitCard" style={{ marginTop: 15 }}>
           <h2>ההתקדמות שלך</h2>

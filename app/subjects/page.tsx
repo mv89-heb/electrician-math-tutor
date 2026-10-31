@@ -109,7 +109,7 @@ export default function SubjectsPage() {
         <footer className="subjectsFooter">
           {subjectCatalog.filter((subject) => subject.status === "core").length} מקצועות ליבה · {subjectCatalog.reduce((sum, subject) => sum + subject.units.length, 0)} יחידות לימוד במפת התוכן
           <br />
-          בכל יחידה יש שיעור פתיחה ובדיקת הבנה. שיעורים מלאים, סימולציות ותרגול מתקדם יתווספו בהדרגה.
+          כל 54 היחידות כוללות שיעור ייעודי עם הסבר, דוגמה ובדיקת הבנה. סימולטורים, תרגול מדורג והרחבה למספר שיעורים בכל יחידה יתווספו בשלבי הפיתוח הבאים.
         </footer>
       </div>
     </main>
