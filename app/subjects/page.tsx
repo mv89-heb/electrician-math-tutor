@@ -88,6 +88,7 @@ export default function SubjectsPage() {
                 <span className={subject.status === "core" ? "subjectStatus" : "subjectStatus extra"}>{subject.status === "core" ? "מקצוע ליבה" : "הרחבה"}</span>
               </div>
               <p>{subject.description}</p>
+              <div className="subjectProgress">{subject.units.filter((unit) => completedUnitIds.includes(`${subject.id}:${unit.id}`)).length} מתוך {subject.units.length} יחידות הושלמו</div>
               <div className="subjectUnits">
                 <h3>{subject.units.length} יחידות לימוד · פתיחת שיעור בלחיצה</h3>
                 <ul>
