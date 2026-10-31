@@ -1,3 +1,5 @@
+import { subjectCatalog } from "./subject-catalog";
+
 export type SubjectProgress = {
   version: 1;
   completedUnitIds: string[];
@@ -42,4 +44,14 @@ export function setUnitCompleted(
   if (completed) ids.add(unitId);
   else ids.delete(unitId);
   return { version: 1, completedUnitIds: [...ids], updatedAt: now };
+}
+
+
+const validSubjectUnitIds = new Set(
+  subjectCatalog.flatMap((subject) => subject.units.map((unit) => `${subject.id}:${unit.id}`)),
+);
+
+/** Count only unique completion keys that still exist in the published curriculum. */
+export function countCompletedSubjectUnits(completedUnitIds: readonly string[]): number {
+  return new Set(completedUnitIds.filter((id) => validSubjectUnitIds.has(id))).size;
 }

@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, BookOpen, CheckCircle2, GraduationCap, Target, TrendingUp } from "lucide-react";
 import { curriculum } from "../../lib/curriculum";
 import { emptyLearningState, loadLearningState, type LearningState } from "../../lib/learning";
-import { parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../../lib/subject-progress";
+import { countCompletedSubjectUnits, parseSubjectProgress, SUBJECT_PROGRESS_STORAGE_KEY } from "../../lib/subject-progress";
 import { subjectCatalog } from "../../lib/subject-catalog";
 
 export default function ProgressPage() {
  const [learning,setLearning]=useState<LearningState>(emptyLearningState);
  const [units,setUnits]=useState(0);
- useEffect(()=>{try{setLearning(loadLearningState(window.localStorage));setUnits(parseSubjectProgress(window.localStorage.getItem(SUBJECT_PROGRESS_STORAGE_KEY)).completedUnitIds.length)}catch{setLearning(emptyLearningState);setUnits(0)}},[]);
+ useEffect(()=>{try{setLearning(loadLearningState(window.localStorage));setUnits(countCompletedSubjectUnits(parseSubjectProgress(window.localStorage.getItem(SUBJECT_PROGRESS_STORAGE_KEY)).completedUnitIds))}catch{setLearning(emptyLearningState);setUnits(0)}},[]);
  const totalUnits=subjectCatalog.reduce((n,s)=>n+s.units.length,0);
  const attempts=Object.values(learning.stats).reduce((n,s)=>n+s.attempts,0);
  const correct=Object.values(learning.stats).reduce((n,s)=>n+s.correct,0);
