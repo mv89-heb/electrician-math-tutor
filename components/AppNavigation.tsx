@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, Home, Layers3, FlaskConical } from "lucide-react";
+import { BookOpen, Home, Layers3, FlaskConical, ChartNoAxesCombined } from "lucide-react";
 
 const items = [
   { href: "/", label: "ראשי", short: "בית", icon: Home, matches: (path: string) => path === "/" },
   { href: "/subjects", label: "מקצועות", short: "מקצועות", icon: Layers3, matches: (path: string) => path.startsWith("/subjects") },
   { href: "/math", label: "תרגול מתמטיקה", short: "מתמטיקה", icon: BookOpen, matches: (path: string) => path.startsWith("/math") },
   { href: "/labs", label: "מעבדות", short: "מעבדות", icon: FlaskConical, matches: (path: string) => path.startsWith("/labs") },
+  { href: "/progress", label: "ההתקדמות שלי", short: "התקדמות", icon: ChartNoAxesCombined, matches: (path: string) => path.startsWith("/progress") },
 ];
 
 export function AppNavigation() {
