@@ -553,6 +553,15 @@ const authoredLessons: Record<string, LessonContent> = {
 
 };
 
+export type LessonAnswerEvaluation = { correct: boolean; message: string };
+
+export function evaluateLessonAnswer(lesson: LessonContent, selectedChoice: number): LessonAnswerEvaluation {
+  if (selectedChoice === lesson.correctChoice) {
+    return { correct: true, message: lesson.feedback };
+  }
+  return { correct: false, message: "התשובה עדיין לא נכונה. נסה שוב ובדוק את הנתונים ואת דרך החשיבה שלך." };
+}
+
 export function lessonForUnit(subjectId: string, unitId: string): LessonContent | undefined {
   const key = `${subjectId}/${unitId}`;
   const authored = authoredLessons[key];
