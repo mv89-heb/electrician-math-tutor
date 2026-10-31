@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { AppNavigation } from "../../../../components/AppNavigation";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { getSubjectById, getSubjectUnit, subjectCatalog } from "../../../../lib/subject-catalog";
@@ -47,12 +48,12 @@ export default function SubjectUnitPage() {
 
   if (!subject || !unit || !lesson) {
     return (
-      <main dir="rtl" className="unitPage">
+      <><AppNavigation /><main dir="rtl" className="unitPage">
         <div className="unitWrap">
           <h1>יחידת הלימוד לא נמצאה</h1>
           <Link href="/subjects">חזרה למפת הלימודים</Link>
         </div>
-      </main>
+      </main></>
     );
   }
 
