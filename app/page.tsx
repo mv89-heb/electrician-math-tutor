@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import katex from "katex";
 import { CheckCircle2, ChevronLeft, Lightbulb, RotateCcw, Sparkles, Target, Trophy, Zap } from "lucide-react";
@@ -1093,6 +1095,7 @@ export default function Home() {
         <div className="focusBrand"><div className="logo"><Zap size={20}/></div><strong>מתמטיקה לחשמלאי מוסמך</strong></div>
         <div className="focusProgress"><span>שלב {currentStage}/8</span><div className="focusTrack"><div style={{width: Math.min(100, Math.max(4, progress)) + "%"}} /></div></div>
         <div className="startFromBasics" aria-label="מסלול לימוד מהבסיס"><Sparkles size={16}/> לומדים מהבסיס</div>
+        <Link href="/subjects" style={{ color: "#1d5a9b", fontWeight: 700, fontSize: 13, textDecoration: "none", whiteSpace: "nowrap" }}>מפת כל מקצועות הלימוד ←</Link>
       </header>
       <section className={"sparkyFocus sparkyMood-" + sparkyMood}>
         <div className="sparkyFocusAvatar" aria-hidden="true"><span className="sparkyBody">👨‍🔧</span><span className="sparkyBolt">{sparkyIcon}</span></div>
