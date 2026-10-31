@@ -8,7 +8,7 @@ import { formulaSubjectGuidance } from "./formula-subject-guidance";
 import { geometryGuidanceForExercise } from "./geometry-guidance";
 import { buildFinalExam, finalExamPasses } from "./final-exam";
 import { stageGateSatisfied } from "./stages";
-import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest } from "./learning";
+import { chooseNextExercise, emptyLearningState, recordAttempt, topicMastery, dueReviewIds, classifyError, resolveExercise, canStartMasteryTest, type DiagnosticResult } from "./learning";
 import { areaLabDefaultsForExercise, areaLabUnitsForExercise, decimalVisualForExercise, electricalLabDefaultsForExercise, electricalMiniSimulatorConfigForExercise, equationLabModelForExercise, fractionLabDefaultsForExercise, fractionVisualForExercise, formulaVisualForExercise, generatedEquationVisualForExercise, isElectricalLesson, isElectricalPowerLesson, isExponentLesson, percentageVisualForExercise, reduceFractionForLab, unitConversionVisualForExercise } from "./lesson-visual";
 
 describe("active exercise resolution", () => {
@@ -124,7 +124,7 @@ describe("diagnostic placement", () => {
 
   it("keeps the absolute beginner start when the diagnostic is strong", async () => {
     const { recommendedStartingIndex } = await import("./learning");
-    const results = [
+    const results: DiagnosticResult[] = [
       { skill: "חיבור", correct: true }, { skill: "חיסור", correct: true },
       { skill: "כפל", correct: true }, { skill: "חילוק", correct: true },
       { skill: "נעלם", correct: true }, { skill: "נוסחה", correct: true },
