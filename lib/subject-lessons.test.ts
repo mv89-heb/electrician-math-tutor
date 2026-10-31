@@ -88,6 +88,18 @@ describe("subject lessons", () => {
     expect(lessonForUnit("safety", "lab-safety")?.safetyNote).toBeTruthy();
   });
 
+  it("requires substantive authored content for every catalog unit", () => {
+    for (const subject of subjectCatalog) {
+      for (const unit of subject.units) {
+        const lesson = lessonForUnit(subject.id, unit.id);
+        expect(lesson?.title.startsWith("מבוא:")).toBe(false);
+        expect(lesson?.explanation.length ?? 0).toBeGreaterThan(100);
+        expect(lesson?.example.length ?? 0).toBeGreaterThan(20);
+        expect(lesson?.checkQuestion.length ?? 0).toBeGreaterThan(10);
+      }
+    }
+  });
+
   it("keeps explicit authored lesson coverage for major professional topics", () => {
     expect(lessonForUnit("electrical-theory", "electrical-quantities")?.mathWalkthrough?.length ?? 0).toBeGreaterThan(0);
     expect(lessonForUnit("plc", "plc-logic")?.title).toContain("לוגיקה");
