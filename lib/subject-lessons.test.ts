@@ -1,0 +1,42 @@
+import { describe, expect, it } from "vitest";
+import { lessonForUnit } from "./subject-lessons";
+import { subjectCatalog } from "./subject-catalog";
+import { emptySubjectProgress, parseSubjectProgress, setUnitCompleted } from "./subject-progress";
+
+describe("subject lessons", () => {
+  it("provides a lesson entry for every catalog unit", () => {
+    for (const subject of subjectCatalog) {
+      for (const unit of subject.units) {
+        const lesson = lessonForUnit(subject.id, unit.id);
+        expect(lesson).toBeDefined();
+        expect(lesson?.title.length).toBeGreaterThan(0);
+        expect(lesson?.choices.length).toBeGreaterThanOrEqual(2);
+        expect(lesson?.correctChoice).toBeGreaterThanOrEqual(0);
+        expect(lesson?.correctChoice).toBeLessThan(lesson?.choices.length ?? 0);
+      }
+    }
+  });
+
+  it("keeps explicit authored lesson coverage for major professional topics", () => {
+    expect(lessonForUnit("electrical-theory", "electrical-quantities")?.mathWalkthrough?.length).toBeGreaterThan(0);
+    expect(lessonForUnit("plc", "plc-logic")?.title).toContain("לוגיקה");
+    expect(lessonForUnit("safety", "electrical-hazards")?.safetyNote).toBeTruthy();
+  });
+});
+
+describe("subject progress", () => {
+  it("loads empty and malformed storage safely", () => {
+    expect(parseSubjectProgress(null)).toEqual(emptySubjectProgress);
+    expect(parseSubjectProgress("{broken")).toEqual(emptySubjectProgress);
+  });
+
+  it("deduplicates saved unit ids", () => {
+    expect(parseSubjectProgress(JSON.stringify({ version: 1, completedUnitIds: ["a", "a"], updatedAt: 1 })).completedUnitIds).toEqual(["a"]);
+  });
+
+  it("adds and removes completed units without changing the math curriculum state", () => {
+    const completed = setUnitCompleted(emptySubjectProgress, "theory:ohm", true, 100);
+    expect(completed.completedUnitIds).toEqual(["theory:ohm"]);
+    expect(setUnitCompleted(completed, "theory:ohm", false, 200).completedUnitIds).toEqual([]);
+  });
+});
