@@ -10,5 +10,5 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{children: React.ReactNode}>) {
-  return <html lang="he" dir="rtl"><body><AppNavigation />{children}</body></html>;
+  return <html lang="he" dir="rtl"><body><AppNavigation /><div id="main-content" tabIndex={-1}>{children}</div></body></html>;
 }
