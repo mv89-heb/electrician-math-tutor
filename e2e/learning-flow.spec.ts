@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    window.localStorage.removeItem("electrician-subject-progress-v1");
-  });
+  // Clear progress once per test. addInitScript would run again on reload and
+  // erase the very persistence this suite is intended to verify.
+  await page.goto("/");
+  await page.evaluate(() => window.localStorage.removeItem("electrician-subject-progress-v1"));
 });
 
 test("homepage starts learning without a placement test", async ({ page }) => {
@@ -26,7 +27,7 @@ test("lesson category link returns to the matching subject category", async ({ p
   await page.goto("/subjects/mathematics/arithmetic-units");
   await expect(page.getByRole("heading", { name: "מספרים ויחידות שמדברים בשפת החשמל" })).toBeVisible();
 
-  await page.getByRole("link", { name: /מפת המקצועות/ }).click();
+  await page.getByRole("link", { name: "מתמטיקה שימושית לחשמל" }).click();
 
   await expect(page).toHaveURL(/\/subjects#foundations$/);
   await expect(page.getByRole("button", { name: "מקצועות יסוד ומדעים" })).toHaveAttribute("aria-pressed", "true");
