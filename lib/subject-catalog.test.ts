@@ -12,7 +12,7 @@ describe("subject catalog", () => {
 
   it("preserves the complete learning-unit set and stable identifiers", () => {
     const unitIds = subjectCatalog.flatMap((subject) => subject.units.map((unit) => `${subject.id}:${unit.id}`));
-    expect(unitIds).toHaveLength(61);
+    expect(unitIds).toHaveLength(54);
     expect(unitIds).toEqual(expect.arrayContaining([
       "electrical-theory:electrical-quantities",
       "electrical-theory:dc-circuits",

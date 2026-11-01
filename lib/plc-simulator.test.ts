@@ -4,9 +4,7 @@ import {
   PLC_PRACTICE_SCENARIOS,
   checkPlcPractice,
   evaluatePlcRule,
-  type PlcInputId,
   type PlcInputs,
-  type PlcOperator,
   type PlcRule,
 } from "./plc-simulator";
 
