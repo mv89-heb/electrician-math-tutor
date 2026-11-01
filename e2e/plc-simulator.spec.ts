@@ -18,7 +18,7 @@ test("PLC simulator updates virtual outputs and explains the logic in real time"
   await page.getByRole("button", { name: "בדיקת התרגול" }).click();
   await expect(page.getByRole("status")).toContainText("מצוין");
   await expect(page.getByTestId("plc-output-Q0.0")).toContainText("פעילה (1)");
-  await expect(page.getByText(/אין חיבור לבקר פיזי/)).toBeVisible();
+  await expect(page.locator(".plcSafetyNotice")).toContainText("אין חיבור לבקר פיזי");
 });
 
 test("the PLC simulator leaves existing subject progress untouched", async ({ page }) => {
