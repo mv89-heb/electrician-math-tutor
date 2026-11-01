@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { getSubjectById, getSubjectUnit, subjectCatalog } from "../../../../lib/subject-catalog";
 import { evaluateLessonAnswer, lessonForUnit } from "../../../../lib/subject-lessons";
 import { DcCircuitLab, OhmsLawLab } from "../../../../components/ElectricalLabs";
+import { PlcSimulator } from "../../../../components/PlcSimulator";
 import {
   emptySubjectProgress,
   parseSubjectProgress,
@@ -131,6 +132,7 @@ export default function SubjectUnitPage() {
 
         {subjectId === "electrical-theory" && unitId === "electrical-quantities" && <OhmsLawLab />}
         {subjectId === "electrical-theory" && unitId === "dc-circuits" && <DcCircuitLab />}
+        {subjectId === "plc" && unitId === "plc-simulation" && <PlcSimulator />}
 
         <section className="unitCard">
           <h2>בדיקת הבנה קצרה</h2>

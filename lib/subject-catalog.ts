@@ -171,13 +171,13 @@ export const subjectCatalog: SubjectDefinition[] = [
     id: "plc",
     categoryId: "automation",
     title: "בקרים מתוכנתים (PLC)",
-    description: "לוגיקה תעשייתית, כניסות/יציאות ותכנות בסיסי בסימולטור.",
+    description: "לוגיקה תעשייתית, כניסות/יציאות ותרגול בסיסי בסימולטור תוכנה לימודי ומבודד.",
     status: "core",
     units: [
       { id: "plc-architecture", title: "מבנה הבקר ומחזור סריקה", description: "CPU, ספק, כניסות, יציאות ומחזור סריקה.", mathConnections: ["ספירה", "זמן"] },
       { id: "plc-logic", title: "לוגיקה בוליאנית", description: "AND, OR, NOT ותרשימי Ladder.", mathConnections: ["לוגיקה", "טבלאות אמת"] },
       { id: "plc-functions", title: "טיימרים ומונים", description: "השהיות, ספירה, זיכרון ורצפים.", mathConnections: ["זמן", "מספרים שלמים"] },
-      { id: "plc-simulation", title: "סימולציה וניפוי שגיאות", description: "בדיקת תוכנית בסביבת סימולציה ותיעוד.", mathConnections: ["לוגיקה", "ניתוח תוצאות"] },
+      { id: "plc-simulation", title: "סימולציה וניפוי שגיאות", description: "בניית תנאי AND/OR/NOT ובדיקת יציאות בסימולטור תוכנה מבודד.", mathConnections: ["לוגיקה", "ניתוח תוצאות"] },
     ],
   },
   {
@@ -254,6 +254,13 @@ export function getSubjectById(subjectId: string): SubjectDefinition | undefined
 
 export function getSubjectsByCategory(categoryId: string): SubjectDefinition[] {
   return subjectCatalog.filter((subject) => subject.categoryId === categoryId);
+}
+
+export function getCategoryIdFromHash(hash: string): string | undefined {
+  const categoryId = hash.startsWith("#") ? hash.slice(1) : hash;
+  return subjectCategories.some((category) => category.id === categoryId)
+    ? categoryId
+    : undefined;
 }
 
 export function getSubjectUnit(subjectId: string, unitId: string): SubjectUnit | undefined {

@@ -9,8 +9,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test": "vitest run"
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "next": "16.4.3",
@@ -25,9 +26,13 @@
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.7.0",
     "vitest": "^5.0.5",
-    "baseline-browser-mapping": "latest"
+    "baseline-browser-mapping": "latest",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "16.4.3",
+    "@playwright/test": "1.56.1"
   },
   "overrides": {
-    "tinypool": "2.2.0"
+    "tinypool": "2.2.0",
+    "minimatch": "^11.0.1"
   }
 }

@@ -24,19 +24,15 @@ jobs:
           node-version: 22
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Report dependency security audit
-        shell: bash
-        run: |
-          npm audit --no-package-lock --json > npm-audit.json || true
-          node <<'NODE'
-          const audit = require('./npm-audit.json');
-          const counts = audit.metadata?.vulnerabilities ?? {};
-          console.log('Dependency audit summary:', JSON.stringify(counts));
-          for (const [name, item] of Object.entries(audit.vulnerabilities ?? {})) {
-            console.log(`${item.severity.toUpperCase()}: ${name}; direct=${item.isDirect}; fixAvailable=${JSON.stringify(item.fixAvailable)}`);
-          }
-          NODE
+      - name: Enforce dependency security audit
+        run: npm audit --no-package-lock
+      - name: Lint application code
+        run: npm run lint
       - name: Run learning and exercise tests
         run: npm test
       - name: Verify production build
         run: npm run build
+      - name: Install Chromium for browser tests
+        run: npx playwright install --with-deps chromium
+      - name: Run desktop and mobile browser tests
+        run: npm run test:e2e

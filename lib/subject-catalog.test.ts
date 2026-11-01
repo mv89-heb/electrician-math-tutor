@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { subjectCatalog, subjectCategories } from "./subject-catalog";
+import { getCategoryIdFromHash, subjectCatalog, subjectCategories } from "./subject-catalog";
 
 describe("subject catalog", () => {
   it("contains unique subject and unit identifiers", () => {
@@ -8,6 +8,19 @@ describe("subject catalog", () => {
 
     expect(new Set(subjectIds).size).toBe(subjectIds.length);
     expect(new Set(unitIds).size).toBe(unitIds.length);
+  });
+
+  it("preserves the complete learning-unit set and stable identifiers", () => {
+    const unitIds = subjectCatalog.flatMap((subject) => subject.units.map((unit) => `${subject.id}:${unit.id}`));
+    expect(unitIds).toHaveLength(54);
+    expect(unitIds).toEqual(expect.arrayContaining([
+      "electrical-theory:electrical-quantities",
+      "electrical-theory:dc-circuits",
+      "plc:plc-architecture",
+      "plc:plc-logic",
+      "plc:plc-functions",
+      "plc:plc-simulation",
+    ]));
   });
 
   it("references only declared categories", () => {
@@ -29,6 +42,15 @@ describe("subject catalog", () => {
     expect(linkedSubjects.every((subject) =>
       subject.units.some((unit) => unit.mathConnections.length > 0),
     )).toBe(true);
+  });
+
+
+  it("resolves only known category anchors from lesson links", () => {
+    expect(getCategoryIdFromHash("#foundations")).toBe("foundations");
+    expect(getCategoryIdFromHash("#electrical-theory")).toBe("electrical-theory");
+    expect(getCategoryIdFromHash("installations")).toBe("installations");
+    expect(getCategoryIdFromHash("#unknown-category")).toBeUndefined();
+    expect(getCategoryIdFromHash("")).toBeUndefined();
   });
 
   it("does not contain empty subjects or units", () => {
