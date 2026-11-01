@@ -10,6 +10,19 @@ describe("subject catalog", () => {
     expect(new Set(unitIds).size).toBe(unitIds.length);
   });
 
+  it("preserves the complete learning-unit set and stable identifiers", () => {
+    const unitIds = subjectCatalog.flatMap((subject) => subject.units.map((unit) => `${subject.id}:${unit.id}`));
+    expect(unitIds).toHaveLength(61);
+    expect(unitIds).toEqual(expect.arrayContaining([
+      "electrical-theory:electrical-quantities",
+      "electrical-theory:dc-circuits",
+      "plc:plc-architecture",
+      "plc:plc-logic",
+      "plc:plc-functions",
+      "plc:plc-simulation",
+    ]));
+  });
+
   it("references only declared categories", () => {
     const categoryIds = new Set(subjectCategories.map((category) => category.id));
     expect(subjectCatalog.every((subject) => categoryIds.has(subject.categoryId))).toBe(true);

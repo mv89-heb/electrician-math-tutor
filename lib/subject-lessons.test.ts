@@ -105,6 +105,15 @@ describe("subject lessons", () => {
     expect(lessonForUnit("plc", "plc-logic")?.title).toContain("לוגיקה");
     expect(lessonForUnit("safety", "electrical-hazards")?.safetyNote).toBeTruthy();
   });
+
+  it("describes the PLC simulator as isolated software with no physical control", () => {
+    const lesson = lessonForUnit("plc", "plc-simulation");
+    expect(lesson?.explanation).toContain("AND");
+    expect(lesson?.explanation).toContain("OR");
+    expect(lesson?.explanation).toContain("NOT");
+    expect(lesson?.safetyNote).toContain("אין חיבור לבקר פיזי");
+    expect(lesson?.safetyNote).toContain("שליטה בציוד אמיתי");
+  });
 });
 
 describe("lesson answer feedback", () => {

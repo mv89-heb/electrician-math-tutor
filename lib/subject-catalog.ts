@@ -171,13 +171,13 @@ export const subjectCatalog: SubjectDefinition[] = [
     id: "plc",
     categoryId: "automation",
     title: "בקרים מתוכנתים (PLC)",
-    description: "לוגיקה תעשייתית, כניסות/יציאות ותכנות בסיסי; הלימוד כרגע עיוני עד להוספת סימולטור.",
+    description: "לוגיקה תעשייתית, כניסות/יציאות ותרגול בסיסי בסימולטור תוכנה לימודי ומבודד.",
     status: "core",
     units: [
       { id: "plc-architecture", title: "מבנה הבקר ומחזור סריקה", description: "CPU, ספק, כניסות, יציאות ומחזור סריקה.", mathConnections: ["ספירה", "זמן"] },
       { id: "plc-logic", title: "לוגיקה בוליאנית", description: "AND, OR, NOT ותרשימי Ladder.", mathConnections: ["לוגיקה", "טבלאות אמת"] },
       { id: "plc-functions", title: "טיימרים ומונים", description: "השהיות, ספירה, זיכרון ורצפים.", mathConnections: ["זמן", "מספרים שלמים"] },
-      { id: "plc-simulation", title: "סימולציה וניפוי שגיאות", description: "ניתוח עיוני של תוכנית ותיעוד שגיאות; סימולטור PLC אינטראקטיבי עדיין אינו זמין.", mathConnections: ["לוגיקה", "ניתוח תוצאות"] },
+      { id: "plc-simulation", title: "סימולציה וניפוי שגיאות", description: "בניית תנאי AND/OR/NOT ובדיקת יציאות בסימולטור תוכנה מבודד.", mathConnections: ["לוגיקה", "ניתוח תוצאות"] },
     ],
   },
   {
